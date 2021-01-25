@@ -1,0 +1,25 @@
+{
+    "name": "@prokey-webcore",
+    "version": "0.0.2",
+    "main": "index.js",
+    "description": "This module can be used to communicate with Prokey device",
+    "author": "Prokey Techologies Sdn. Bhd. <info@prokey.io>",
+    "dependencies": {
+        "@types/bytebuffer": "^5.0.40",
+        "big-number": "^2.0.0",
+        "buffer": "^5.4.3",
+        "bytebuffer": "^5.0.1",
+        "compare-versions": "^3.6.0",
+        "core-js": "^2.6.11",
+        "events": "^3.2.0",
+        "flowtype": "^2.0.0",
+        "long": "^4.0.0",
+        "multicoin-address-validator": "^0.4.8",
+        "protobufjs": "^6.8.8",
+        "rxjs": "~6.2.0"
+    },
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {}
+}
