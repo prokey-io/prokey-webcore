@@ -1,0 +1,6 @@
+.vs
+node_modules
+package-lock.json
+src/**/*.js
+src/**/*.js.map
+dist

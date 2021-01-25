@@ -1,0 +1,3260 @@
+syntax = "proto2";
+import "google/protobuf/descriptor.proto.txt";
+
+/**
+ * Request: Ask the device for a Binance address.
+ * @start
+ * @next BinanceAddress
+ * @next Failure
+ */
+message BinanceGetAddress {
+    repeated uint32 address_n = 1;  // BIP-32-style path to derive the key from master node
+    optional bool show_display = 2; // optionally prompt for confirmation on trezor display
+}
+
+/**
+ * Response: A Binance address.
+ * @end
+ */
+message BinanceAddress {
+    optional string address = 1;    // prefixed bech32 Binance address
+}
+
+/**
+ * Request: Ask device for a public key corresponding to address_n path.
+ * @start
+ * @next BinancePublicKey
+ */
+message BinanceGetPublicKey {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bool show_display = 2; // optionally show on display before sending the result
+}
+
+/**
+ * Response: A public key corresponding to address_n path.
+ * @end
+ */
+message BinancePublicKey {
+    optional bytes public_key = 1;
+}
+
+/**
+ * Request: Starts the Binance transaction protocol flow.
+ * A transaction consists of these common fields and a series of Binance<Any>Msg messages.
+ * These parts form a JSON structure (a string) in Trezor's memory, which is signed to produce a BinanceSignedTx.
+ * @start
+ * @next BinanceTxRequest
+ * @next Failure
+*/
+message BinanceSignTx {
+    repeated uint32 address_n = 1; // BIP-32-style path to derive the key from master node
+    optional uint32 msg_count = 2; // count of Binance<Any>Msg to be included in this tx
+    optional sint64 account_number = 3;
+    optional string chain_id = 4;
+    optional string memo = 5;
+    optional sint64 sequence = 6;
+    optional sint64 source = 7;
+}
+
+/**
+ * Response: Trezor requests the next message or signals that it is ready to send a BinanceSignedTx.
+ * @next BinanceTransferMsg
+ * @next BinanceOrderMsg
+ * @next BinanceCancelMsg
+ */
+message BinanceTxRequest {
+}
+
+/**
+ * Request: Ask the device to include a Binance transfer msg in the tx.
+ * @next BinanceSignedTx
+ * @next Failure
+ */
+message BinanceTransferMsg {
+    repeated BinanceInputOutput inputs = 1;
+    repeated BinanceInputOutput outputs = 2;
+
+    message BinanceInputOutput {
+        optional string address = 1;
+        repeated BinanceCoin coins = 2;
+    }
+
+    message BinanceCoin {
+        optional sint64 amount = 1;
+        optional string denom = 2;
+    }
+}
+
+/**
+ * Request: Ask the device to include a Binance order msg in the tx.
+ * @next BinanceSignedTx
+ * @next Failure
+ */
+message BinanceOrderMsg {
+    optional string id = 1;
+    optional BinanceOrderType ordertype = 2;
+    optional sint64 price = 3;
+    optional sint64 quantity = 4;
+    optional string sender = 5;
+    optional BinanceOrderSide side = 6;
+    optional string symbol = 7;
+    optional BinanceTimeInForce timeinforce = 8;
+
+    enum BinanceOrderType {
+        OT_UNKNOWN = 0;
+        MARKET = 1;
+        LIMIT = 2;
+        OT_RESERVED = 3;
+    }
+
+    enum BinanceOrderSide {
+        SIDE_UNKNOWN = 0;
+        BUY = 1;
+        SELL = 2;
+    }
+
+    enum BinanceTimeInForce {
+        TIF_UNKNOWN = 0;
+        GTE = 1;
+        TIF_RESERVED = 2;
+        IOC = 3;
+    }
+}
+
+/**
+ * Request: Ask the device to include a Binance cancel msg in the tx.
+ * @next BinanceSignedTx
+ * @next Failure
+ */
+message BinanceCancelMsg {
+    optional string refid = 1;
+    optional string sender = 2;
+    optional string symbol = 3;
+}
+
+/**
+ * Response: A transaction signature and public key corresponding to the address_n path in BinanceSignTx.
+ * @end
+ */
+message BinanceSignedTx {
+	optional bytes signature = 1;
+    optional bytes public_key = 2;
+}
+
+
+// Sugar for easier handling in Java
+
+
+/**
+ * Type of script which will be used for transaction output
+ */
+enum InputScriptType {
+    SPENDADDRESS = 0;       // standard P2PKH address
+    SPENDMULTISIG = 1;      // P2SH multisig address
+    EXTERNAL = 2;           // reserved for external inputs (coinjoin)
+    SPENDWITNESS = 3;       // native SegWit
+    SPENDP2SHWITNESS = 4;   // SegWit over P2SH (backward compatible)
+}
+
+/**
+ * Type of redeem script used in input
+ * @embed
+ */
+message MultisigRedeemScriptType {
+    repeated HDNodePathType pubkeys = 1;    // pubkeys from multisig address (sorted lexicographically)
+    repeated bytes signatures = 2;          // existing signatures for partially signed input
+    optional uint32 m = 3;                  // "m" from n, how many valid signatures is necessary for spending
+    repeated HDNodeType nodes = 4;    // simplified way how to specify pubkeys if they share the same address_n path
+    repeated uint32 address_n = 5;                              // use only field 1 or fields 4+5, if fields 4+5 are used, field 1 is ignored
+    /**
+    * Structure representing HDNode + Path
+    */
+    message HDNodePathType {
+        required HDNodeType node = 1; // BIP-32 node in deserialized form
+        repeated uint32 address_n = 2;                          // BIP-32 path to derive the key from node
+    }
+}
+
+/**
+ * Request: Ask device for public key corresponding to address_n path
+ * @start
+ * @next PublicKey
+ * @next Failure
+ */
+message GetPublicKey {
+    repeated uint32 address_n = 1;                                      // BIP-32 path to derive the key from master node
+    optional string ecdsa_curve_name = 2;                               // ECDSA curve name to use
+    optional bool show_display = 3;                                     // optionally show on display before sending the result
+    optional string coin_name = 4 [default='Bitcoin'];                  // coin to use for verifying
+    optional InputScriptType script_type = 5 [default=SPENDADDRESS];    // used to distinguish between various address formats (non-segwit, segwit, etc.)
+}
+
+/**
+ * Response: Contains public key derived from device private seed
+ * @end
+ */
+message PublicKey {
+    optional HDNodeType node = 1;        // BIP32 public node
+    optional string xpub = 2;        // serialized form of public node
+}
+
+/**
+ * Request: Ask device for address corresponding to address_n path
+ * @start
+ * @next Address
+ * @next Failure
+ */
+message GetAddress {
+    repeated uint32 address_n = 1;                                      // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Bitcoin'];                  // coin to use
+    optional bool show_display = 3;                                     // optionally show on display before sending the result
+    optional MultisigRedeemScriptType multisig = 4;                     // filled if we are showing a multisig address
+    optional InputScriptType script_type = 5 [default=SPENDADDRESS];    // used to distinguish between various address formats (non-segwit, segwit, etc.)
+}
+
+/**
+ * Response: Contains address derived from device private seed
+ * @end
+ */
+message Address {
+    required string address = 1;    // Coin address in Base58 encoding
+}
+
+/**
+ * Request: Ask device to sign message
+ * @start
+ * @next MessageSignature
+ * @next Failure
+ */
+message SignMessage {
+    repeated uint32 address_n = 1;                                      // BIP-32 path to derive the key from master node
+    required bytes message = 2;                                         // message to be signed
+    optional string coin_name = 3 [default='Bitcoin'];                  // coin to use for signing
+    optional InputScriptType script_type = 4 [default=SPENDADDRESS];    // used to distinguish between various address formats (non-segwit, segwit, etc.)
+}
+
+/**
+ * Response: Signed message
+ * @end
+ */
+message MessageSignature {
+    optional string address = 1;    // address used to sign the message
+    optional bytes signature = 2;   // signature of the message
+}
+
+/**
+ * Request: Ask device to verify message
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message VerifyMessage {
+    optional string address = 1;                        // address to verify
+    optional bytes signature = 2;                       // signature to verify
+    optional bytes message = 3;                         // message to verify
+    optional string coin_name = 4 [default='Bitcoin'];  // coin to use for verifying
+}
+
+/**
+ * Request: Ask device to sign transaction
+ * @start
+ * @next TxRequest
+ * @next Failure
+ */
+message SignTx {
+    required uint32 outputs_count = 1;                  // number of transaction outputs
+    required uint32 inputs_count = 2;                   // number of transaction inputs
+    optional string coin_name = 3 [default='Bitcoin'];  // coin to use
+    optional uint32 version = 4 [default=1];            // transaction version
+    optional uint32 lock_time = 5 [default=0];          // transaction lock_time
+    optional uint32 expiry = 6;                         // only for Decred and Zcash
+    optional bool overwintered = 7;                     // only for Zcash
+    optional uint32 version_group_id = 8;               // only for Zcash, nVersionGroupId when overwintered is set
+    optional uint32 timestamp = 9;                      // only for Capricoin, transaction timestamp
+    optional uint32 branch_id = 10;                     // only for Zcash, BRANCH_ID when overwintered is set
+}
+
+/**
+ * Response: Device asks for information for signing transaction or returns the last result
+ * If request_index is set, device awaits TxAck message (with fields filled in according to request_type)
+ * If signature_index is set, 'signature' contains signed input of signature_index's input
+ * @end
+ * @next TxAck
+ */
+message TxRequest {
+    optional RequestType request_type = 1;              // what should be filled in TxAck message?
+    optional TxRequestDetailsType details = 2;          // request for tx details
+    optional TxRequestSerializedType serialized = 3;    // serialized data and request for next
+    /**
+    * Type of information required by transaction signing process
+    */
+    enum RequestType {
+        TXINPUT = 0;
+        TXOUTPUT = 1;
+        TXMETA = 2;
+        TXFINISHED = 3;
+        TXEXTRADATA = 4;
+    }
+    /**
+    * Structure representing request details
+    */
+    message TxRequestDetailsType {
+        optional uint32 request_index = 1;      // device expects TxAck message from the computer
+        optional bytes tx_hash = 2;             // tx_hash of requested transaction
+        optional uint32 extra_data_len = 3;     // length of requested extra data
+        optional uint32 extra_data_offset = 4;  // offset of requested extra data
+    }
+    /**
+    * Structure representing serialized data
+    */
+    message TxRequestSerializedType {
+        optional uint32 signature_index = 1;    // 'signature' field contains signed input of this index
+        optional bytes signature = 2;           // signature of the signature_index input
+        optional bytes serialized_tx = 3;       // part of serialized and signed transaction
+    }
+}
+
+/**
+ * Request: Reported transaction data
+ * @next TxRequest
+ */
+message TxAck {
+    optional TransactionType tx = 1;
+    /**
+    * Structure representing transaction
+    */
+    message TransactionType {
+        optional uint32 version = 1;
+        repeated TxInputType inputs = 2;
+        repeated TxOutputBinType bin_outputs = 3;
+        optional uint32 lock_time = 4;
+        repeated TxOutputType outputs = 5;
+        optional uint32 inputs_cnt = 6;
+        optional uint32 outputs_cnt = 7;
+        optional bytes extra_data = 8;          // only for Zcash
+        optional uint32 extra_data_len = 9;     // only for Zcash
+        optional uint32 expiry = 10;            // only for Decred and Zcash
+        optional bool overwintered = 11;        // only for Zcash
+        optional uint32 version_group_id = 12;  // only for Zcash, nVersionGroupId when overwintered is set
+        optional uint32 timestamp = 13;         // only for Capricoin, transaction timestamp
+        optional uint32 branch_id = 14;         // only for Zcash, BRANCH_ID when overwintered is set
+        /**
+        * Structure representing transaction input
+        */
+        message TxInputType {
+            repeated uint32 address_n = 1;                                      // BIP-32 path to derive the key from master node
+            required bytes prev_hash = 2;                                       // hash of previous transaction output to spend by this input
+            required uint32 prev_index = 3;                                     // index of previous output to spend
+            optional bytes script_sig = 4;                                      // script signature, unset for tx to sign
+            optional uint32 sequence = 5 [default=4294967295];                  // sequence (default=0xffffffff)
+            optional InputScriptType script_type = 6 [default=SPENDADDRESS];    // defines template of input script
+            optional MultisigRedeemScriptType multisig = 7;                     // Filled if input is going to spend multisig tx
+            optional uint64 amount = 8;                                         // amount of previous transaction output (for segwit only)
+            optional uint32 decred_tree = 9;                                    // only for Decred
+            optional uint32 decred_script_version = 10;                         // only for Decred
+            optional bytes prev_block_hash_bip115 = 11;                         // block hash of previous transaction output (for bip115 implementation)
+            optional uint32 prev_block_height_bip115 = 12;                      // block height of previous transaction output (for bip115 implementation)
+        }
+        /**
+        * Structure representing compiled transaction output
+        */
+        message TxOutputBinType {
+            required uint64 amount = 1;
+            required bytes script_pubkey = 2;
+            optional uint32 decred_script_version = 3;      // only for Decred
+        }
+        /**
+        * Structure representing transaction output
+        */
+        message TxOutputType {
+            optional string address = 1;                    // target coin address in Base58 encoding
+            repeated uint32 address_n = 2;                  // BIP-32 path to derive the key from master node; has higher priority than "address"
+            required uint64 amount = 3;                     // amount to spend in satoshis
+            required OutputScriptType script_type = 4;      // output script type
+            optional MultisigRedeemScriptType multisig = 5; // defines multisig address; script_type must be PAYTOMULTISIG
+            optional bytes op_return_data = 6;              // defines op_return data; script_type must be PAYTOOPRETURN, amount must be 0
+            optional uint32 decred_script_version = 7;      // only for Decred
+            optional bytes block_hash_bip115 = 8;           // block hash of existing block (recommended current_block - 300) (for bip115 implementation)
+            optional uint32 block_height_bip115 = 9;        // block height of existing block (recommended current_block - 300) (for bip115 implementation)
+            enum OutputScriptType {
+                PAYTOADDRESS = 0;       // used for all addresses (bitcoin, p2sh, witness)
+                PAYTOSCRIPTHASH = 1;    // p2sh address (deprecated; use PAYTOADDRESS)
+                PAYTOMULTISIG = 2;      // only for change output
+                PAYTOOPRETURN = 3;      // op_return
+                PAYTOWITNESS = 4;       // only for change output
+                PAYTOP2SHWITNESS = 5;   // only for change output
+            }
+        }
+    }
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Ask device to erase its firmware (so it can be replaced via FirmwareUpload)
+ * @start
+ * @next FirmwareRequest
+ */
+message FirmwareErase {
+    optional uint32 length = 1; // length of new firmware
+}
+
+/**
+ * Response: Ask for firmware chunk
+ * @next FirmwareUpload
+ */
+message FirmwareRequest {
+    optional uint32 offset = 1; // offset of requested firmware chunk
+    optional uint32 length = 2; // length of requested firmware chunk
+}
+
+/**
+ * Request: Send firmware in binary form to the device
+ * @next FirmwareRequest
+ * @next Success
+ * @next Failure
+ */
+message FirmwareUpload {
+    required bytes payload = 1; // firmware to be loaded into device
+    optional bytes hash = 2;    // hash of the payload
+}
+
+/**
+ * Request: Perform a device self-test
+ * @next Success
+ * @next Failure
+ */
+message SelfTest {
+    optional bytes payload = 1; // payload to be used in self-test
+}
+
+// Sugar for easier handling in Java
+
+
+/**
+ * Request: Ask device for Cardano address
+ * @start
+ * @next CardanoAddress
+ * @next Failure
+ */
+message CardanoGetAddress {
+    repeated uint32 address_n = 1;  // BIP-32-style path to derive the key from master node
+    optional bool show_display = 2; // optionally prompt for confirmation on trezor display
+}
+
+/**
+ * Request: Ask device for Cardano address
+ * @end
+ */
+message CardanoAddress {
+    optional string address = 1;    // Base58 cardano address
+}
+
+/**
+ * Request: Ask device for public key corresponding to address_n path
+ * @start
+ * @next CardanoPublicKey
+ * @next Failure
+ */
+message CardanoGetPublicKey {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bool show_display = 2; // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains public key derived from device private seed
+ * @end
+ */
+message CardanoPublicKey {
+    optional string xpub = 1;                               // Xpub key
+    optional HDNodeType node = 2; // BIP-32 public node
+}
+
+/**
+ * Request: Ask device to sign Cardano transaction
+ * @start
+ * @next CardanoSignedTx
+ * @next CardanoTxRequest
+ * @next Failure
+ */
+message CardanoSignTx {
+    repeated CardanoTxInputType inputs = 1;     // inputs to be used in transaction
+    repeated CardanoTxOutputType outputs = 2;   // outputs to be used in transaction
+    optional uint32 transactions_count = 3;     // transactions count
+    optional uint32 protocol_magic = 5;         // network's protocol magic
+    /**
+     * Structure representing cardano transaction input
+     */
+    message CardanoTxInputType {
+        repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+        optional bytes prev_hash = 2;   // hash of previous transaction output to spend by this input
+        optional uint32 prev_index = 3; // index of previous output to spend
+        optional uint32 type = 4;       // input type, defaults to 0
+    }
+    /**
+     * Structure representing cardano transaction output
+     */
+    message CardanoTxOutputType {
+        optional string address = 1;    // target coin address in Base58 encoding
+        repeated uint32 address_n = 2;  // BIP-32 path to derive the key from master node; has higher priority than "address"
+        optional uint64 amount = 3;     // amount to spend
+    }
+}
+
+/**
+ * Response: Serialised signed cardano transaction if tx_index is not specified.
+ *              If tx_index is specified, trezor will wait for transaction
+ * @next CardanoTxAck
+ */
+message CardanoTxRequest {
+    optional uint32 tx_index = 1;   // index of requested transaction
+    optional bytes tx_hash = 2;     // hash of the signed transaction
+    optional bytes tx_body = 3;     // serialised body of the signed transaction
+}
+
+/**
+ * Request: Reported transaction data
+ * @next CardanoSignedTx
+ * @next CardanoTxRequest
+ */
+message CardanoTxAck {
+    optional bytes transaction = 1;
+}
+
+/**
+ * Response: Serialised signed cardano transaction
+ * @end
+ */
+message CardanoSignedTx {
+    optional bytes tx_hash = 1; // hash of the signed transaction
+    optional bytes tx_body = 2; // serialised body of the signed transaction
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Response: Success of the previous request
+ * @end
+ */
+message Success {
+    optional string message = 1;    // human readable description of action or request-specific payload
+}
+
+/**
+ * Response: Failure of the previous request
+ * @end
+ */
+message Failure {
+    optional FailureType code = 1;  // computer-readable definition of the error state
+    optional string message = 2;    // human-readable message of the error state
+    enum FailureType {
+        Failure_UnexpectedMessage = 1;
+        Failure_ButtonExpected = 2;
+        Failure_DataError = 3;
+        Failure_ActionCancelled = 4;
+        Failure_PinExpected = 5;
+        Failure_PinCancelled = 6;
+        Failure_PinInvalid = 7;
+        Failure_InvalidSignature = 8;
+        Failure_ProcessError = 9;
+        Failure_NotEnoughFunds = 10;
+        Failure_NotInitialized = 11;
+        Failure_PinMismatch = 12;
+        Failure_WipeCodeMismatch = 13;
+        Failure_FirmwareError = 99;
+    }
+}
+
+/**
+ * Response: Device is waiting for HW button press.
+ * @auxstart
+ * @next ButtonAck
+ */
+message ButtonRequest {
+    optional ButtonRequestType code = 1;
+    /**
+    * Type of button request
+    */
+    enum ButtonRequestType {
+        ButtonRequest_Other = 1;
+        ButtonRequest_FeeOverThreshold = 2;
+        ButtonRequest_ConfirmOutput = 3;
+        ButtonRequest_ResetDevice = 4;
+        ButtonRequest_ConfirmWord = 5;
+        ButtonRequest_WipeDevice = 6;
+        ButtonRequest_ProtectCall = 7;
+        ButtonRequest_SignTx = 8;
+        ButtonRequest_FirmwareCheck = 9;
+        ButtonRequest_Address = 10;
+        ButtonRequest_PublicKey = 11;
+        ButtonRequest_MnemonicWordCount = 12;
+        ButtonRequest_MnemonicInput = 13;
+        ButtonRequest_PassphraseType = 14;
+        ButtonRequest_UnknownDerivationPath = 15;
+        ButtonRequest_RecoveryHomepage = 16;
+        ButtonRequest_Success = 17;
+        ButtonRequest_Warning = 18;
+    }
+}
+
+/**
+ * Request: Computer agrees to wait for HW button press
+ * @auxend
+ */
+message ButtonAck {
+}
+
+/**
+ * Response: Device is asking computer to show PIN matrix and awaits PIN encoded using this matrix scheme
+ * @auxstart
+ * @next PinMatrixAck
+ */
+message PinMatrixRequest {
+    optional PinMatrixRequestType type = 1;
+    /**
+    * Type of PIN request
+    */
+    enum PinMatrixRequestType {
+        PinMatrixRequestType_Current = 1;
+        PinMatrixRequestType_NewFirst = 2;
+        PinMatrixRequestType_NewSecond = 3;
+        PinMatrixRequestType_WipeCodeFirst = 4;
+        PinMatrixRequestType_WipeCodeSecond = 5;
+    }
+}
+
+/**
+ * Request: Computer responds with encoded PIN
+ * @auxend
+ */
+message PinMatrixAck {
+    required string pin = 1;    // matrix encoded PIN entered by user
+}
+
+/**
+ * Response: Device awaits encryption passphrase
+ * @auxstart
+ * @next PassphraseAck
+ */
+message PassphraseRequest {
+    optional bool on_device = 1;    // passphrase is being entered on the device
+}
+
+/**
+ * Request: Send passphrase back
+ * @next PassphraseStateRequest
+ */
+message PassphraseAck {
+    optional string passphrase = 1;
+    optional bytes state = 2;       // expected device state
+}
+
+/**
+ * Response: Device awaits passphrase state
+ * @next PassphraseStateAck
+ */
+message PassphraseStateRequest {
+    optional bytes state = 1;       // actual device state
+}
+
+/**
+ * Request: Send passphrase state back
+ * @auxend
+ */
+message PassphraseStateAck {
+}
+
+/**
+ * Structure representing BIP32 (hierarchical deterministic) node
+ * Used for imports of private key into the device and exporting public key out of device
+ * @embed
+ */
+message HDNodeType {
+    required uint32 depth = 1;
+    required uint32 fingerprint = 2;
+    required uint32 child_num = 3;
+    required bytes chain_code = 4;
+    optional bytes private_key = 5;
+    optional bytes public_key = 6;
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Ask device to encrypt or decrypt value of given key
+ * @start
+ * @next CipheredKeyValue
+ * @next Failure
+ */
+message CipherKeyValue {
+    repeated uint32 address_n = 1;      // BIP-32 path to derive the key from master node
+    optional string key = 2;            // key component of key:value
+    optional bytes value = 3;           // value component of key:value
+    optional bool encrypt = 4;          // are we encrypting (True) or decrypting (False)?
+    optional bool ask_on_encrypt = 5;   // should we ask on encrypt operation?
+    optional bool ask_on_decrypt = 6;   // should we ask on decrypt operation?
+    optional bytes iv = 7;              // initialization vector (will be computed if not set)
+}
+
+/**
+ * Response: Return ciphered/deciphered value
+ * @end
+ */
+message CipheredKeyValue {
+    optional bytes value = 1;           // ciphered/deciphered value
+}
+
+/**
+ * Structure representing identity data
+ * @embed
+ */
+message IdentityType {
+    optional string proto = 1;              // proto part of URI
+    optional string user = 2;               // user part of URI
+    optional string host = 3;               // host part of URI
+    optional string port = 4;               // port part of URI
+    optional string path = 5;               // path part of URI
+    optional uint32 index = 6 [default=0];  // identity index
+}
+
+/**
+ * Request: Ask device to sign identity
+ * @start
+ * @next SignedIdentity
+ * @next Failure
+ */
+message SignIdentity {
+    optional IdentityType identity = 1;     // identity
+    optional bytes challenge_hidden = 2;    // non-visible challenge
+    optional string challenge_visual = 3;   // challenge shown on display (e.g. date+time)
+    optional string ecdsa_curve_name = 4;   // ECDSA curve name to use
+}
+
+/**
+ * Response: Device provides signed identity
+ * @end
+ */
+message SignedIdentity {
+    optional string address = 1;    // identity address
+    optional bytes public_key = 2;  // identity public key
+    optional bytes signature = 3;   // signature of the identity data
+}
+
+/**
+ * Request: Ask device to generate ECDH session key
+ * @start
+ * @next ECDHSessionKey
+ * @next Failure
+ */
+message GetECDHSessionKey {
+    optional IdentityType identity = 1;     // identity
+    optional bytes peer_public_key = 2;     // peer's public key
+    optional string ecdsa_curve_name = 3;   // ECDSA curve name to use
+}
+
+/**
+ * Response: Device provides ECDH session key
+ * @end
+ */
+message ECDHSessionKey {
+    optional bytes session_key = 1;     // ECDH session key
+}
+
+/**
+ * Request: Ask device to commit to CoSi signing
+ * @start
+ * @next CosiCommitment
+ * @next Failure
+ */
+message CosiCommit {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bytes data = 2;        // Data to be signed
+}
+
+/**
+ * Response: Contains a CoSi commitment
+ * @end
+ */
+message CosiCommitment {
+    optional bytes commitment = 1;  // Commitment
+    optional bytes pubkey = 2;      // Public key
+}
+
+/**
+ * Request: Ask device to sign using CoSi
+ * @start
+ * @next CosiSignature
+ * @next Failure
+ */
+message CosiSign {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional bytes data = 2;                // Data to be signed
+    optional bytes global_commitment = 3;   // Aggregated commitment
+    optional bytes global_pubkey = 4;       // Aggregated public key
+}
+
+/**
+ * Response: Contains a CoSi signature
+ * @end
+ */
+message CosiSignature {
+    optional bytes signature = 1;   // Signature
+}
+
+// Sugar for easier handling in Java
+
+
+/**
+ * Request: "Press" the button on the device
+ * @start
+ * @next DebugLinkLayout
+ */
+message DebugLinkDecision {
+    optional bool yes_no = 1;   // true for "Confirm", false for "Cancel"
+    optional DebugSwipeDirection swipe = 2;  // swipe direction
+    optional string input = 3;  // keyboard input
+    /**
+    * Structure representing swipe direction
+    */
+    enum DebugSwipeDirection {
+        UP = 0;
+        DOWN = 1;
+        LEFT = 2;
+        RIGHT = 3;
+    }
+
+    optional uint32 x = 4;   // touch X coordinate
+    optional uint32 y = 5;   // touch Y coordinate
+    optional bool wait = 6;  // wait for layout change
+}
+
+/**
+ * Response: Device text layout
+ * @end
+ */
+message DebugLinkLayout {
+    repeated string lines = 1;
+}
+
+/**
+ * Request: Computer asks for device state
+ * @start
+ * @next DebugLinkState
+ */
+message DebugLinkGetState {
+    optional bool wait_word_list = 1;  // Trezor T only - wait until mnemonic words are shown
+    optional bool wait_word_pos = 2;   // Trezor T only - wait until reset word position is requested
+    optional bool wait_layout = 3;     // wait until current layout changes
+}
+
+/**
+ * Response: Device current state
+ * @end
+ */
+message DebugLinkState {
+    optional bytes layout = 1;                              // raw buffer of display
+    optional string pin = 2;                                // current PIN, blank if PIN is not set/enabled
+    optional string matrix = 3;                             // current PIN matrix
+    optional bytes mnemonic_secret = 4;                     // current mnemonic secret
+    optional HDNodeType node = 5; // current BIP-32 node
+    optional bool passphrase_protection = 6;                // is node/mnemonic encrypted using passphrase?
+    optional string reset_word = 7;                         // word on device display during ResetDevice workflow
+    optional bytes reset_entropy = 8;                       // current entropy during ResetDevice workflow
+    optional string recovery_fake_word = 9;                 // (fake) word on display during RecoveryDevice workflow
+    optional uint32 recovery_word_pos = 10;                 // index of mnemonic word the device is expecting during RecoveryDevice workflow
+    optional uint32 reset_word_pos = 11;                    // index of mnemonic word the device is expecting during ResetDevice workflow
+    optional uint32 mnemonic_type = 12;                     // current mnemonic type (BIP-39/SLIP-39)
+    repeated string layout_lines = 13;                      // current layout text
+}
+
+/**
+ * Request: Ask device to restart
+ * @start
+ */
+message DebugLinkStop {
+}
+
+/**
+ * Response: Device wants host to log event
+ * @ignore
+ */
+message DebugLinkLog {
+    optional uint32 level = 1;
+    optional string bucket = 2;
+    optional string text = 3;
+}
+
+/**
+ * Request: Read memory from device
+ * @start
+ * @next DebugLinkMemory
+ */
+message DebugLinkMemoryRead {
+    optional uint32 address = 1;
+    optional uint32 length = 2;
+}
+
+/**
+ * Response: Device sends memory back
+ * @end
+ */
+message DebugLinkMemory {
+    optional bytes memory = 1;
+}
+
+/**
+ * Request: Write memory to device.
+ * WARNING: Writing to the wrong location can irreparably break the device.
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message DebugLinkMemoryWrite {
+    optional uint32 address = 1;
+    optional bytes memory = 2;
+    optional bool flash = 3;
+}
+
+/**
+ * Request: Erase block of flash on device
+ * WARNING: Writing to the wrong location can irreparably break the device.
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message DebugLinkFlashErase {
+    optional uint32 sector = 1;
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Ask device for Eos public key corresponding to address_n path
+ * @start
+ * @next EosPublicKey
+ * @next Failure
+ */
+message EosGetPublicKey {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node 44'/194'/0'
+    optional bool show_display = 2; // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains an Eos public key derived from device private seed
+ * @end
+ */
+message EosPublicKey {
+    optional string wif_public_key = 1; // EOS pub key in Base58 encoding
+    optional bytes raw_public_key = 2;  // Raw public key
+}
+
+/**
+ * Request: Ask device to sign transaction
+ * @start
+ * @next EosTxRequest
+ * @next Failure
+ */
+message EosSignTx {
+    repeated uint32 address_n = 1;   // BIP-32 path to derive the key from master node 44'/194'/0'
+    optional bytes chain_id = 2;     // 256-bit long chain id
+    optional EosTxHeader header = 3; // EOS transaction header
+    optional uint32 num_actions = 4; // number of actions
+
+    /**
+     * Structure representing EOS transaction header
+     */
+    message EosTxHeader {
+        required uint32 expiration = 1;          // time at which transaction expires
+        required uint32 ref_block_num = 2;       // 16-bit specifies a block num in the last 2^16 blocks.
+        required uint32 ref_block_prefix = 3;    // specifies the lower 32 bits of the blockid at get_ref_blocknum
+        required uint32 max_net_usage_words = 4; // upper limit on total network bandwidth (in 8 byte words) billed for this transaction
+        required uint32 max_cpu_usage_ms = 5;    // 8-bit upper limit on the total CPU time billed for this transaction
+        required uint32 delay_sec = 6;           // number of seconds to delay this transaction for during which it may be canceled.
+    }
+}
+
+/**
+ * Response: Device asks to upload next action
+ * @next EosTxActionAck
+ */
+message EosTxActionRequest {
+    optional uint32 data_size = 1;
+}
+
+/**
+ * Request: Next action data that needs to be uploaded
+ * @next EosTxActionRequest
+ * @next EosSignedTx
+ * @next Failure
+ */
+message EosTxActionAck {
+    optional EosActionCommon common = 1;
+    optional EosActionTransfer transfer = 2;
+    optional EosActionDelegate delegate = 3;
+    optional EosActionUndelegate undelegate = 4;
+    optional EosActionRefund refund = 5;
+    optional EosActionBuyRam buy_ram = 6;
+    optional EosActionBuyRamBytes buy_ram_bytes = 7;
+    optional EosActionSellRam sell_ram = 8;
+    optional EosActionVoteProducer vote_producer = 9;
+    optional EosActionUpdateAuth update_auth = 10;
+    optional EosActionDeleteAuth delete_auth = 11;
+    optional EosActionLinkAuth link_auth = 12;
+    optional EosActionUnlinkAuth unlink_auth = 13;
+    optional EosActionNewAccount new_account = 14;
+    optional EosActionUnknown unknown = 15;
+
+    /**
+     * Structure representing asset type
+     */
+    message EosAsset {
+        optional sint64 amount = 1;
+        optional uint64 symbol = 2; // Lowest 8 bits used for precision.
+    }
+
+    /**
+     * Structure representing action permission level
+     */
+    message EosPermissionLevel {
+        optional uint64 actor = 1;
+        optional uint64 permission = 2;
+    }
+
+    /**
+     * Structure representing auth key
+     */
+    message EosAuthorizationKey {
+        optional uint32 type = 1;
+        optional bytes key = 2;        // Explicit public key bytes; when present, address_n must be empty
+        repeated uint32 address_n = 3; // BIP-32 path to derive key; when filled out, key must not be present
+        optional uint32 weight = 4;
+    }
+
+    /**
+     * Structure representing auth account
+     */
+    message EosAuthorizationAccount {
+        optional EosPermissionLevel account = 1;
+        optional uint32 weight = 2;
+    }
+
+    /**
+     * Structure representing auth delays
+     */
+    message EosAuthorizationWait {
+        optional uint32 wait_sec = 1;
+        optional uint32 weight = 2;
+    }
+
+    /**
+     * Structure representing authorization settings
+     */
+    message EosAuthorization {
+        optional uint32 threshold = 1;
+        repeated EosAuthorizationKey keys = 2;
+        repeated EosAuthorizationAccount accounts = 3;
+        repeated EosAuthorizationWait waits = 4;
+    }
+
+    /**
+     * Structure representing the common part of every action
+     */
+    message EosActionCommon {
+        optional uint64 account = 1; // Contract name
+        optional uint64 name = 2;    // Action name
+        repeated EosPermissionLevel authorization = 3;
+    }
+
+    /**
+     * Structure representing transfer data structure
+     */
+    message EosActionTransfer {
+        optional uint64 sender = 1; // Asset sender
+        optional uint64 receiver = 2;
+        optional EosAsset quantity = 3;
+        optional string memo = 4;
+    }
+
+    /**
+     * Structure representing delegation data structure
+     */
+    message EosActionDelegate {
+        optional uint64 sender = 1;
+        optional uint64 receiver = 2;
+        optional EosAsset net_quantity = 3; // Asset format '1.0000 EOS'
+        optional EosAsset cpu_quantity = 4; // Asset format '1.0000 EOS'
+        optional bool transfer = 5;         // Transfer delegated tokens or not.
+    }
+
+    /**
+     * Structure representing the removal of delegated resources from `sender`
+     */
+    message EosActionUndelegate {
+        optional uint64 sender = 1;
+        optional uint64 receiver = 2;
+        optional EosAsset net_quantity = 3; // Asset format '1.0000 EOS'
+        optional EosAsset cpu_quantity = 4; // Asset format '1.0000 EOS'
+    }
+
+    /**
+     * Structure representing fallback if undelegate wasnt executed automaticaly.
+     */
+    message EosActionRefund {
+        optional uint64 owner = 1;
+    }
+
+    /**
+     * Structure representing buying RAM operation for EOS tokens
+     */
+    message EosActionBuyRam {
+        optional uint64 payer = 1;
+        optional uint64 receiver = 2;
+        optional EosAsset quantity = 3; // Asset format '1.0000 EOS'
+    }
+
+    /**
+     * Structure representing buying bytes according to RAM market price.
+     */
+    message EosActionBuyRamBytes {
+        optional uint64 payer = 1;
+        optional uint64 receiver = 2;
+        optional uint32 bytes = 3; // Number of bytes
+    }
+
+    /**
+     * Structure representing sell RAM
+     */
+    message EosActionSellRam {
+        optional uint64 account = 1;
+        optional uint64 bytes = 2; // Number of bytes
+    }
+
+    /**
+     * Structure representing voting. Currently, there could be up to 30 producers.
+     */
+    message EosActionVoteProducer {
+        optional uint64 voter = 1;     // Voter account
+        optional uint64 proxy = 2;     // Proxy voter account
+        repeated uint64 producers = 3; // List of producers
+    }
+
+    /**
+     * Structure representing update authorization.
+     */
+    message EosActionUpdateAuth {
+        optional uint64 account = 1;
+        optional uint64 permission = 2;
+        optional uint64 parent = 3;
+        optional EosAuthorization auth = 4;
+    }
+
+    /**
+     * Structure representing delete authorization.
+     */
+    message EosActionDeleteAuth {
+        optional uint64 account = 1;
+        optional uint64 permission = 2;
+    }
+
+    /**
+     * Structure representing link authorization to action.
+     */
+    message EosActionLinkAuth {
+        optional uint64 account = 1;
+        optional uint64 code = 2;
+        optional uint64 type = 3;
+        optional uint64 requirement = 4;
+    }
+
+    /**
+     * Structure representing unlink authorization from action.
+     */
+    message EosActionUnlinkAuth {
+        optional uint64 account = 1;
+        optional uint64 code = 2;
+        optional uint64 type = 3;
+    }
+
+    /**
+     * Structure representing creation of a new account.
+     */
+    message EosActionNewAccount {
+        optional uint64 creator = 1;
+        optional uint64 name = 2;
+        optional EosAuthorization owner = 3;
+        optional EosAuthorization active = 4;
+    }
+
+    /**
+     * Structure representing actions not implemented above.
+     */
+    message EosActionUnknown {
+        optional uint32 data_size = 1;
+        optional bytes data_chunk = 2;
+    }
+}
+
+/**
+ * Response: Device returns the signature.
+ * The signature_* fields contain the computed transaction signature. All three fields will be present.
+ * @end
+ */
+message EosSignedTx {
+    optional string signature = 1; // Computed signature
+}
+
+// Sugar for easier handling in Java
+
+
+
+/**
+ * Request: Ask device for public key corresponding to address_n path
+ * @start
+ * @next EthereumPublicKey
+ * @next Failure
+ */
+message EthereumGetPublicKey {
+    repeated uint32 address_n = 1;                                      // BIP-32 path to derive the key from master node
+    optional bool show_display = 2;                                     // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains public key derived from device private seed
+ * @end
+ */
+message EthereumPublicKey {
+    optional HDNodeType node = 1;        // BIP32 public node
+    optional string xpub = 2;        // serialized form of public node
+}
+
+/**
+ * Request: Ask device for Ethereum address corresponding to address_n path
+ * @start
+ * @next EthereumAddress
+ * @next Failure
+ */
+message EthereumGetAddress {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bool show_display = 2; // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains an Ethereum address derived from device private seed
+ * @end
+ */
+message EthereumAddress {
+    optional bytes old_address = 1 [deprecated=true];  // trezor <1.8.0, <2.1.0 - raw bytes of Ethereum address
+    optional string address = 2;                       // Ethereum address as hex-encoded string
+}
+
+/**
+ * Request: Ask device to sign transaction
+ * All fields are optional from the protocol's point of view. Each field defaults to value `0` if missing.
+ * Note: the first at most 1024 bytes of data MUST be transmitted as part of this message.
+ * @start
+ * @next EthereumTxRequest
+ * @next Failure
+ */
+message EthereumSignTx {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional bytes nonce = 2;               // <=256 bit unsigned big endian
+    optional bytes gas_price = 3;           // <=256 bit unsigned big endian (in wei)
+    optional bytes gas_limit = 4;           // <=256 bit unsigned big endian
+    optional string to = 11;                // recipient address
+    optional bytes value = 6;               // <=256 bit unsigned big endian (in wei)
+    optional bytes data_initial_chunk = 7;  // The initial data chunk (<= 1024 bytes)
+    optional uint32 data_length = 8;        // Length of transaction payload
+    optional uint32 chain_id = 9;           // Chain Id for EIP 155
+    optional uint32 tx_type = 10;           // (only for Wanchain)
+}
+
+/**
+ * Response: Device asks for more data from transaction payload, or returns the signature.
+ * If data_length is set, device awaits that many more bytes of payload.
+ * Otherwise, the signature_* fields contain the computed transaction signature. All three fields will be present.
+ * @end
+ * @next EthereumTxAck
+ */
+message EthereumTxRequest {
+    optional uint32 data_length = 1;    // Number of bytes being requested (<= 1024)
+    optional uint32 signature_v = 2;    // Computed signature (recovery parameter, limited to 27 or 28)
+    optional bytes signature_r = 3;     // Computed signature R component (256 bit)
+    optional bytes signature_s = 4;     // Computed signature S component (256 bit)
+}
+
+/**
+ * Request: Transaction payload data.
+ * @next EthereumTxRequest
+ */
+message EthereumTxAck {
+    optional bytes data_chunk = 1;  // Bytes from transaction payload (<= 1024 bytes)
+}
+
+/**
+ * Request: Ask device to sign message
+ * @start
+ * @next EthereumMessageSignature
+ * @next Failure
+ */
+message EthereumSignMessage {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bytes message = 2;     // message to be signed
+}
+
+/**
+ * Response: Signed message
+ * @end
+ */
+message EthereumMessageSignature {
+    optional bytes signature = 2;   // signature of the message
+    optional string address = 3;     // address used to sign the message
+}
+
+/**
+ * Request: Ask device to verify message
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message EthereumVerifyMessage {
+    optional bytes signature = 2;   // signature to verify
+    optional bytes message = 3;     // message to verify
+    optional string address = 4;     // address to verify
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Ask device for Lisk address corresponding to address_n path
+ * @start
+ * @next LiskAddress
+ * @next Failure
+ */
+message LiskGetAddress {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bool show_display = 2; // Optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains Lisk address derived from device private seed
+ * @end
+ */
+message LiskAddress {
+    optional string address = 1;    // Lisk address
+}
+
+/**
+ * Request: Ask device for Lisk public key corresponding to address_n path
+ * @start
+ * @next LiskPublicKey
+ */
+message LiskGetPublicKey {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional bool show_display = 2; // Optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains Lisk public key derived from device private seed
+ * @end
+ */
+message LiskPublicKey {
+    optional bytes public_key = 1;  // Lisk public key
+}
+
+/**
+ * Request: Ask device to sign Lisk transaction
+ * @start
+ * @next LiskSignedTx
+ * @next Failure
+ */
+message LiskSignTx {
+    repeated uint32 address_n = 1;                  // BIP-32 path to derive the key from master node
+    optional LiskTransactionCommon transaction = 2; // Lisk transaction structure
+    /**
+     * Structure representing the common part for Lisk transactions
+     */
+    message LiskTransactionCommon {
+        optional LiskTransactionType type = 1;
+        optional uint64 amount = 2 [default=0];
+        optional uint64 fee = 3;
+        optional string recipient_id = 4;
+        optional bytes sender_public_key = 5;
+        optional bytes requester_public_key = 6;
+        optional bytes signature = 7;
+        optional uint32 timestamp = 8;
+        optional LiskTransactionAsset asset = 9;
+        /**
+         * Type of Lisk transaction
+         */
+        enum LiskTransactionType {
+            Transfer = 0;
+            RegisterSecondPassphrase = 1;
+            RegisterDelegate = 2;
+            CastVotes = 3;
+            RegisterMultisignatureAccount = 4;
+            CreateDapp = 5;
+            TransferIntoDapp = 6;
+            TransferOutOfDapp = 7;
+        }
+        /**
+         * Structure representing the asset field in the Lisk transaction
+         */
+        message LiskTransactionAsset {
+            optional LiskSignatureType signature = 1;
+            optional LiskDelegateType delegate = 2;
+            repeated string votes = 3;
+            optional LiskMultisignatureType multisignature = 4;
+            optional string data = 5;
+            /**
+             * Structure representing the signature field in the Lisk transaction asset field
+             */
+            message LiskSignatureType {
+                optional bytes public_key = 1;
+            }
+            /**
+             * Structure representing the delegate field in the Lisk transaction asset field
+             */
+            message LiskDelegateType {
+                optional string username  = 1;
+            }
+            /**
+             * Structure representing the multisignature field in the Lisk transaction asset field
+             */
+            message LiskMultisignatureType {
+                optional uint32 min = 1;
+                optional uint32 life_time = 2;
+                repeated string keys_group = 3;
+            }
+        }
+    }
+}
+
+/**
+ * Response: Contains Lisk transaction signature
+ * @end
+ */
+message LiskSignedTx {
+    optional bytes signature = 1;
+}
+
+/**
+ * Request: Ask device to sign message
+ * @start
+ * @next LiskMessageSignature
+ * @next Failure
+ */
+message LiskSignMessage {
+    repeated uint32 address_n = 1;
+    optional bytes message = 2;
+}
+
+/**
+ * Response: Signed message
+ * @end
+ */
+message LiskMessageSignature {
+    optional bytes public_key = 1;
+    optional bytes signature = 2;
+}
+
+/**
+ * Request: Ask device to verify message
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message LiskVerifyMessage {
+    optional bytes public_key = 1;
+    optional bytes signature = 2;
+    optional bytes message = 3;
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Type of the mnemonic backup given/received by the device during reset/recovery.
+ */
+enum BackupType {
+    Bip39 = 0;              // also called "Single Backup", see BIP-0039
+    Slip39_Basic = 1;       // also called "Shamir Backup", see SLIP-0039
+    Slip39_Advanced = 2;    // also called "Super Shamir" or "Shamir with Groups", see SLIP-0039#two-level-scheme
+}
+
+/**
+ * Request: Reset device to default state and ask for device details
+ * @start
+ * @next Features
+ */
+message Initialize {
+    optional bytes state = 1;           // assumed device state, clear session if set and different
+    optional bool skip_passphrase = 2;  // this session should always assume empty passphrase
+}
+
+/**
+ * Request: Ask for device details (no device reset)
+ * @start
+ * @next Features
+ */
+message GetFeatures {
+}
+
+/**
+ * Response: Reports various information about the device
+ * @end
+ */
+message Features {
+    optional string vendor = 1;                 // name of the manufacturer, e.g. "prokey.io"
+    optional uint32 major_version = 2;          // major version of the firmware/bootloader, e.g. 1
+    optional uint32 minor_version = 3;          // minor version of the firmware/bootloader, e.g. 0
+    optional uint32 patch_version = 4;          // patch version of the firmware/bootloader, e.g. 0
+    optional bool bootloader_mode = 5;          // is device in bootloader mode?
+    optional string device_id = 6;              // device's unique identifier
+    optional bool pin_protection = 7;           // is device protected by PIN?
+    optional bool passphrase_protection = 8;    // is node/mnemonic encrypted using passphrase?
+    optional string language = 9;               // device language
+    optional string label = 10;                 // device description label
+    optional bool initialized = 12;             // does device contain seed?
+    optional bytes revision = 13;               // SCM revision of firmware
+    optional bytes bootloader_hash = 14;        // hash of the bootloader
+    optional bool imported = 15;                // was storage imported from an external source?
+    optional bool pin_cached = 16;              // is PIN already cached in session?
+    optional bool passphrase_cached = 17;       // is passphrase already cached in session?
+    optional bool firmware_present = 18;        // is valid firmware loaded?
+    optional bool needs_backup = 19;            // does storage need backup? (equals to Storage.needs_backup)
+    optional uint32 flags = 20;                 // device flags (equals to Storage.flags)
+    optional string model = 21;                 // device hardware model
+    optional uint32 fw_major = 22;              // reported firmware version if in bootloader mode
+    optional uint32 fw_minor = 23;              // reported firmware version if in bootloader mode
+    optional uint32 fw_patch = 24;              // reported firmware version if in bootloader mode
+    optional string fw_vendor = 25;             // reported firmware vendor if in bootloader mode
+    optional bytes fw_vendor_keys = 26;         // reported firmware vendor keys (their hash)
+    optional bool unfinished_backup = 27;       // report unfinished backup (equals to Storage.unfinished_backup)
+    optional bool no_backup = 28;               // report no backup (equals to Storage.no_backup)
+    optional bool recovery_mode = 29;           // is recovery mode in progress
+    repeated Capability capabilities = 30;      // list of supported capabilities
+    enum Capability {
+        Capability_Bitcoin = 1;
+        Capability_Bitcoin_like = 2;            // Altcoins based on the Bitcoin source code
+        Capability_Binance = 3;
+        Capability_Cardano = 4;
+        Capability_Crypto = 5;                  // generic crypto operations for GPG, SSH, etc.
+        Capability_EOS = 6;
+        Capability_Ethereum = 7;
+        Capability_Lisk = 8;
+        Capability_Monero = 9;
+        Capability_NEM = 10;
+        Capability_Ripple = 11;
+        Capability_Stellar = 12;
+        Capability_Tezos = 13;
+        Capability_U2F = 14;
+        Capability_Shamir = 15;
+        Capability_ShamirGroups = 16;
+    }
+    optional BackupType backup_type = 31;       // type of device backup (BIP-39 / SLIP-39 basic / SLIP-39 advanced)
+    optional bool sd_card_present = 32;         // is SD card present
+    optional bool sd_protection = 33;           // is SD Protect enabled
+    optional bool wipe_code_protection = 34;    // is wipe code protection enabled
+}
+
+/**
+ * Request: clear session (removes cached PIN, passphrase, etc).
+ * @start
+ * @next Success
+ */
+message ClearSession {
+}
+
+/**
+ * Request: change language and/or label of the device
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message ApplySettings {
+    optional string language = 1;
+    optional string label = 2;
+    optional bool use_passphrase = 3;
+    optional bytes homescreen = 4;
+    optional PassphraseSourceType passphrase_source = 5;
+    optional uint32 auto_lock_delay_ms = 6;
+    optional uint32 display_rotation = 7;  // in degrees from North
+    /**
+    * Structure representing passphrase source
+    */
+    enum PassphraseSourceType {
+        ASK = 0;
+        DEVICE = 1;
+        HOST = 2;
+    }
+}
+
+/**
+ * Request: set flags of the device
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message ApplyFlags {
+    optional uint32 flags = 1;  // bitmask, can only set bits, not unset
+}
+
+/**
+ * Request: Starts workflow for setting/changing/removing the PIN
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message ChangePin {
+    optional bool remove = 1;   // is PIN removal requested?
+}
+
+/**
+ * Request: Starts workflow for setting/removing the wipe code
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message ChangeWipeCode {
+    optional bool remove = 1;   // is wipe code removal requested?
+}
+
+/**
+ * Request: Starts workflow for enabling/regenerating/disabling SD card protection
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message SdProtect {
+    optional SdProtectOperationType operation = 1;
+    /**
+    * Structure representing SD card protection operation
+    */
+    enum SdProtectOperationType {
+        DISABLE = 0;
+        ENABLE = 1;
+        REFRESH = 2;
+    }
+}
+
+/**
+ * Request: Test if the device is alive, device sends back the message in Success response
+ * @start
+ * @next Success
+ */
+message Ping {
+    optional string message = 1;                // message to send back in Success message
+    optional bool button_protection = 2;        // ask for button press
+    optional bool pin_protection = 3;           // ask for PIN if set in device
+    optional bool passphrase_protection = 4;    // ask for passphrase if set in device
+}
+
+/**
+ * Request: Abort last operation that required user interaction
+ * @start
+ * @next Failure
+ */
+message Cancel {
+}
+
+/**
+ * Request: Request a sample of random data generated by hardware RNG. May be used for testing.
+ * @start
+ * @next Entropy
+ * @next Failure
+ */
+message GetEntropy {
+    required uint32 size = 1;       // size of requested entropy
+}
+
+/**
+ * Response: Reply with random data generated by internal RNG
+ * @end
+ */
+message Entropy {
+    required bytes entropy = 1;     // chunk of random generated bytes
+}
+
+/**
+ * Request: Request device to wipe all sensitive data and settings
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message WipeDevice {
+}
+
+/**
+ * Request: Load seed and related internal settings from the computer
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message LoadDevice {
+    repeated string mnemonics = 1;                          // seed encoded as mnemonic (12, 18 or 24 words for BIP39, 20 or 33 for SLIP39)
+    optional string pin = 3;                                // set PIN protection
+    optional bool passphrase_protection = 4;                // enable master node encryption using passphrase
+    optional string language = 5 [default='english'];       // device language
+    optional string label = 6;                              // device label
+    optional bool skip_checksum = 7;                        // do not test mnemonic for valid BIP-39 checksum
+    optional uint32 u2f_counter = 8;                        // U2F counter
+    optional bool needs_backup = 9;                         // set "needs backup" flag
+    optional bool no_backup = 10;                           // indicate that no backup is going to be made
+}
+
+/**
+ * Request: Ask device to do initialization involving user interaction
+ * @start
+ * @next EntropyRequest
+ * @next Failure
+ */
+message ResetDevice {
+    optional bool display_random = 1;                       // display entropy generated by the device before asking for additional entropy
+    optional uint32 strength = 2 [default=256];             // strength of seed in bits
+    optional bool passphrase_protection = 3;                // enable master node encryption using passphrase
+    optional bool pin_protection = 4;                       // enable PIN protection
+    optional string language = 5 [default='english'];       // device language
+    optional string label = 6;                              // device label
+    optional uint32 u2f_counter = 7;                        // U2F counter
+    optional bool skip_backup = 8;                          // postpone seed backup to BackupDevice workflow
+    optional bool no_backup = 9;                            // indicate that no backup is going to be made
+    optional BackupType backup_type = 10 [default=Bip39];   // type of the mnemonic backup
+}
+
+/**
+ * Request: Perform backup of the device seed if not backed up using ResetDevice
+ * @start
+ * @next Success
+ */
+message BackupDevice {
+}
+
+/**
+ * Response: Ask for additional entropy from host computer
+ * @next EntropyAck
+ */
+message EntropyRequest {
+}
+
+/**
+ * Request: Provide additional entropy for seed generation function
+ * @next Success
+ */
+message EntropyAck {
+    optional bytes entropy = 1;     // 256 bits (32 bytes) of random data
+}
+
+/**
+ * Request: Start recovery workflow asking user for specific words of mnemonic
+ * Used to recovery device safely even on untrusted computer.
+ * @start
+ * @next WordRequest
+ */
+message RecoveryDevice {
+    optional uint32 word_count = 1;                     // number of words in BIP-39 mnemonic
+    optional bool passphrase_protection = 2;            // enable master node encryption using passphrase
+    optional bool pin_protection = 3;                   // enable PIN protection
+    optional string language = 4 [default='english'];   // device language
+    optional string label = 5;                          // device label
+    optional bool enforce_wordlist = 6;                 // enforce BIP-39 wordlist during the process
+    // 7 reserved for unused recovery method
+    optional RecoveryDeviceType type = 8;               // supported recovery type
+    optional uint32 u2f_counter = 9;                    // U2F counter
+    optional bool dry_run = 10;                         // perform dry-run recovery workflow (for safe mnemonic validation)
+    /**
+     * Type of recovery procedure. These should be used as bitmask, e.g.,
+     * `RecoveryDeviceType_ScrambledWords | RecoveryDeviceType_Matrix`
+     * listing every method supported by the host computer.
+     *
+     * Note that ScrambledWords must be supported by every implementation
+     * for backward compatibility; there is no way to not support it.
+     */
+    enum RecoveryDeviceType {
+        // use powers of two when extending this field
+        RecoveryDeviceType_ScrambledWords = 0;        // words in scrambled order
+        RecoveryDeviceType_Matrix = 1;                // matrix recovery type
+    }
+}
+
+/**
+ * Response: Device is waiting for user to enter word of the mnemonic
+ * Its position is shown only on device's internal display.
+ * @next WordAck
+ */
+message WordRequest {
+    optional WordRequestType type = 1;
+    /**
+    * Type of Recovery Word request
+    */
+    enum WordRequestType {
+        WordRequestType_Plain = 0;
+        WordRequestType_Matrix9 = 1;
+        WordRequestType_Matrix6 = 2;
+    }
+}
+
+/**
+ * Request: Computer replies with word from the mnemonic
+ * @next WordRequest
+ * @next Success
+ * @next Failure
+ */
+message WordAck {
+    required string word = 1;           // one word of mnemonic on asked position
+}
+
+/**
+ * Request: Set U2F counter
+ * @start
+ * @next Success
+ */
+message SetU2FCounter {
+    optional uint32 u2f_counter = 1;
+}
+
+/**
+ * Request: Set U2F counter
+ * @start
+ * @next NextU2FCounter
+ */
+message GetNextU2FCounter {
+}
+
+/**
+ * Request: Set U2F counter
+ * @end
+ */
+message NextU2FCounter {
+    optional uint32 u2f_counter = 1;
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Structure representing Monero transaction source entry, UTXO
+ * @embed
+ */
+message MoneroTransactionSourceEntry {
+    repeated MoneroOutputEntry outputs = 1;  // all outputs including decoys (forms the ring)
+    optional uint64 real_output = 2;  // index denoting which item in `outputs` is our real output (not a decoy)
+    optional bytes real_out_tx_key = 3;  // tx key located in the real output's tx
+    repeated bytes real_out_additional_tx_keys = 4;  // additional tx keys if applicable
+    optional uint64 real_output_in_tx_index = 5;  // index of our real output in the tx (aka which output was it in the transaction)
+    optional uint64 amount = 6;
+    optional bool rct = 7;  // is RingCT used (true for newer UTXOs)
+    optional bytes mask = 8;
+    optional MoneroMultisigKLRki multisig_kLRki = 9;
+    message MoneroOutputEntry {
+        optional uint64 idx = 1;
+        optional MoneroRctKeyPublic key = 2;
+        message MoneroRctKeyPublic {
+            optional bytes dest = 1;
+            optional bytes commitment = 2;
+        }
+    }
+    message MoneroMultisigKLRki {
+        optional bytes K = 1;
+        optional bytes L = 2;
+        optional bytes R = 3;
+        optional bytes ki = 4;
+    }
+}
+
+/**
+ * Structure representing Monero transaction destination entry
+ * @embed
+ */
+message MoneroTransactionDestinationEntry {
+    optional uint64 amount = 1;
+    optional MoneroAccountPublicAddress addr = 2;
+    optional bool is_subaddress = 3;
+    optional bytes original = 4;
+    optional bool is_integrated = 5;
+    /**
+     * Structure representing Monero public address
+     */
+    message MoneroAccountPublicAddress {
+        optional bytes spend_public_key = 1;
+        optional bytes view_public_key = 2;
+    }
+}
+
+/**
+ * Range sig parameters / data.
+ * @embed
+ */
+message MoneroTransactionRsigData {
+    optional uint32 rsig_type = 1;  // range signature (aka proof) type
+    optional uint32 offload_type = 2;
+    repeated uint64 grouping = 3;  // aggregation scheme for BP
+
+    optional bytes mask = 4;       // mask vector
+    optional bytes rsig = 5;       // range sig data, all of it or partial (based on rsig_parts)
+    repeated bytes rsig_parts = 6;
+    optional uint32 bp_version = 7;  // Bulletproof version
+}
+
+/**
+ * Request: Ask device for public address derived from seed and address_n
+ * @start
+ * @next MoneroAddress
+ * @next Failure
+ */
+message MoneroGetAddress {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional bool show_display = 2;         // Optionally show on display before sending the result
+    optional uint32 network_type = 3;       // Main-net / testnet / stagenet
+    optional uint32 account = 4;            // Major subaddr index
+    optional uint32 minor = 5;              // Minor subaddr index
+    optional bytes payment_id = 6;          // Payment ID for integrated address
+}
+
+/**
+ * Response: Contains Monero watch-only credentials derived from device private seed
+ * @end
+ */
+message MoneroAddress {
+    optional bytes address = 1;
+}
+
+/**
+ * Request: Ask device for watch only credentials
+ * @start
+ * @next MoneroWatchKey
+ * @next Failure
+ */
+message MoneroGetWatchKey {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional uint32 network_type = 2;       // Main-net / testnet / stagenet
+}
+
+/**
+ * Response: Contains Monero watch-only credentials derived from device private seed
+ * @end
+ */
+message MoneroWatchKey {
+    optional bytes watch_key = 1;
+    optional bytes address = 2;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Initializes transaction signing.
+ * @start
+ * @next MoneroTransactionInitAck
+ */
+message MoneroTransactionInitRequest {
+    optional uint32 version = 1;
+    repeated uint32 address_n = 2;
+    optional uint32 network_type = 3;       // Main-net / testnet / stagenet
+    optional MoneroTransactionData tsx_data = 4;
+    /**
+     * Structure representing Monero initial transaction information
+     */
+    message MoneroTransactionData {
+        optional uint32 version = 1;
+        optional bytes payment_id = 2;
+        optional uint64 unlock_time = 3;
+        repeated MoneroTransactionDestinationEntry outputs = 4;
+        optional MoneroTransactionDestinationEntry change_dts = 5;
+        optional uint32 num_inputs = 6;
+        optional uint32 mixin = 7;
+        optional uint64 fee = 8;
+        optional uint32 account = 9;
+        repeated uint32 minor_indices = 10;
+        optional MoneroTransactionRsigData rsig_data = 11;
+        repeated uint32 integrated_indices = 12;
+        optional uint32 client_version = 13;  // connected client version
+        optional uint32 hard_fork = 14;       // transaction hard fork number
+        optional bytes monero_version = 15;   // monero software version
+    }
+}
+
+/**
+ * Response: Response to transaction signing initialization.
+ * @next MoneroTransactionSetInputRequest
+ */
+message MoneroTransactionInitAck {
+    repeated bytes hmacs = 1;
+    optional MoneroTransactionRsigData rsig_data = 2;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sends one UTXO to device
+ * @next MoneroTransactionSetInputAck
+ */
+message MoneroTransactionSetInputRequest {
+    optional MoneroTransactionSourceEntry src_entr = 1;
+}
+
+/**
+ * Response: Response to setting UTXO for signature. Contains sealed values needed for further protocol steps.
+ * @next MoneroTransactionSetInputAck
+ * @next MoneroTransactionInputsPermutationRequest
+ */
+message MoneroTransactionSetInputAck {
+    optional bytes vini = 1;      // xmrtypes.TxinToKey
+    optional bytes vini_hmac = 2;
+    optional bytes pseudo_out = 3;
+    optional bytes pseudo_out_hmac = 4;
+    optional bytes pseudo_out_alpha = 5;
+    optional bytes spend_key = 6;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Permutation on key images.
+ * @next MoneroTransactionInputsPermutationAck
+ */
+message MoneroTransactionInputsPermutationRequest {
+    repeated uint32 perm = 1;
+}
+
+/**
+ * Response: Response to setting permutation on key images
+ * @next MoneroTransactionInputViniRequest
+ */
+message MoneroTransactionInputsPermutationAck {
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sends one UTXO to device together with sealed values.
+ * @next MoneroTransactionInputViniAck
+ */
+message MoneroTransactionInputViniRequest {
+    optional MoneroTransactionSourceEntry src_entr = 1;
+    optional bytes vini = 2;      // xmrtypes.TxinToKey
+    optional bytes vini_hmac = 3;
+    optional bytes pseudo_out = 4;
+    optional bytes pseudo_out_hmac = 5;
+}
+
+/**
+ * Response: Response to setting UTXO to the device
+ * @next MoneroTransactionInputViniRequest
+ * @next MoneroTransactionAllInputsSetRequest
+ */
+message MoneroTransactionInputViniAck {
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sent after all inputs have been sent. Useful for rangeisg offloading.
+ * @next MoneroTransactionAllInputsSetAck
+ */
+message MoneroTransactionAllInputsSetRequest {
+}
+
+/**
+ * Response: Response to after all inputs have been set.
+ * @next MoneroTransactionSetOutputRequest
+ */
+message MoneroTransactionAllInputsSetAck {
+    optional MoneroTransactionRsigData rsig_data = 1;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sends one transaction destination to device (HMACed)
+ * @next MoneroTransactionSetOutputAck
+ */
+message MoneroTransactionSetOutputRequest {
+    optional MoneroTransactionDestinationEntry dst_entr = 1;
+    optional bytes dst_entr_hmac = 2;
+    optional MoneroTransactionRsigData rsig_data = 3;
+    optional bool is_offloaded_bp = 4;  // Extra message, with offloaded BP.
+}
+
+/**
+ * Response: Response to setting transaction destination. Contains sealed values needed for further protocol steps.
+ * @next MoneroTransactionSetOutputRequest
+ * @next MoneroTransactionAllOutSetRequest
+ */
+message MoneroTransactionSetOutputAck {
+    optional bytes tx_out = 1;  // xmrtypes.TxOut
+    optional bytes vouti_hmac = 2;
+    optional MoneroTransactionRsigData rsig_data = 3;
+    optional bytes out_pk = 4;
+    optional bytes ecdh_info = 5;
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sent after all outputs are sent.
+ * @next MoneroTransactionAllOutSetAck
+ */
+message MoneroTransactionAllOutSetRequest {
+    optional MoneroTransactionRsigData rsig_data = 1;
+}
+
+/**
+ * Response: After all outputs are sent the initial RCT signature fields are sent.
+ * @next MoneroTransactionSignInputRequest
+ */
+message MoneroTransactionAllOutSetAck {
+    optional bytes extra = 1;
+    optional bytes tx_prefix_hash = 2;
+    optional MoneroRingCtSig rv = 4;  // xmrtypes.RctSig
+    optional bytes full_message_hash = 5;
+
+    /*
+     * Structure represents initial fields of the Monero RCT signature
+     */
+    message MoneroRingCtSig {
+        optional uint64 txn_fee = 1;
+        optional bytes message = 2;
+        optional uint32 rv_type = 3;
+    }
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Sends UTXO for the signing.
+ * @next MoneroTransactionSignInputAck
+ */
+message MoneroTransactionSignInputRequest {
+    optional MoneroTransactionSourceEntry src_entr = 1;
+    optional bytes vini = 2;     // xmrtypes.TxinToKey
+    optional bytes vini_hmac = 3;
+    optional bytes pseudo_out = 4;
+    optional bytes pseudo_out_hmac = 5;
+    optional bytes pseudo_out_alpha = 6;
+    optional bytes spend_key = 7;
+}
+
+/**
+ * Response: Contains full MG signature of the UTXO + multisig data if applicable.
+ * @next MoneroTransactionSignInputRequest
+ * @next MoneroTransactionFinalRequest
+ */
+message MoneroTransactionSignInputAck {
+    optional bytes signature = 1;
+    optional bytes pseudo_out = 2;  // updated pseudo-out after mask correction
+}
+
+/**
+ * Request: Sub request of MoneroTransactionSign. Final message of the procol after all UTXOs are signed
+ * @next MoneroTransactionFinalAck
+ */
+message MoneroTransactionFinalRequest {
+}
+
+/**
+ * Response: Contains transaction metadata and encryption keys needed for further transaction operations (e.g. multisig, send proof).
+ * @end
+ */
+message MoneroTransactionFinalAck {
+    optional bytes cout_key = 1;
+    optional bytes salt = 2;
+    optional bytes rand_mult = 3;
+    optional bytes tx_enc_keys = 4;
+}
+
+/**
+ * Request: Sub request of MoneroKeyImageSync. Initializing key image sync.
+ * @start
+ * @next MoneroKeyImageExportInitAck
+ */
+message MoneroKeyImageExportInitRequest {
+    optional uint64 num = 1;
+    optional bytes hash = 2;
+    repeated uint32 address_n = 3;               // BIP-32 path to derive the key from master node
+    optional uint32 network_type = 4;            // Main-net / testnet / stagenet
+    repeated MoneroSubAddressIndicesList subs = 5;
+    /**
+     * Structure representing Monero list of sub-addresses
+     */
+    message MoneroSubAddressIndicesList {
+        optional uint32 account = 1;
+        repeated uint32 minor_indices = 2;
+    }
+}
+
+/**
+ * Response: Response to key image sync initialization.
+ * @next MoneroKeyImageSyncStepRequest
+ */
+message MoneroKeyImageExportInitAck {
+}
+
+/**
+ * Request: Sub request of MoneroKeyImageSync. Contains batch of the UTXO to export key image for.
+ * @next MoneroKeyImageSyncStepAck
+ */
+message MoneroKeyImageSyncStepRequest {
+    repeated MoneroTransferDetails tdis = 1;
+    /**
+     * Structure representing Monero UTXO for key image sync
+     */
+    message MoneroTransferDetails {
+        optional bytes out_key = 1;
+        optional bytes tx_pub_key = 2;
+        repeated bytes additional_tx_pub_keys = 3;
+        optional uint64 internal_output_index = 4;
+    }
+}
+
+/**
+ * Response: Response to key image sync step. Contains encrypted exported key image.
+ * @next MoneroKeyImageSyncStepRequest
+ * @next MoneroKeyImageSyncFinalRequest
+ */
+message MoneroKeyImageSyncStepAck {
+    repeated MoneroExportedKeyImage kis = 1;
+    /**
+     * Structure representing Monero encrypted exported key image
+     */
+    message MoneroExportedKeyImage {
+        optional bytes iv = 1;
+        optional bytes blob = 3;
+    }
+}
+
+/**
+ * Request: Sub request of MoneroKeyImageSync. Final message of the sync protocol.
+ * @next MoneroKeyImageSyncFinalAck
+ */
+message MoneroKeyImageSyncFinalRequest {
+}
+
+/**
+ * Response: Response to key image sync step. Contains encryption keys for exported key images.
+ * @end
+ */
+message MoneroKeyImageSyncFinalAck {
+    optional bytes enc_key = 1;
+}
+
+/**
+ * Request: Decrypt tx private keys blob
+ * @next MoneroGetTxKeyAck
+ */
+message MoneroGetTxKeyRequest {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional uint32 network_type = 2;       // Main-net / testnet / stagenet
+
+    optional bytes salt1 = 3;
+    optional bytes salt2 = 4;
+    optional bytes tx_enc_keys = 5;
+    optional bytes tx_prefix_hash = 6;
+    optional uint32 reason = 7;  // reason to display for user. e.g., tx_proof
+    optional bytes view_public_key = 8;   // addr for derivation
+}
+
+/**
+ * Response: Response with the re-encrypted private keys and derivations blob under view key
+ * @end
+ */
+message MoneroGetTxKeyAck {
+    optional bytes salt = 1;
+    optional bytes tx_keys = 2;
+    optional bytes tx_derivations = 3;
+}
+
+/**
+ * Request: Starts live refresh flow. Asks user permission, switches state
+ * @next MoneroLiveRefreshStartAck
+ */
+message MoneroLiveRefreshStartRequest {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional uint32 network_type = 2;       // Main-net / testnet / stagenet
+}
+
+/**
+ * Response after user gave permission
+ * @next MoneroLiveRefreshStepRequest
+ * @next MoneroLiveRefreshFinalRequest
+ */
+message MoneroLiveRefreshStartAck {
+
+}
+
+/**
+ * Request: Request to compute a single key image during live sync
+ * @next MoneroLiveRefreshStepAck
+ */
+message MoneroLiveRefreshStepRequest {
+    optional bytes out_key = 1;
+    optional bytes recv_deriv = 2;
+    optional uint64 real_out_idx = 3;
+    optional uint32 sub_addr_major = 4;
+    optional uint32 sub_addr_minor = 5;
+}
+
+/**
+ * Response: Response with the encrypted key image + signature
+ * @next MoneroLiveRefreshStepRequest
+ * @next MoneroLiveRefreshFinishedRequest
+ */
+message MoneroLiveRefreshStepAck {
+    optional bytes salt = 1;
+    optional bytes key_image = 2;
+}
+
+/**
+ * Request: Request terminating live refresh mode.
+ * @next MoneroLiveRefreshFinishedAck
+ */
+message MoneroLiveRefreshFinalRequest {
+
+}
+
+/**
+ * Response: Response on termination of live refresh mode.
+ * @end
+ */
+message MoneroLiveRefreshFinalAck {
+
+}
+
+/**
+ * Request: Universal Monero protocol implementation diagnosis request.
+ * @start
+ * @next DebugMoneroDiagAck
+ */
+message DebugMoneroDiagRequest {
+    optional uint64 ins = 1;
+    optional uint64 p1 = 2;
+    optional uint64 p2 = 3;
+    repeated uint64 pd = 4;
+    optional bytes data1 = 5;
+    optional bytes data2 = 6;
+}
+
+/**
+ * Response: Response to Monero diagnosis protocol.
+ * @end
+ */
+message DebugMoneroDiagAck {
+    optional uint64 ins = 1;
+    optional uint64 p1 = 2;
+    optional uint64 p2 = 3;
+    repeated uint64 pd = 4;
+    optional bytes data1 = 5;
+    optional bytes data2 = 6;
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Ask device for NEM address corresponding to address_n path
+ * @start
+ * @next NEMAddress
+ * @next Failure
+ */
+message NEMGetAddress {
+    repeated uint32 address_n = 1;      // BIP-32 path to derive the key from master node
+    optional uint32 network = 2;        // Network ID (0x68 = Mainnet, 0x98 = Testnet, 0x60 = Mijin)
+    optional bool show_display = 3;     // Optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains NEM address derived from device private seed
+ * @end
+ */
+message NEMAddress {
+    required string address = 1;    // NEM address in Base32 encoding
+}
+
+/**
+ * Request: Ask device to sign transaction
+ * @start
+ * @next NEMSignedTx
+ * @next Failure
+ */
+message NEMSignTx {
+    optional NEMTransactionCommon transaction = 1;                  // Common part of transaction
+    optional NEMTransactionCommon multisig = 2;                     // Common part of inner transaction for multisig transactions
+    optional NEMTransfer transfer = 3;                              // Transfer transaction part
+    optional bool cosigning = 4;                                    // Whether cosigning or initiating the multisig transaction
+    optional NEMProvisionNamespace provision_namespace = 5;         // Provision namespace part
+    optional NEMMosaicCreation mosaic_creation = 6;                 // Mosaic definition creation part
+    optional NEMMosaicSupplyChange supply_change = 7;               // Mosaic supply change part
+    optional NEMAggregateModification aggregate_modification = 8;   // Aggregate modification part
+    optional NEMImportanceTransfer importance_transfer = 9;         // Importance transfer part
+    /**
+    * Structure representing the common part for NEM transactions
+    */
+    message NEMTransactionCommon {
+        repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+        optional uint32 network = 2;    // Network ID (0x68 = Mainnet, 0x98 = Testnet, 0x60 = Mijin)
+        optional uint32 timestamp = 3;  // Number of seconds elapsed since the creation of the nemesis block
+        optional uint64 fee = 4;        // Fee for the transaction
+        optional uint32 deadline = 5;   // Deadline of the transaction
+        optional bytes signer = 6;      // Public key of the account (for multisig transactions)
+    }
+    /**
+    * Structure representing the transfer transaction part for NEM transactions
+    */
+    message NEMTransfer {
+        optional string recipient = 1;      // Address of the recipient
+        optional uint64 amount = 2;         // Amount of micro NEM that is transferred
+        optional bytes payload = 3;         // Actual message data (unencrypted)
+        optional bytes public_key = 4;      // Public key of the recipient (for encrypted payloads)
+        repeated NEMMosaic mosaics = 5;     // Attached mosaics
+        /**
+        * Structure representing the mosaic attachment for NEM transfer transactions
+        */
+        message NEMMosaic {
+            optional string namespace = 1;  // Fully qualified name of the namespace
+            optional string mosaic = 2;     // Name of the mosaic definition
+            optional uint64 quantity = 3;   // Mosaic quantity, always given in smallest units
+        }
+    }
+    /**
+    * Structure representing the provision namespace part for NEM transactions
+    */
+    message NEMProvisionNamespace {
+        optional string namespace = 1;  // New part concatenated to the parent
+        optional string parent = 2;     // Parent namespace (for child namespaces)
+        optional string sink = 3;       // Rental fee sink address
+        optional uint64 fee = 4;        // Rental fee
+    }
+    /**
+    * Structure representing the mosaic definition creation part for NEM transactions
+    */
+    message NEMMosaicCreation {
+        optional NEMMosaicDefinition definition = 1;    // Mosaic definition
+        optional string sink = 2;                       // Creation fee sink address
+        optional uint64 fee = 3;                        // Creation fee
+        /**
+        * Structure representing a mosaic definition
+        */
+        message NEMMosaicDefinition {
+            optional string name = 1;               // User-friendly name of the mosaic (for whitelisted mosaics)
+            optional string ticker = 2;             // Ticker of the mosaic (for whitelisted mosaics)
+            optional string namespace = 3;          // Fully qualified name of the namespace
+            optional string mosaic = 4;             // Name of the mosaic definition
+            optional uint32 divisibility = 5;       // Number of decimal places that a mosaic can be divided into
+            optional NEMMosaicLevy levy = 6;        // Levy type
+            optional uint64 fee = 7;                // Levy fee (interpretation depends on levy type)
+            optional string levy_address = 8;       // Levy address
+            optional string levy_namespace = 9;     // Fully qualified name of the namespace of the levy mosaic
+            optional string levy_mosaic = 10;       // Name of the levy mosaic
+            optional uint64 supply = 11;            // Initial supply to create, always given in entire units
+            optional bool mutable_supply = 12;      // Mutable supply
+            optional bool transferable = 13;        // Mosaic allows transfers among accounts other than the creator
+            optional string description = 14;       // Mosaic description
+            repeated uint32 networks = 15;          // Networks that the mosaic is valid on (for whitelisted mosaics)
+            /**
+            * Type of levy which will be used for mosaic
+            */
+            enum NEMMosaicLevy {
+                MosaicLevy_Absolute = 1;
+                MosaicLevy_Percentile = 2;
+            }
+        }
+    }
+    /**
+    * Structure representing the mosaic supply change part for NEM transactions
+    */
+    message NEMMosaicSupplyChange {
+        optional string namespace = 1;          // Fully qualified name of the namespace
+        optional string mosaic = 2;             // Name of the mosaic definition
+        optional NEMSupplyChangeType type = 3;  // Type of supply change
+        optional uint64 delta = 4;              // Supply delta
+        /**
+        * Type of supply change which will be applied to mosaic
+        */
+        enum NEMSupplyChangeType {
+            SupplyChange_Increase = 1;
+            SupplyChange_Decrease = 2;
+        }
+    }
+    /**
+    * Structure representing the aggregate modification part for NEM transactions
+    */
+    message NEMAggregateModification {
+        repeated NEMCosignatoryModification modifications = 1;  // Cosignatory modifications
+        optional sint32 relative_change = 2;                    // Relative change of the minimum cosignatories
+        /**
+        * Structure representing the cosignatory modification for aggregate modification transactions
+        */
+        message NEMCosignatoryModification {
+            optional NEMModificationType type = 1;  // Type of cosignatory modification
+            optional bytes public_key = 2;          // Public key of the cosignatory
+            /**
+            * Type of cosignatory modification
+            */
+            enum NEMModificationType {
+                CosignatoryModification_Add = 1;
+                CosignatoryModification_Delete = 2;
+            }
+        }
+    }
+    /**
+    * Structure representing the importance transfer part for NEM transactions
+    */
+    message NEMImportanceTransfer {
+        optional NEMImportanceTransferMode mode = 1;    // Mode of importance transfer
+        optional bytes public_key = 2;                  // Public key of the remote account
+        /**
+        * Mode of importance transfer
+        */
+        enum NEMImportanceTransferMode {
+            ImportanceTransfer_Activate = 1;
+            ImportanceTransfer_Deactivate = 2;
+        }
+    }
+}
+
+/**
+ * Response: Contains NEM transaction data and signature
+ * @end
+ */
+message NEMSignedTx {
+    optional bytes data = 1;        // Transaction data
+    optional bytes signature = 2;   // Signature for the transaction
+}
+
+/**
+ * Request: Ask device to decrypt NEM transaction payload
+ * @start
+ * @next NEMDecryptedMessage
+ * @next Failure
+ */
+message NEMDecryptMessage {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional uint32 network = 2;    // Network ID (0x68 = Mainnet, 0x98 = Testnet, 0x60 = Mijin)
+    optional bytes public_key = 3;  // Public key of the other party
+    optional bytes payload = 4;     // Actual message data (encrypted)
+}
+
+/**
+ * Response: Contains decrypted NEM transaction payload
+ * @end
+ */
+message NEMDecryptedMessage {
+    optional bytes payload = 1;     // Actual message data (unencrypted)
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Address at the specified index
+ * @start
+ * @next RippleAddress
+ */
+message RippleGetAddress {
+    repeated uint32 address_n = 1;              // BIP-32 path. For compatibility with other wallets, must be m/44'/144'/index'
+    optional bool show_display = 2;             // optionally show on display before sending the result
+}
+
+/**
+ * Response: Address for the given index
+ * @end
+ */
+message RippleAddress {
+    optional string address = 1;                // Address in Ripple format (base58 of a pubkey with checksum)
+}
+
+/**
+ * Request: ask device to sign Ripple transaction
+ * @start
+ * @next RippleSignedTx
+ */
+message RippleSignTx {
+    repeated uint32 address_n = 1;              // BIP-32 path. For compatibility with other wallets, must be m/44'/144'/index'
+    optional uint64 fee = 2;                    // fee (in drops) for the transaction
+    optional uint32 flags = 3;                  // transaction flags
+    optional uint32 sequence = 4;               // transaction sequence number
+    optional uint32 last_ledger_sequence = 5;   // see https://developers.ripple.com/reliable-transaction-submission.html#lastledgersequence
+    optional RipplePayment payment = 6;         // Payment transaction type
+
+    /**
+     * Payment transaction type
+     * - simple A sends money to B
+     * - only a subset of fields is supported
+     * - see https://developers.ripple.com/payment.html
+     */
+    message RipplePayment {
+        optional uint64 amount = 1;             // only XRP is supported at the moment so this an integer
+        optional string destination = 2;        // destination account address
+        optional uint32 destination_tag = 3;    // destination tag to identify payments
+    }
+}
+
+/**
+ * Response: signature for transaction
+ * @end
+ */
+message RippleSignedTx {
+    optional bytes signature = 1;
+    optional bytes serialized_tx = 2;
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Describes a Stellar asset
+ * @embed
+ */
+message StellarAssetType {
+    optional uint32 type = 1;       // 0 = native asset (XLM), 1 = alphanum 4, 2 = alphanum 12
+    optional string code = 2;       // for non-native assets, string describing the code
+    optional string issuer = 3;     // issuing address
+}
+
+/**
+ * Request: Address at the specified index
+ * @start
+ * @next StellarAddress
+ */
+message StellarGetAddress {
+    repeated uint32 address_n = 1;  // BIP-32 path. For compatibility with other wallets, must be m/44'/148'/index'
+    optional bool show_display = 2; // optionally show on display before sending the result
+}
+
+/**
+ * Response: Address for the given index
+ * @end
+ */
+message StellarAddress {
+    optional string address = 1;    // Address in Stellar format (base32 of a pubkey with checksum)
+}
+
+/**
+ * Request: ask device to sign Stellar transaction
+ * @start
+ * @next StellarTxOpRequest
+ */
+message StellarSignTx {
+    repeated uint32 address_n = 2;          // BIP-32 path. For compatibility with other wallets, must be m/44'/148'/index'
+    optional string network_passphrase = 3; // passphrase for signing messages on the destination network
+    optional string source_account = 4;     // source account address
+    optional uint32 fee = 5;                // Fee (in stroops) for the transaction
+    optional uint64 sequence_number = 6;    // transaction sequence number
+    optional uint32 timebounds_start = 8;   // unix timestamp (client must truncate this to 32 bytes)
+    optional uint32 timebounds_end = 9;     // unix timestamp (client must truncate this to 32 bytes)
+    optional uint32 memo_type = 10;         // 0 = none, 1 = text, 2 = id, 3 = hash, 4 = return
+    optional string memo_text = 11;         // up to 28 characters (4 bytes are for length)
+    optional uint64 memo_id = 12;           // 8-byte uint64
+    optional bytes memo_hash = 13;          // 32 bytes representing a hash
+    optional uint32 num_operations = 14;    // number of operations in this transaction
+}
+
+/**
+ * Response: device is ready for client to send the next operation
+ * @next StellarPaymentOp
+ * @next StellarCreateAccountOp
+ * @next StellarPathPaymentOp
+ * @next StellarManageOfferOp
+ * @next StellarCreatePassiveOfferOp
+ * @next StellarSetOptionsOp
+ * @next StellarChangeTrustOp
+ * @next StellarAllowTrustOp
+ * @next StellarAccountMergeOp
+ * @next StellarManageDataOp
+ * @next StellarBumpSequenceOp
+ */
+message StellarTxOpRequest {
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarPaymentOp {
+    optional string source_account = 1;         // (optional) source account address
+    optional string destination_account = 2;    // destination account address
+    optional StellarAssetType asset = 3;        // asset involved in the operation
+    optional sint64 amount = 4;                 // amount of the given asset to pay
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarCreateAccountOp {
+    optional string source_account = 1;     // (optional) source account address
+    optional string new_account = 2;        // account address to create
+    optional sint64 starting_balance = 3;   // initial starting balance for the new account
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarPathPaymentOp {
+    optional string source_account = 1;         // (optional) source address
+    optional StellarAssetType send_asset = 2;
+    optional sint64 send_max = 3;
+    optional string destination_account = 4;
+    optional StellarAssetType destination_asset = 5;
+    optional sint64 destination_amount = 6;
+    repeated StellarAssetType paths = 7;
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarManageOfferOp {
+    optional string source_account = 1;             // (optional) source account address
+    optional StellarAssetType selling_asset = 2;
+    optional StellarAssetType buying_asset = 3;
+    optional sint64 amount = 4;
+    optional uint32 price_n = 5;                    // Price numerator
+    optional uint32 price_d = 6;                    // Price denominator
+    optional uint64 offer_id = 7;                   // Offer ID for updating an existing offer
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarCreatePassiveOfferOp {
+    optional string source_account = 1;             // (optional) source account address
+    optional StellarAssetType selling_asset = 2;
+    optional StellarAssetType buying_asset = 3;
+    optional sint64 amount = 4;
+    optional uint32 price_n = 5;                    // Price numerator
+    optional uint32 price_d = 6;                    // Price denominator
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarSetOptionsOp {
+    optional string source_account = 1;                 // (optional) source account address
+    optional string inflation_destination_account = 2;  // (optional) inflation destination address
+    optional uint32 clear_flags = 3;
+    optional uint32 set_flags = 4;
+    optional uint32 master_weight = 5;
+    optional uint32 low_threshold = 6;
+    optional uint32 medium_threshold = 7;
+    optional uint32 high_threshold = 8;
+    optional string home_domain = 9;
+    optional uint32 signer_type = 10;
+    optional bytes signer_key = 11;
+    optional uint32 signer_weight = 12;
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarChangeTrustOp {
+    optional string source_account = 1;     // (optional) source account address
+    optional StellarAssetType asset = 2;
+    optional uint64 limit = 3;
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarAllowTrustOp {
+    optional string source_account = 1;     // (optional) source account address
+    optional string trusted_account = 2;    // The account being allowed to hold the asset
+    optional uint32 asset_type = 3;         // 1 = 4-character, 2 = 12-character
+    optional string asset_code = 4;         // human-readable asset code
+    optional uint32 is_authorized = 5;
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarAccountMergeOp {
+    optional string source_account = 1;         // (optional) source account address
+    optional string destination_account = 2;    // destination account address
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarManageDataOp {
+    optional string source_account = 1; // (optional) source account address
+    optional string key = 2;
+    optional bytes value = 3;           // 64 bytes of arbitrary data
+}
+
+/**
+ * Request: ask device to confirm this operation type
+ * @next StellarTxOpRequest
+ * @next StellarSignedTx
+ */
+message StellarBumpSequenceOp {
+    optional string source_account = 1; // (optional) source account address
+    optional uint64 bump_to = 2;        // new sequence number
+}
+
+/**
+ * Response: signature for transaction
+ * @end
+ */
+message StellarSignedTx {
+    optional bytes public_key = 1;  // public key for the private key used to sign data
+    optional bytes signature = 2;   // signature suitable for sending to the Stellar network
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: Ask device for Tezos address corresponding to address_n path
+ * @start
+ * @next TezosAddress
+ * @next Failure
+ */
+message TezosGetAddress {
+    repeated uint32 address_n = 1;      // BIP-32 path to derive the key from master node
+    optional bool show_display = 2;     // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains Tezos address derived from device private seed
+ * @end
+ */
+message TezosAddress {
+    optional string address = 1;        // Coin address in Base58 encoding
+}
+
+/**
+ * Request: Ask device for Tezos public key corresponding to address_n path
+ * @start
+ * @next TezosPublicKey
+ */
+message TezosGetPublicKey {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional bool show_display = 2;         // Optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains Tezos public key derived from device private seed
+ * @end
+ */
+message TezosPublicKey {
+    optional string public_key = 1;          // b58 encoded Tezos public key with prefix
+}
+
+/**
+ * Request: Ask device to sign Tezos transaction
+ * @start
+ * @next TezosSignedTx
+ */
+message TezosSignTx {
+    repeated uint32 address_n = 1;                  // BIP-32 path to derive the key from master node
+    optional bytes branch = 2;
+
+    optional TezosRevealOp reveal = 3;              // Tezos reveal operation (may be bundled with other op)
+    optional TezosTransactionOp transaction = 4;    // Tezos transaction operation
+    optional TezosOriginationOp origination = 5;    // Tezos origination operation
+    optional TezosDelegationOp delegation = 6;      // Tezos delegation operation
+    optional TezosProposalOp proposal = 7;          // Tezos proposal operation
+    optional TezosBallotOp ballot = 8;              // Tezos ballot operation
+    /*
+     * Tezos contract ID
+     */
+    message TezosContractID {
+        optional TezosContractType tag = 1;
+        optional bytes hash = 2;                    // Implicit = 21B, originated = 20B + 1B padding
+        /*
+         * Type of Tezos Contract type
+         */
+        enum TezosContractType {
+            Implicit = 0;
+            Originated = 1;
+        }
+    }
+    /**
+     * Structure representing information for reveal
+     */
+    message TezosRevealOp {
+        optional bytes source = 7;
+        optional uint64 fee = 2;
+        optional uint64 counter = 3;
+        optional uint64 gas_limit = 4;
+        optional uint64 storage_limit = 5;
+        optional bytes public_key = 6;
+    }
+    /**
+     * Structure representing information for transaction
+     */
+    message TezosTransactionOp {
+        optional bytes source = 9;
+        optional uint64 fee = 2;
+        optional uint64 counter = 3;
+        optional uint64 gas_limit = 4;
+        optional uint64 storage_limit = 5;
+        optional uint64 amount = 6;
+        optional TezosContractID destination = 7;
+        optional bytes parameters = 8;
+        optional TezosParametersManager parameters_manager = 10;
+
+        message TezosParametersManager {
+            optional bytes set_delegate = 1;
+            optional bool cancel_delegate = 2;
+            optional TezosManagerTransfer transfer = 3;
+
+            message TezosManagerTransfer {
+                optional TezosContractID destination = 1;
+                optional uint64 amount = 2;
+            }
+        }
+    }
+    /**
+     * Structure representing information for origination
+     */
+    message TezosOriginationOp {
+        optional bytes source = 12;
+        optional uint64 fee = 2;
+        optional uint64 counter = 3;
+        optional uint64 gas_limit = 4;
+        optional uint64 storage_limit = 5;
+        optional bytes manager_pubkey = 6;
+        optional uint64 balance = 7;
+        optional bool spendable = 8;
+        optional bool delegatable = 9;
+        optional bytes delegate = 10;
+        optional bytes script = 11;
+    }
+    /**
+     * Structure representing information for delegation
+     */
+    message TezosDelegationOp {
+        optional bytes source = 7;
+        optional uint64 fee = 2;
+        optional uint64 counter = 3;
+        optional uint64 gas_limit = 4;
+        optional uint64 storage_limit = 5;
+        optional bytes delegate = 6;
+    }
+    /**
+     * Structure representing information for proposal
+     */
+    message TezosProposalOp {
+        optional bytes source = 1;                  //Contains only public_key_hash, not to be confused with TezosContractID
+        optional uint64 period = 2;
+        repeated bytes proposals = 4;
+    }
+    /**
+     * Structure representing information for ballot
+     */
+    message TezosBallotOp {
+        optional bytes source = 1;                  //Contains only public_key_hash, not to be confused with TezosContractID
+        optional uint64 period = 2;
+        optional bytes proposal = 3;
+        optional TezosBallotType ballot = 4;
+
+        enum TezosBallotType {
+            Yay = 0;
+            Nay = 1;
+            Pass = 2;
+        }
+    }
+}
+
+/**
+ * Response: Contains Tezos transaction signature
+ * @end
+ */
+message TezosSignedTx {
+    optional string signature = 1;          // Tezos b58 encoded transaction signature with prefix
+    optional bytes sig_op_contents = 2;     // operation_bytes + signed operation_bytes
+    optional string operation_hash = 3;     // b58 encoded hashed operation contents with prefix
+}
+
+// Sugar for easier handling in Java
+
+/**
+ * Request: List resident credentials
+ * @start
+ * @next WebAuthnCredentials
+ * @next Failure
+ */
+message WebAuthnListResidentCredentials {
+}
+
+/**
+ * Request: Add resident credential
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message WebAuthnAddResidentCredential {
+    optional bytes credential_id = 1;
+}
+
+/**
+ * Request: Remove resident credential
+ * @start
+ * @next Success
+ * @next Failure
+ */
+message WebAuthnRemoveResidentCredential {
+    optional uint32 index = 1;
+}
+
+
+/**
+ * Response: Resident credential list
+ * @start
+ * @next end
+ */
+message WebAuthnCredentials {
+    repeated WebAuthnCredential credentials = 1;
+    message WebAuthnCredential {
+        optional uint32 index = 1;
+        optional bytes id = 2;
+        optional string rp_id = 3;
+        optional string rp_name = 4;
+        optional bytes user_id = 5;
+        optional string user_name = 6;
+        optional string user_display_name = 7;
+        optional uint32 creation_time = 8;
+        optional bool hmac_secret = 9;
+        optional bool use_sign_count = 10;
+    }
+}
+
+/**
+ * Messages for Trezor communication
+ */
+
+// Sugar for easier handling in Java
+
+
+/**
+ * Options for specifying message direction and type of wire (normal/debug)
+ */
+extend google.protobuf.EnumValueOptions {
+    optional bool wire_in = 50002;              // message can be transmitted via wire from PC to Trezor
+    optional bool wire_out = 50003;             // message can be transmitted via wire from Trezor to PC
+    optional bool wire_debug_in = 50004;        // message can be transmitted via debug wire from PC to Trezor
+    optional bool wire_debug_out = 50005;       // message can be transmitted via debug wire from Trezor to PC
+    optional bool wire_tiny = 50006;            // message is handled by Trezor when the USB stack is in tiny mode
+    optional bool wire_bootloader = 50007;      // message is only handled by Trezor Bootloader
+    optional bool wire_no_fsm = 50008;          // message is not handled by Trezor unless the USB stack is in tiny mode
+}
+
+/**
+ * Mapping between Trezor wire identifier (uint) and a protobuf message
+ */
+enum MessageType {
+
+    // Management
+    MessageType_Initialize = 0 [(wire_in) = true, (wire_tiny) = true];
+    MessageType_Ping = 1 [(wire_in) = true];
+    MessageType_Success = 2 [(wire_out) = true];
+    MessageType_Failure = 3 [(wire_out) = true];
+    MessageType_ChangePin = 4 [(wire_in) = true];
+    MessageType_WipeDevice = 5 [(wire_in) = true];
+    MessageType_GetEntropy = 9 [(wire_in) = true];
+    MessageType_Entropy = 10 [(wire_out) = true];
+    MessageType_LoadDevice = 13 [(wire_in) = true];
+    MessageType_ResetDevice = 14 [(wire_in) = true];
+    MessageType_Features = 17 [(wire_out) = true];
+    MessageType_PinMatrixRequest = 18 [(wire_out) = true];
+    MessageType_PinMatrixAck = 19 [(wire_in) = true, (wire_tiny) = true, (wire_no_fsm) = true];
+    MessageType_Cancel = 20 [(wire_in) = true, (wire_tiny) = true];
+    MessageType_ClearSession = 24 [(wire_in) = true];
+    MessageType_ApplySettings = 25 [(wire_in) = true];
+    MessageType_ButtonRequest = 26 [(wire_out) = true];
+    MessageType_ButtonAck = 27 [(wire_in) = true, (wire_tiny) = true, (wire_no_fsm) = true];
+    MessageType_ApplyFlags = 28 [(wire_in) = true];
+    MessageType_BackupDevice = 34 [(wire_in) = true];
+    MessageType_EntropyRequest = 35 [(wire_out) = true];
+    MessageType_EntropyAck = 36 [(wire_in) = true];
+    MessageType_PassphraseRequest = 41 [(wire_out) = true];
+    MessageType_PassphraseAck = 42 [(wire_in) = true, (wire_tiny) = true, (wire_no_fsm) = true];
+    MessageType_PassphraseStateRequest = 77 [(wire_out) = true];
+    MessageType_PassphraseStateAck = 78 [(wire_in) = true, (wire_tiny) = true, (wire_no_fsm) = true];
+    MessageType_RecoveryDevice = 45 [(wire_in) = true];
+    MessageType_WordRequest = 46 [(wire_out) = true];
+    MessageType_WordAck = 47 [(wire_in) = true];
+    MessageType_GetFeatures = 55 [(wire_in) = true];
+    MessageType_SetU2FCounter = 63 [(wire_in) = true];
+    MessageType_SdProtect = 79 [(wire_in) = true];
+    MessageType_GetNextU2FCounter = 80 [(wire_in) = true];
+    MessageType_NextU2FCounter = 81 [(wire_out) = true];
+    MessageType_ChangeWipeCode = 82 [(wire_in) = true];
+
+    // Bootloader
+    MessageType_FirmwareErase = 6 [(wire_in) = true, (wire_bootloader) = true];
+    MessageType_FirmwareUpload = 7 [(wire_in) = true, (wire_bootloader) = true];
+    MessageType_FirmwareRequest = 8 [(wire_out) = true, (wire_bootloader) = true];
+    MessageType_SelfTest = 32 [(wire_in) = true, (wire_bootloader) = true];
+
+    // Bitcoin
+    MessageType_GetPublicKey = 11 [(wire_in) = true];
+    MessageType_PublicKey = 12 [(wire_out) = true];
+    MessageType_SignTx = 15 [(wire_in) = true];
+    MessageType_TxRequest = 21 [(wire_out) = true];
+    MessageType_TxAck = 22 [(wire_in) = true];
+    MessageType_GetAddress = 29 [(wire_in) = true];
+    MessageType_Address = 30 [(wire_out) = true];
+    MessageType_SignMessage = 38 [(wire_in) = true];
+    MessageType_VerifyMessage = 39 [(wire_in) = true];
+    MessageType_MessageSignature = 40 [(wire_out) = true];
+
+    // Crypto
+    MessageType_CipherKeyValue = 23 [(wire_in) = true];
+    MessageType_CipheredKeyValue = 48 [(wire_out) = true];
+    MessageType_SignIdentity = 53 [(wire_in) = true];
+    MessageType_SignedIdentity = 54 [(wire_out) = true];
+    MessageType_GetECDHSessionKey = 61 [(wire_in) = true];
+    MessageType_ECDHSessionKey = 62 [(wire_out) = true];
+    MessageType_CosiCommit = 71 [(wire_in) = true];
+    MessageType_CosiCommitment = 72 [(wire_out) = true];
+    MessageType_CosiSign = 73 [(wire_in) = true];
+    MessageType_CosiSignature = 74 [(wire_out) = true];
+
+    // Debug
+    MessageType_DebugLinkDecision = 100 [(wire_debug_in) = true, (wire_tiny) = true, (wire_no_fsm) = true];
+    MessageType_DebugLinkGetState = 101 [(wire_debug_in) = true, (wire_tiny) = true];
+    MessageType_DebugLinkState = 102 [(wire_debug_out) = true];
+    MessageType_DebugLinkStop = 103 [(wire_debug_in) = true];
+    MessageType_DebugLinkLog = 104 [(wire_debug_out) = true];
+    MessageType_DebugLinkMemoryRead = 110 [(wire_debug_in) = true];
+    MessageType_DebugLinkMemory = 111 [(wire_debug_out) = true];
+    MessageType_DebugLinkMemoryWrite = 112 [(wire_debug_in) = true];
+    MessageType_DebugLinkFlashErase = 113 [(wire_debug_in) = true];
+    MessageType_DebugLinkLayout = 9001 [(wire_debug_out) = true];
+
+    // Ethereum
+    MessageType_EthereumGetPublicKey = 450 [(wire_in) = true];
+    MessageType_EthereumPublicKey = 451 [(wire_out) = true];
+    MessageType_EthereumGetAddress = 56 [(wire_in) = true];
+    MessageType_EthereumAddress = 57 [(wire_out) = true];
+    MessageType_EthereumSignTx = 58 [(wire_in) = true];
+    MessageType_EthereumTxRequest = 59 [(wire_out) = true];
+    MessageType_EthereumTxAck = 60 [(wire_in) = true];
+    MessageType_EthereumSignMessage = 64 [(wire_in) = true];
+    MessageType_EthereumVerifyMessage = 65 [(wire_in) = true];
+    MessageType_EthereumMessageSignature = 66 [(wire_out) = true];
+
+    // NEM
+    MessageType_NEMGetAddress = 67 [(wire_in) = true];
+    MessageType_NEMAddress = 68 [(wire_out) = true];
+    MessageType_NEMSignTx = 69 [(wire_in) = true];
+    MessageType_NEMSignedTx = 70 [(wire_out) = true];
+    MessageType_NEMDecryptMessage = 75 [(wire_in) = true];
+    MessageType_NEMDecryptedMessage = 76 [(wire_out) = true];
+
+    // Lisk
+    MessageType_LiskGetAddress = 114 [(wire_in) = true];
+    MessageType_LiskAddress = 115 [(wire_out) = true];
+    MessageType_LiskSignTx = 116 [(wire_in) = true];
+    MessageType_LiskSignedTx = 117 [(wire_out) = true];
+    MessageType_LiskSignMessage = 118 [(wire_in) = true];
+    MessageType_LiskMessageSignature = 119 [(wire_out) = true];
+    MessageType_LiskVerifyMessage = 120 [(wire_in) = true];
+    MessageType_LiskGetPublicKey = 121 [(wire_in) = true];
+    MessageType_LiskPublicKey = 122 [(wire_out) = true];
+
+    // Tezos
+    MessageType_TezosGetAddress = 150 [(wire_in) = true];
+    MessageType_TezosAddress = 151 [(wire_out) = true];
+    MessageType_TezosSignTx = 152 [(wire_in) = true];
+    MessageType_TezosSignedTx = 153 [(wire_out) = true];
+    MessageType_TezosGetPublicKey = 154 [(wire_in) = true];
+    MessageType_TezosPublicKey = 155 [(wire_out) = true];
+
+    // Stellar
+    MessageType_StellarSignTx = 202 [(wire_in) = true];
+    MessageType_StellarTxOpRequest = 203 [(wire_out) = true];
+    MessageType_StellarGetAddress = 207 [(wire_in) = true];
+    MessageType_StellarAddress = 208 [(wire_out) = true];
+    MessageType_StellarCreateAccountOp = 210 [(wire_in) = true];
+    MessageType_StellarPaymentOp = 211 [(wire_in) = true];
+    MessageType_StellarPathPaymentOp = 212 [(wire_in) = true];
+    MessageType_StellarManageOfferOp = 213 [(wire_in) = true];
+    MessageType_StellarCreatePassiveOfferOp = 214 [(wire_in) = true];
+    MessageType_StellarSetOptionsOp = 215 [(wire_in) = true];
+    MessageType_StellarChangeTrustOp = 216 [(wire_in) = true];
+    MessageType_StellarAllowTrustOp = 217 [(wire_in) = true];
+    MessageType_StellarAccountMergeOp = 218 [(wire_in) = true];
+    // omitted: StellarInflationOp is not a supported operation, would be 219
+    MessageType_StellarManageDataOp = 220 [(wire_in) = true];
+    MessageType_StellarBumpSequenceOp = 221 [(wire_in) = true];
+    MessageType_StellarSignedTx = 230 [(wire_out) = true];
+
+    // Cardano
+    // dropped Sign/VerifyMessage ids 300-302
+    MessageType_CardanoSignTx = 303 [(wire_in) = true];
+    MessageType_CardanoTxRequest = 304 [(wire_out) = true];
+    MessageType_CardanoGetPublicKey = 305 [(wire_in) = true];
+    MessageType_CardanoPublicKey = 306 [(wire_out) = true];
+    MessageType_CardanoGetAddress = 307 [(wire_in) = true];
+    MessageType_CardanoAddress = 308 [(wire_out) = true];
+    MessageType_CardanoTxAck = 309 [(wire_in) = true];
+    MessageType_CardanoSignedTx = 310 [(wire_out) = true];
+
+    // Ripple
+    MessageType_RippleGetAddress = 400 [(wire_in) = true];
+    MessageType_RippleAddress = 401 [(wire_out) = true];
+    MessageType_RippleSignTx = 402 [(wire_in) = true];
+    MessageType_RippleSignedTx = 403 [(wire_in) = true];
+
+    // Monero
+    MessageType_MoneroTransactionInitRequest = 501 [(wire_out) = true];
+    MessageType_MoneroTransactionInitAck = 502 [(wire_out) = true];
+    MessageType_MoneroTransactionSetInputRequest = 503 [(wire_out) = true];
+    MessageType_MoneroTransactionSetInputAck = 504 [(wire_out) = true];
+    MessageType_MoneroTransactionInputsPermutationRequest = 505 [(wire_out) = true];
+    MessageType_MoneroTransactionInputsPermutationAck = 506 [(wire_out) = true];
+    MessageType_MoneroTransactionInputViniRequest = 507 [(wire_out) = true];
+    MessageType_MoneroTransactionInputViniAck = 508 [(wire_out) = true];
+    MessageType_MoneroTransactionAllInputsSetRequest = 509 [(wire_out) = true];
+    MessageType_MoneroTransactionAllInputsSetAck = 510 [(wire_out) = true];
+    MessageType_MoneroTransactionSetOutputRequest = 511 [(wire_out) = true];
+    MessageType_MoneroTransactionSetOutputAck = 512 [(wire_out) = true];
+    MessageType_MoneroTransactionAllOutSetRequest = 513 [(wire_out) = true];
+    MessageType_MoneroTransactionAllOutSetAck = 514 [(wire_out) = true];
+    MessageType_MoneroTransactionSignInputRequest = 515 [(wire_out) = true];
+    MessageType_MoneroTransactionSignInputAck = 516 [(wire_out) = true];
+    MessageType_MoneroTransactionFinalRequest = 517 [(wire_out) = true];
+    MessageType_MoneroTransactionFinalAck = 518 [(wire_out) = true];
+    MessageType_MoneroKeyImageExportInitRequest = 530 [(wire_out) = true];
+    MessageType_MoneroKeyImageExportInitAck = 531 [(wire_out) = true];
+    MessageType_MoneroKeyImageSyncStepRequest = 532 [(wire_out) = true];
+    MessageType_MoneroKeyImageSyncStepAck = 533 [(wire_out) = true];
+    MessageType_MoneroKeyImageSyncFinalRequest = 534 [(wire_out) = true];
+    MessageType_MoneroKeyImageSyncFinalAck = 535 [(wire_out) = true];
+    MessageType_MoneroGetAddress = 540 [(wire_in) = true];
+    MessageType_MoneroAddress = 541 [(wire_out) = true];
+    MessageType_MoneroGetWatchKey = 542 [(wire_in) = true];
+    MessageType_MoneroWatchKey = 543 [(wire_out) = true];
+    MessageType_DebugMoneroDiagRequest = 546 [(wire_in) = true];
+    MessageType_DebugMoneroDiagAck = 547 [(wire_out) = true];
+    MessageType_MoneroGetTxKeyRequest = 550 [(wire_in) = true];
+    MessageType_MoneroGetTxKeyAck = 551 [(wire_out) = true];
+    MessageType_MoneroLiveRefreshStartRequest = 552 [(wire_in) = true];
+    MessageType_MoneroLiveRefreshStartAck = 553 [(wire_out) = true];
+    MessageType_MoneroLiveRefreshStepRequest = 554 [(wire_in) = true];
+    MessageType_MoneroLiveRefreshStepAck = 555 [(wire_out) = true];
+    MessageType_MoneroLiveRefreshFinalRequest = 556 [(wire_in) = true];
+    MessageType_MoneroLiveRefreshFinalAck = 557 [(wire_out) = true];
+
+    // EOS
+    MessageType_EosGetPublicKey = 600 [(wire_in) = true];
+    MessageType_EosPublicKey = 601 [(wire_out) = true];
+    MessageType_EosSignTx = 602 [(wire_in) = true];
+    MessageType_EosTxActionRequest = 603 [(wire_out) = true];
+    MessageType_EosTxActionAck = 604 [(wire_in) = true];
+    MessageType_EosSignedTx = 605 [(wire_out) = true];
+
+    // Binance
+    MessageType_BinanceGetAddress = 700 [(wire_in) = true];
+    MessageType_BinanceAddress = 701 [(wire_out) = true];
+    MessageType_BinanceGetPublicKey = 702 [(wire_in) = true];
+    MessageType_BinancePublicKey = 703 [(wire_out) = true];
+    MessageType_BinanceSignTx = 704 [(wire_in) = true];
+    MessageType_BinanceTxRequest = 705 [(wire_out) = true];
+    MessageType_BinanceTransferMsg = 706 [(wire_in) = true];
+    MessageType_BinanceOrderMsg = 707 [(wire_in) = true];
+    MessageType_BinanceCancelMsg = 708 [(wire_in) = true];
+    MessageType_BinanceSignedTx = 709 [(wire_out) = true];
+
+    // WebAuthn
+    MessageType_WebAuthnListResidentCredentials = 800 [(wire_in) = true];
+    MessageType_WebAuthnCredentials = 801 [(wire_out) = true];
+    MessageType_WebAuthnAddResidentCredential = 802 [(wire_in) = true];
+    MessageType_WebAuthnRemoveResidentCredential = 803 [(wire_in) = true];
+}
