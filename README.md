@@ -12,9 +12,9 @@ By using this library you will be able to implement these functionalities to you
 - etc
 
 ## How to add?
-You better add this repository main branch to your project as a git submodule.
+It is recommended to add this repository main branch to your project as a submodule.
 
-  After adding it to your project you need to run 'npm install' in the root directory of this module in order to install all prerequisites.
+  After adding, you need to run 'npm install' in the root directory of this module in order to install all prerequisites.
 
 ## Supported Coins
  - Bitcoin based coins Like Bitcoin, Litecoin, Bitcoincash, Doge, Bitcoin Gold
