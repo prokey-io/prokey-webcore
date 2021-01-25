@@ -1,5 +1,5 @@
 {
-    "name": "@prokey-webcore",
+    "name": "webcore",
     "version": "0.0.2",
     "main": "index.js",
     "description": "This module can be used to communicate with Prokey device",
