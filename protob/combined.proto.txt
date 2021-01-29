@@ -594,6 +594,7 @@ message ButtonRequest {
         ButtonRequest_RecoveryHomepage = 16;
         ButtonRequest_Success = 17;
         ButtonRequest_Warning = 18;
+        ButtonRequest_EnterPinOnDevice = 101;
     }
 }
 
