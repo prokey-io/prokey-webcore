@@ -595,6 +595,9 @@ message ButtonRequest {
         ButtonRequest_Success = 17;
         ButtonRequest_Warning = 18;
         ButtonRequest_EnterPinOnDevice = 101;
+        ButtonRequest_EnterNewPinOnDevice = 102;
+        ButtonRequest_ReEnterNewPinOnDevice = 103;
+        ButtonRequest_PinOnDeviceDone = 104;
     }
 }
 
