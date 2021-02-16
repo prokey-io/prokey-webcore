@@ -30,6 +30,7 @@ import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel';
 import { BaseWallet } from './BaseWallet';
 var WAValidator = require('multicoin-address-validator');
 import * as Utility from '../utils/utils';
+import { MyConsole } from '../utils/console';
 
 /**
  * If you wish to discover and use the omni wallet, you need to use this class. 
@@ -248,7 +249,7 @@ export class OmniWallet extends BaseWallet {
         // Omni Simple send Transaction
         // VVVV = 2 bytes version
         // SSSS = 2 bytes transaction type, 0: Simple Send
-        // COINIDEN = 4 bytes, Currency identifier, 31= USDT
+        // COINIDEN = 4 bytes, Currency identifier, 1 = OMNI, 2 OMNI test, 3 = MAID, 31 = USDT
         // NUMBER_OF_COINS = 8 bytes
         let omniCoinId = ("00000000" + coinInfo.proparty_id.toString(16)).substr(-8);
         let omniAmount = ("0000000000000000" + amount.toString(16)).substr(-16);
@@ -269,7 +270,7 @@ export class OmniWallet extends BaseWallet {
             amount: coinInfo.dust.toString(),
         });
 
-        console.log("tx:", tx);
+        MyConsole.Info("tx:", tx);
 
         return tx;
     }

@@ -594,6 +594,10 @@ message ButtonRequest {
         ButtonRequest_RecoveryHomepage = 16;
         ButtonRequest_Success = 17;
         ButtonRequest_Warning = 18;
+        ButtonRequest_EnterPinOnDevice = 101;
+        ButtonRequest_EnterNewPinOnDevice = 102;
+        ButtonRequest_ReEnterNewPinOnDevice = 103;
+        ButtonRequest_PinOnDeviceDone = 104;
     }
 }
 
@@ -1554,6 +1558,10 @@ message Features {
     optional bool sd_card_present = 32;         // is SD card present
     optional bool sd_protection = 33;           // is SD Protect enabled
     optional bool wipe_code_protection = 34;    // is wipe code protection enabled
+    optional bool pin_on_device = 100;
+    optional uint32 view_major_version = 101;
+    optional uint32 view_minor_version = 102;
+    optional uint32 view_patch_version = 103;
 }
 
 /**
