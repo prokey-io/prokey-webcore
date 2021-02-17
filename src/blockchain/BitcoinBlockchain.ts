@@ -78,14 +78,14 @@ export class BitcoinBlockchain {
                 const client = httpclient.newHttpClient();
 
                 const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
-        
-                var r = JSON.parse(await client.execute<string>(request));    
+                
+                var r = await client.execute<any>(request);    
                 r.fees.forEach(element => {
-                    if (element.maxMinutes == 360 && fee.economy === 0) {
+                    if (element.maxMinutes == 360 && fee.economy == null) {
                         fee.economy = element.minFee;                        
-                    } else if (element.maxMinutes == 180 && fee.normal === 0) {
+                    } else if (element.maxMinutes == 180 && fee.normal == null) {
                         fee.normal = element.minFee;
-                    } else if (element.maxMinutes == 90 && fee.high === 0) {
+                    } else if (element.maxMinutes == 60 && fee.high == null) {
                         fee.high = element.minFee;
                     }
                 });
@@ -93,8 +93,7 @@ export class BitcoinBlockchain {
                 return fee;
             }
             catch (error) {
-
-            }            
+            }
         }
         
         var fees = await this._prokeyBtcBlockchain.GetTxFee();
