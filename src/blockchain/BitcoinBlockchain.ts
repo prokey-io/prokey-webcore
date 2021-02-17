@@ -89,6 +89,8 @@ export class BitcoinBlockchain {
                         fee.high = element.minFee;
                     }
                 });
+
+                return fee;
             }
             catch (error) {
 
