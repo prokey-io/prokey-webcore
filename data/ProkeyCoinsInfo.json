@@ -15066,12 +15066,14 @@
       "slip44": 0,
       "decimals": 8,
       "proparty_id": 31,
-      "dust": 546,
+      "dust_limit": 546,
       "priority": 4,
       "on_device": "Bitcoin",
       "test": false,
       "tx_url": "https://omniexplorer.info/search/{hash}",
-      "wallets": []
+      "wallets": [
+        "wallet.prokey.io"
+      ]
     },
     {
       "shortcut": "MAID",
@@ -15081,12 +15083,14 @@
       "slip44": 0,
       "decimals": 8,
       "proparty_id": 3,
-      "dust": 546,
+      "dust_limit": 546,
       "priority": 100,
       "on_device": "Bitcoin",
       "test": false,
-      "tx_url": null,
-      "wallets": []
+      "tx_url": "https://omniexplorer.info/search/{hash}",
+      "wallets": [
+        "wallet.prokey.io"
+      ]
     }
   ]
 }

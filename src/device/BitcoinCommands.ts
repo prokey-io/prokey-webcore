@@ -402,6 +402,7 @@ export class BitcoinCommands implements ICoinCommands {
 
             }
             catch (ex) {
+                MyConsole.Info(ex);
                 this._isSigning = false;
                 return reject(ex);
             }

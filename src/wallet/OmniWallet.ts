@@ -184,6 +184,8 @@ export class OmniWallet extends BaseWallet {
         // Get UTXO from BTC blockchain
         let addInfo = await this._blockchain.GetBaseCoinAddressInfo(acc.addressModel.address);
 
+        MyConsole.Info("Btc address info", addInfo);
+
         if(!addInfo) {
             throw new Error('Cannot get BTC address info');
         }
@@ -216,8 +218,10 @@ export class OmniWallet extends BaseWallet {
                 return 1;
         });
 
+        MyConsole.Info("sortedUtoxs", sortedUtoxs);
+
         let selectedUtxo = sortedUtoxs.find(utxo => {
-            return utxo.amount > (coinInfo.dust + txFee );
+            return utxo.amount > (coinInfo.dust_limit + txFee );
         })
 
         if(!selectedUtxo) {
@@ -243,7 +247,7 @@ export class OmniWallet extends BaseWallet {
         tx.outputs.push({
             address_n: acc.addressModel.path,
             script_type: EnumOutputScriptType.PAYTOP2SHWITNESS,
-            amount: (selectedUtxo.amount - txFee - coinInfo.dust).toString(),
+            amount: (selectedUtxo.amount - txFee - coinInfo.dust_limit).toString(),
         });
 
         // Omni Simple send Transaction
@@ -267,7 +271,7 @@ export class OmniWallet extends BaseWallet {
         tx.outputs.push({
             address: receiverAddress,
             script_type: EnumOutputScriptType.PAYTOADDRESS,
-            amount: coinInfo.dust.toString(),
+            amount: coinInfo.dust_limit.toString(),
         });
 
         MyConsole.Info("tx:", tx);

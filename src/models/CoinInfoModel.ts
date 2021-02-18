@@ -106,7 +106,6 @@ export interface OmniCoinInfoModel {
     slip44: number,
     decimals: number,
     proparty_id: number,
-    dust: number,
     on_device?: string,
     test?: boolean,
     dust_limit: number,
