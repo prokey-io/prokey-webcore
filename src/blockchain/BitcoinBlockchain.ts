@@ -29,12 +29,17 @@ import { ProkeySendTransactionResponse } from './servers/prokey/src/models/Proke
 import * as GenericWalletModel from '../models/GenericWalletModel';
 import { CoinBaseType, CoinInfo } from '../coins/CoinInfo';
 import { BitcoinBaseCoinInfoModel } from '../models/CoinInfoModel'
+import { httpclient } from 'typescript-http-client'
+import Request = httpclient.Request
 
 export class BitcoinBlockchain {
 
     _prokeyBtcBlockchain: BitcoinBlockChain;
+    _coinName: string;
+
     constructor(coinName: string)
     {
+        this._coinName = coinName;
         this._prokeyBtcBlockchain = new BitcoinBlockChain(coinName);
     }
 
@@ -67,8 +72,34 @@ export class BitcoinBlockchain {
      * @returns BitcoinFee
      */
     public async GetTxFee(): Promise<BitcoinFee> {
-        var fees = await this._prokeyBtcBlockchain.GetTxFee();
         var fee = <BitcoinFee>{};
+        if (this._coinName === 'BTC')
+        {
+            try {
+                
+                // get fee from https://bitcoinfees.earn.com/api/v1/fees/list            
+                const client = httpclient.newHttpClient();
+
+                const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
+                
+                var r = await client.execute<any>(request);    
+                r.fees.forEach(element => {
+                    if (element.maxMinutes == 360 && fee.economy == null) {
+                        fee.economy = element.minFee;                        
+                    } else if (element.maxMinutes == 180 && fee.normal == null) {
+                        fee.normal = element.minFee;
+                    } else if (element.maxMinutes == 60 && fee.high == null) {
+                        fee.high = element.minFee;
+                    }
+                });
+
+                return fee;
+            }
+            catch (error) {
+            }
+        }
+        
+        var fees = await this._prokeyBtcBlockchain.GetTxFee();
         fee.economy = fees.ecoFees[5].feerate * 100000;
         fee.normal = fees.fees[3].feerate * 100000;
         fee.high = fees.fees[1].feerate * 100000;
