@@ -35,8 +35,11 @@ import Request = httpclient.Request
 export class BitcoinBlockchain {
 
     _prokeyBtcBlockchain: BitcoinBlockChain;
+    _coinName: string;
+
     constructor(coinName: string)
     {
+        this._coinName = coinName;
         this._prokeyBtcBlockchain = new BitcoinBlockChain(coinName);
     }
 
@@ -70,7 +73,7 @@ export class BitcoinBlockchain {
      */
     public async GetTxFee(): Promise<BitcoinFee> {
         var fee = <BitcoinFee>{};
-        if (this._prokeyBtcBlockchain._coinName === 'BTC')
+        if (this._coinName === 'BTC')
         {
             try {
                 
