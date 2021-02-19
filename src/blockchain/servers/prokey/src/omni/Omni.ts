@@ -57,7 +57,7 @@ export class OmniBlockChain {
 
         return {
             addressModel: reqAddress.addressModel,
-            balance: response[0].balance * 100000000,
+            balance: response[0].balance,
             trKeys: response[0].trKeys,
         }
     }
