@@ -25,6 +25,10 @@ import * as GenericWalletModel from '../models/GenericWalletModel';
 import { OmniAddressInfo, OmniTxInfo } from '../models/OmniWalletModel';
 import { BitcoinBlockchainAddress } from '../models/BitcoinWalletModel';
 import { BitcoinFee } from '../models/BitcoinWalletModel';
+import { CoinBaseType, CoinInfo } from '../coins/CoinInfo';
+import { BitcoinBaseCoinInfoModel } from '../models/CoinInfoModel'
+import { httpclient } from 'typescript-http-client'
+import Request = httpclient.Request
 
 export class OmniBlockchain {
     _prokeyOmniBlockchain: ProkeyOmniBlockchain;
@@ -64,10 +68,44 @@ export class OmniBlockchain {
     public async GetTxFee(): Promise<BitcoinFee> {
         var fees = await this._prokeyOmniBlockchain.GetTxFee();
         var fee = <BitcoinFee>{};
+
+        try {
+                
+            // get fee from https://bitcoinfees.earn.com/api/v1/fees/list            
+            const client = httpclient.newHttpClient();
+
+            const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
+            
+            var r = await client.execute<any>(request);    
+            r.fees.forEach(element => {
+                if (element.maxMinutes == 360 && fee.economy == null) {
+                    fee.economy = element.minFee;                        
+                } else if (element.maxMinutes == 180 && fee.normal == null) {
+                    fee.normal = element.minFee;
+                } else if (element.maxMinutes == 60 && fee.high == null) {
+                    fee.high = element.minFee;
+                }
+            });
+
+            return fee;
+        }
+        catch (error) {
+        }
         
         fee.economy = fees.ecoFees[5].feerate * 100000;
         fee.normal = fees.fees[3].feerate * 100000;
         fee.high = fees.fees[1].feerate * 100000;
+
+        // Server may return the negative fee, so we should use the next returned fee
+        if (fee.high < 0)
+            fee.high = fees.fees[2].feerate * 100000;
+        if (fee.high < 0)
+        {
+            // We need to use the fee from coin info
+            fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( "Bitcoin", CoinBaseType.BitcoinBase).minfee_kb;
+        }
+
+        return fee;
 
         return fee;
     }

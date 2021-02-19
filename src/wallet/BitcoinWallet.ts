@@ -526,7 +526,7 @@ export class BitcoinWallet extends BaseWallet {
 
         //! Transaction instance
         let tx: BitcoinTx = {
-            coinName: coinInfo.on_device!,
+            coinName: coinInfo.on_device,
             inputs: new Array<TransactionInput>(),
             outputs: new Array<TransactionOutput>(),
             options: {},
