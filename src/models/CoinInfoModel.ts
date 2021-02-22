@@ -48,7 +48,7 @@ export interface BitcoinBaseCoinInfoModel {
     max_fee: number,
     blocks?: number,
     decimals: number,
-    on_device?: string,
+    on_device: string,
     test?: boolean,
     tx_url: string,
 };
@@ -93,7 +93,7 @@ export interface MiscCoinInfoModel {
     slip44: number;
     support: ProkeySupport;
     decimals: number;
-    on_device?: string,
+    on_device: string,
     test?: boolean,
     tx_url: string,
 }
@@ -104,9 +104,9 @@ export interface OmniCoinInfoModel {
     blockchain: string,
     segwit: boolean,
     slip44: number,
-    decimals: number,
+    divisible: boolean,
     proparty_id: number,
-    on_device?: string,
+    on_device: string,
     test?: boolean,
     dust_limit: number,
     tx_url: string,

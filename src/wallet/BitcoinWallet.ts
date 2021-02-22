@@ -513,8 +513,9 @@ export class BitcoinWallet extends BaseWallet {
             totalSend += element.value;
         });
 
+
         //! Total sent should be more than coin dust limit
-        if(totalSend < super.GetCoinInfo().dust_limit){
+        if(totalSend < coinInfo.dust_limit){
             throw new Error(`Total value is less that this coin dust limit`);
         }
 
@@ -525,7 +526,7 @@ export class BitcoinWallet extends BaseWallet {
 
         //! Transaction instance
         let tx: BitcoinTx = {
-            coinName: super.GetCoinInfo().on_device,
+            coinName: coinInfo.on_device,
             inputs: new Array<TransactionInput>(),
             outputs: new Array<TransactionOutput>(),
             options: {},

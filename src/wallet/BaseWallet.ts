@@ -89,7 +89,7 @@ export abstract class BaseWallet {
     /**
      * Get CoinInfo
      */
-    public GetCoinInfo(): any {
+    public GetCoinInfo(): BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel {
         return this._coinInfo;
     }
 

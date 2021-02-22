@@ -31,6 +31,7 @@ import { BaseWallet } from './BaseWallet';
 var WAValidator = require('multicoin-address-validator');
 import * as Utility from '../utils/utils';
 import { MyConsole } from '../utils/console';
+import { OmniCoinInfoModel } from '../models/CoinInfoModel'
 
 /**
  * If you wish to discover and use the omni wallet, you need to use this class. 
@@ -52,7 +53,7 @@ export class OmniWallet extends BaseWallet {
     constructor(device: Device, coinName: string) {
         super(device, coinName, CoinBaseType.OMNI);
         
-        const coinInfo = super.GetCoinInfo();
+        const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
         
         this._blockchain = new OmniBlockchain('omni', coinInfo.proparty_id, coinInfo.blockchain || 'BTC');
     }
@@ -76,6 +77,11 @@ export class OmniWallet extends BaseWallet {
                     // Discover the account number n
                     let account = await this.AccountDiscovery(an);
 
+                    // If there is no transaction, the discovery finished
+                    if(account.trKeys == null || account.trKeys.length == 0){
+                        return resolve(this._wallet);
+                    }
+
                     if(this._wallet.accounts == undefined) {
                         this._wallet.accounts = new Array<WalletModel.OmniAccountInfo>();
                     }
@@ -89,11 +95,6 @@ export class OmniWallet extends BaseWallet {
                     // update the total wallet balance 
                     this._wallet.totalBalance += account.balance;
                     
-                    // If there is no transaction, the discovery finished
-                    if(account.trKeys == null || account.trKeys.length == 0){
-                        return resolve(this._wallet);
-                    }
-
                     // go for next account
                     an++;
                 
@@ -115,7 +116,7 @@ export class OmniWallet extends BaseWallet {
             balance: 0,
         }
 
-        const coinInfo = super.GetCoinInfo();
+        const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
 
         // Makinging a list of paths
         let path = PathUtil.GetListOfBipPath(
@@ -141,6 +142,10 @@ export class OmniWallet extends BaseWallet {
             address: address.address,      // Address
             addressModel: path[0],
         });
+
+        if(coinInfo.divisible == true) {
+            addInfo.balance *= 100000000;
+        }
 
         accountInfo.balance += (addInfo.balance == null) ? 0 : addInfo.balance;
         accountInfo.trKeys = addInfo.trKeys;
@@ -179,7 +184,7 @@ export class OmniWallet extends BaseWallet {
             throw new Error('Address model is undefined');
         }
 
-        const coinInfo = super.GetCoinInfo();
+        const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
 
         // Get UTXO from BTC blockchain
         let addInfo = await this._blockchain.GetBaseCoinAddressInfo(acc.addressModel.address);
@@ -312,11 +317,16 @@ export class OmniWallet extends BaseWallet {
             throw new Error('Address Model can not be undefined');
         }
 
+        // Decimal Factor
+        // for divisible coins or tokens, the value in this field is to be divided by 100,000,000
+        // for indivisible coins or tokens, the value in this field is the integer number of Omni Protocol coins or tokens (e.g. 1 represents 1 indivisible token)
+        const decimalFactor = ((super.GetCoinInfo() as OmniCoinInfoModel).divisible == true) ? 100000000 : 1;
+
         listOfTransactions.forEach(tx => {
             let tv: WalletModel.OmniTransactionView = {
                 fromAddress: tx.fromAddress,
                 toAddress: tx.toAddress,
-                amount: tx.amount * 100000000,
+                amount: tx.amount * decimalFactor,
                 blockId: tx.blockId,
                 hash: tx.hash,
                 date: new Date(tx.timeStamp * 1000).toLocaleString(),
