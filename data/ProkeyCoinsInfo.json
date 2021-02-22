@@ -15064,7 +15064,7 @@
       "blockchain": "BTC",
       "segwit": true,
       "slip44": 0,
-      "divisible": false,
+      "divisible": true,
       "proparty_id": 31,
       "dust_limit": 546,
       "priority": 4,
