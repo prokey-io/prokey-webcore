@@ -185,6 +185,10 @@ export class Device {
     public async Initialize(){
         return await this.SendMessage<ProkeyResponses.Features>('Initialize', { state: null, skip_passphrase: false}, 'Features');
     }
+
+    public async RebootDevice(){
+        await this.SendMessage<any>('RebootDevice', {}, 'Success');
+    }
     
     /**
      * Ping command
