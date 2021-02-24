@@ -178,6 +178,17 @@ export class Device {
 
         return await this._transport.Open();
     }
+
+    /**
+     * Reset device to default state and ask for device details
+     */
+    public async Initialize(){
+        return await this.SendMessage<ProkeyResponses.Features>('Initialize', {}, 'Features');
+    }
+
+    public async RebootDevice(){
+        await this.SendMessage<any>('RebootDevice', {}, 'Success');
+    }
     
     /**
      * Ping command
