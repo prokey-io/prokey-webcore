@@ -183,7 +183,7 @@ export class Device {
      * Reset device to default state and ask for device details
      */
     public async Initialize(){
-        return await this.SendMessage<ProkeyResponses.Features>('Initialize', { state: null, skip_passphrase: false}, 'Features');
+        return await this.SendMessage<ProkeyResponses.Features>('Initialize', {}, 'Features');
     }
 
     public async RebootDevice(){
