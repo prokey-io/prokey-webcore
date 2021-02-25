@@ -77,23 +77,23 @@ export class OmniWallet extends BaseWallet {
                     // Discover the account number n
                     let account = await this.AccountDiscovery(an);
 
-                    // If there is no transaction, the discovery finished
-                    if(account.trKeys == null || account.trKeys.length == 0){
-                        return resolve(this._wallet);
-                    }
-
                     if(this._wallet.accounts == undefined) {
                         this._wallet.accounts = new Array<WalletModel.OmniAccountInfo>();
                     }
+
+                    // update the total wallet balance 
+                    this._wallet.totalBalance += account.balance;
 
                     this._wallet.accounts.push(account);
 
                     if(accountFindCallBack){
                         accountFindCallBack(account);
                     }
-                   
-                    // update the total wallet balance 
-                    this._wallet.totalBalance += account.balance;
+
+                    // If there is no transaction, the discovery finished
+                    if(account.trKeys == null || account.trKeys.length == 0){
+                        return resolve(this._wallet);
+                    }
                     
                     // go for next account
                     an++;
@@ -117,6 +117,7 @@ export class OmniWallet extends BaseWallet {
         }
 
         const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
+        console.log("CoinInfo", coinInfo);
 
         // Makinging a list of paths
         let path = PathUtil.GetListOfBipPath(
