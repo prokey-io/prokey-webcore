@@ -117,8 +117,7 @@ export class OmniWallet extends BaseWallet {
         }
 
         const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
-        console.log("CoinInfo", coinInfo);
-
+        
         // Makinging a list of paths
         let path = PathUtil.GetListOfBipPath(
             coinInfo.slip44,                 
