@@ -774,6 +774,10 @@ export class BitcoinWallet extends BaseWallet {
         let coinInfo = this.GetCoinInfo();
 
         let symbol: string = coinInfo.shortcut;
+        if(symbol == "TEST") {
+            symbol = "tBTC";
+        }
+
         if(coinInfo.test != undefined && coinInfo.test == true){
             if(symbol.substr(0,1) == 't'){
                 symbol = symbol.substring(1);
