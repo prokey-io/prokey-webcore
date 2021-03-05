@@ -4,7 +4,7 @@ import { Buffer } from 'buffer';
 export class RlpEncoding {
   public encode(input: Buffer | string | number | Array<any>) {
     if (input instanceof Array) {
-      const output = []
+      const output:any[] = []
       for (let i = 0; i < input.length; i++) {
         output.push(this.encode(input[i]))
       }
@@ -85,7 +85,7 @@ export class RlpEncoding {
 
   private _decode(input: Buffer) {
     let length, llength, data, innerRemainder, d;
-    const decoded = []
+    const decoded:any[] = []
     const firstByte = input[0]
 
     if (firstByte <= 0x7f) {

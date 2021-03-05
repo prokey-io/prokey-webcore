@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as ByteBuffer  from "bytebuffer";
+import ByteBuffer  from "bytebuffer";
 import { MyConsole } from '../utils/console';
 import * as Utils from '../utils/utils';
 import { IMessagePayload, ITransport } from './ITransport'
@@ -317,7 +317,7 @@ export class WebUsb implements ITransport {
     }
 
     async delay(ms: number): Promise<void> {
-        await new Promise(resolve => setTimeout(() => resolve(), ms)).then(() => console.log("fired"));
+        await new Promise<void>(resolve => setTimeout(() => resolve(), ms)).then(() => console.log("fired"));
     }
 
     Close(): void {
