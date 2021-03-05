@@ -25,7 +25,6 @@ import { EthereumCommands } from './src/device/EthereumCommands';
 
 module.exports = {
     Device,
-    DefaultMessageResponse,
     ICoinCommands,
     BitcoinCommands,
     EthereumCommands,
