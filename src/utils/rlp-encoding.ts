@@ -55,7 +55,7 @@ export class RlpEncoding {
       return decoded as any;
     }
 
-    assert.equal(decoded.remainder.length, 0, 'invalid remainder');
+    assert.strictEqual(decoded.remainder.length, 0, 'invalid remainder');
     return decoded.data;
   }
 
