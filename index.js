@@ -24,6 +24,7 @@ import { EthereumCommands } from './src/device/EthereumCommands';
 import { BitcoinWallet } from './src/wallet/BitcoinWallet';
 import { EthereumWallet } from './src/wallet/EthereumWallet';
 import { OmniWallet } from './src/wallet/OmniWallet';
+import { CoinInfo } from './src/coins/CoinInfo';
 
 module.exports = {
     Device,
@@ -32,5 +33,6 @@ module.exports = {
     BitcoinWallet,
     EthereumWallet,
     OmniWallet,
+    CoinInfo,
 }
 
