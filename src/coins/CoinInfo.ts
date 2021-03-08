@@ -33,11 +33,12 @@ export enum CoinBaseType {
 }
 
 export interface CoinNameModel {
-    Name: string;
+    Name: string;    
     Shortcut: string;
     Type: CoinBaseType;
     Priority: Number;
     ContractAddress: string;
+    Decimals: number;
 }
 
 export class CoinInfo {
@@ -101,6 +102,7 @@ export class CoinInfo {
                     Type: CoinBaseType.BitcoinBase,
                     Priority: element.priority,
                     ContractAddress: '',
+                    Decimals: element.decimals,
                 });
             }
         });
@@ -114,6 +116,7 @@ export class CoinInfo {
                     Type: CoinBaseType.EthereumBase,
                     Priority: element.priority,
                     ContractAddress: '',
+                    Decimals: element.decimals,
                 });
             }
         });
@@ -126,6 +129,7 @@ export class CoinInfo {
                 Type: CoinBaseType.ERC20,
                 Priority: element.priority,
                 ContractAddress: element.address,
+                Decimals: element.decimals,
             });
         });
 
@@ -137,6 +141,7 @@ export class CoinInfo {
                 Type: CoinBaseType.OMNI,
                 Priority: element.priority,
                 ContractAddress: '',
+                Decimals: element.divisible ? 8 : 0,
             })
         });
 
@@ -169,6 +174,7 @@ export class CoinInfo {
                     Type: CoinBaseType.BitcoinBase,
                     Priority: element.priority,
                     ContractAddress: '',
+                    Decimals: element.decimals,
                 });
             });
         }
@@ -181,6 +187,7 @@ export class CoinInfo {
                     Type: CoinBaseType.EthereumBase,
                     Priority: element.priority,
                     ContractAddress: '',
+                    Decimals: element.decimals,
                 });
             });
         }
@@ -193,6 +200,7 @@ export class CoinInfo {
                     Type: CoinBaseType.ERC20,
                     Priority: element.priority,
                     ContractAddress: element.address,
+                    Decimals: element.decimals,
                 });
             });
         }
@@ -204,6 +212,7 @@ export class CoinInfo {
                     Type: CoinBaseType.OMNI,
                     Priority: element.priority,
                     ContractAddress: element.address,
+                    Decimals: element.divisible ? 8 : 0,
                 });
             });
         }

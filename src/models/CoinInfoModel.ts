@@ -56,6 +56,7 @@ export interface BitcoinBaseCoinInfoModel {
 export interface EthereumBaseCoinInfoModel {
     chain: string,
     chain_id: number,
+    decimals: number,
     name: string
     rskip60: boolean,
     shortcut: string,
