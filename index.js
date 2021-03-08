@@ -21,13 +21,18 @@
 import { Device } from './src/device/Device';
 import { BitcoinCommands } from './src/device/BitcoinCommands';
 import { EthereumCommands } from './src/device/EthereumCommands';
-
+import { BitcoinWallet } from './src/wallet/BitcoinWallet';
+import { EthereumWallet } from './src/wallet/EthereumWallet';
+import { OmniWallet } from './src/wallet/OmniWallet';
+import { CoinInfo } from './src/coins/CoinInfo';
 
 module.exports = {
     Device,
-    DefaultMessageResponse,
-    ICoinCommands,
     BitcoinCommands,
     EthereumCommands,
+    BitcoinWallet,
+    EthereumWallet,
+    OmniWallet,
+    CoinInfo,
 }
 

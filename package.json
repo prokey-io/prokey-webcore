@@ -1,11 +1,12 @@
 {
     "name": "@prokey-io/webcore",
-    "version": "0.1.0",
+    "version": "0.1.8",
     "license": "GPL-3.0",
-    "main": "index.js",
+    "main": "dist/index.js",
+    "types": "dist/**.d.ts",
     "description": "This module can be used to communicate with Prokey device",
     "author": "Prokey Techologies Sdn. Bhd. <info@prokey.io>",
-    "prepublish": "tsc",
+    "prepublish": "tsc && cp data/ProkeyCoinsInfo.json dist/data/ProkeyCoinsInfo.json",
     "dependencies": {
         "@types/bytebuffer": "^5.0.40",
         "big-number": "^2.0.0",
@@ -19,7 +20,8 @@
         "multicoin-address-validator": "^0.4.8",
         "protobufjs": "^6.8.8",
         "rxjs": "~6.2.0",
-        "typescript-http-client": "^0.10.1"
+        "typescript-http-client": "^0.10.1",
+        "assert": "^2.0.0"
     },
     "scripts": {
         "build": "tsc"
