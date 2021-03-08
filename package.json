@@ -1,9 +1,11 @@
 {
-    "name": "webcore",
-    "version": "0.0.2",
+    "name": "@prokey-io/webcore",
+    "version": "0.1.0",
+    "license": "GPL-3.0",
     "main": "index.js",
     "description": "This module can be used to communicate with Prokey device",
     "author": "Prokey Techologies Sdn. Bhd. <info@prokey.io>",
+    "prepublish": "tsc",
     "dependencies": {
         "@types/bytebuffer": "^5.0.40",
         "big-number": "^2.0.0",
@@ -16,10 +18,13 @@
         "long": "^4.0.0",
         "multicoin-address-validator": "^0.4.8",
         "protobufjs": "^6.8.8",
-        "rxjs": "~6.2.0"
+        "rxjs": "~6.2.0",
+        "typescript-http-client": "^0.10.1"
     },
     "scripts": {
         "build": "tsc"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "typescript": "^4.2.3"
+    }
 }
