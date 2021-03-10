@@ -280,11 +280,15 @@ export class Device {
      * @param coin coin name
      */
     public async SignMessage( address_n: Array<number>, message: Uint8Array, coin?: string): Promise<ProkeyResponses.MessageSignature> {
+
+        let scriptType = PathUtil.GetScriptType(address_n);
+        console.log(scriptType);
+
         let res = await this.SendMessage<ProkeyResponses.MessageSignature>('SignMessage', {
-            addressN: address_n,
+            address_n: address_n,
             message,
-            coinName: coin || 'Bitcoin',
-            scriptType: PathUtil.IsSegwitPath(address_n) ? 'SPENDP2SHWITNESS' : undefined,
+            coin_name: coin || 'Bitcoin',
+            script_type: scriptType,
         },'MessageSignature');
 
         if(res.signature){

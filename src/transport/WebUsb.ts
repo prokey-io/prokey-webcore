@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-import ByteBuffer  from "bytebuffer";
 import { MyConsole } from '../utils/console';
 import * as Utils from '../utils/utils';
 import { IMessagePayload, ITransport } from './ITransport'
@@ -76,18 +74,25 @@ export class WebUsb implements ITransport {
     }
 
     public async SendProtoMsg(msgId: number, data: Uint8Array): Promise<GeneralResponse> {
-        const bf =  new ByteBuffer(data.length + 6); //+6b: 2b as MsgType and 4b as data length
+        const bf = new Uint8Array(data.length + 6);
+        let n = 0;
 
         // MsgType
-        bf.writeInt16(msgId);
+        bf[n++] = msgId >> 8;
+        bf[n++] = msgId & 0xFF;
 
         // Lenght of data
-        bf.writeInt32(data.length);
+        bf[n++] = data.length >> 24;
+        bf[n++] = data.length >> 16;
+        bf[n++] = data.length >> 8;
+        bf[n++] = data.length;
 
         // Data
-        bf.append(data);
+        for(let i=0; i<data.length; i++){
+            bf[n++] = data[i];
+        }
 
-        let res = await this.SendData(new Uint8Array(bf.buffer));
+        let res = await this.SendData(bf);
         if (res.success == false)
             return res;
 
