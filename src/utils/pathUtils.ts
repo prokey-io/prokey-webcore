@@ -1,7 +1,7 @@
 /* @flow */
 'use strict';
 
-import { EnumOutputScriptType, AddressModel } from '../models/Prokey';
+import { EnumOutputScriptType, AddressModel, EnumInputScriptType } from '../models/Prokey';
 
 export const HD_HARDENED = 0x80000000;
 export const toHardened = (n: number): number => (n | HD_HARDENED) >>> 0;
@@ -122,7 +122,25 @@ export function getIndexFromPath(path: Array<number>): number {
 //     return label.replace('#NETWORK', '');
 // };
 
-export const getOutputScriptType = (path?: Array<number>): EnumOutputScriptType => {
+export function GetScriptType(path?: Array<number>): EnumInputScriptType {
+    if (!Array.isArray(path) || path.length < 1){ 
+        return EnumInputScriptType.SPENDADDRESS;
+    }
+
+    const p1 = fromHardened(path[0]);
+    switch (p1) {
+        case 48:
+            return EnumInputScriptType.SPENDMULTISIG;
+        case 49:
+            return EnumInputScriptType.SPENDP2SHWITNESS;
+        case 84:
+            return EnumInputScriptType.SPENDWITNESS;
+        default:
+            return EnumInputScriptType.SPENDADDRESS;
+    }
+};
+
+export function GetOutputScriptType(path?: Array<number>): EnumOutputScriptType {
     if (!Array.isArray(path) || path.length < 1) 
         return EnumOutputScriptType.PAYTOADDRESS;
     const p = fromHardened(path[0]);
