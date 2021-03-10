@@ -643,7 +643,7 @@ export class BitcoinWallet extends BaseWallet {
     }
 
     /**
-     * To calculate the TX len
+     * To calculate the TX fee
      * @param receivers List of receivers (outputs)
      * @param fromAccount The account number you wish to send from
      */
@@ -655,7 +655,7 @@ export class BitcoinWallet extends BaseWallet {
 
         // Validate account
         if(fromAccount >= this._bitcoinWallet.accounts.length){
-            throw new Error(`Cannot fine account #${fromAccount}`);
+            throw new Error(`Cannot find account #${fromAccount}`);
         }
 
         // Validate list of receivers
