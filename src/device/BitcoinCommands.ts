@@ -445,6 +445,58 @@ export class BitcoinCommands implements ICoinCommands {
         });
     }
 
+    /**
+     * Sign Message
+     * @param device Prokey device instance
+     * @param address_n array of BIP32/44 Path
+     * @param message message to be signed
+     * @param coin coin name
+     */
+     public async SignMessage(
+         device: Device, 
+         address_n: Array<number>, 
+         message: Uint8Array, 
+         coin?: string): Promise<ProkeyResponses.MessageSignature> {
+
+        let scriptType = PathUtil.GetScriptType(address_n);
+
+        let res = await device.SendMessage<ProkeyResponses.MessageSignature>('SignMessage', {
+            address_n: address_n,
+            message: message,
+            coin_name: coin || 'Bitcoin',
+            script_type: scriptType,
+        },'MessageSignature');
+
+        if(res.signature){
+            res.signature = Utility.ByteArrayToHexString(res.signature);
+        }
+
+        return res;
+    }
+    
+    /**
+     * Verify Message
+     * @param device Prokey device instance
+     * @param address address
+     * @param message message
+     * @param signature signature data
+     * @param coinName coin name
+     */
+    public async VerifyMessage(
+        device: Device,
+        address: string,
+        message: Uint8Array,
+        signature: Uint8Array,
+        coinName: string): Promise<ProkeyResponses.Success> {
+
+        return await device.SendMessage<ProkeyResponses.Success>('VerifyMessage', {
+            address: address,
+            signature: signature,
+            message: message,
+            coin_name: coinName || 'Bitcoin',
+        } ,'Success');
+    }
+
     // **********************************
     // PRIVATE FUNCTIONS
     // Signing transaction helpers

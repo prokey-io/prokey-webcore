@@ -237,6 +237,46 @@ export class EthereumCommands implements ICoinCommands {
         });
     }
 
+    /**
+     * Sign Message
+     * @param device Prokey device instance
+     * @param address_n array of BIP32/44 Path
+     * @param message message to be signed
+     */
+    public async SignMessage(device: Device, path: Array<number>, message: Uint8Array, coinName?: string): Promise<ProkeyResponses.MessageSignature> {
+        let res = await device.SendMessage<ProkeyResponses.MessageSignature>('EthereumSignMessage', {
+            address_n: path,
+            message: message,
+        }, 'EthereumMessageSignature');
+
+        if(res.signature){
+            res.signature = Util.ByteArrayToHexString(res.signature);
+        }
+
+        return res;
+    }
+
+    /**
+     * Verify Message
+     * @param device Prokey device instance
+     * @param address address
+     * @param signature signature data
+     * @param message message
+     * @param coinName
+     */
+     public async VerifyMessage(
+        device: Device,
+        address: string,
+        message: Uint8Array,
+        signature: Uint8Array): Promise<ProkeyResponses.Success> {
+
+        return await device.SendMessage<ProkeyResponses.Success>('EthereumVerifyMessage', {
+            address: address,
+            signature: signature,
+            message: message,
+        },'Success');
+    }
+
     // **********************************
     // PRIVATE FUNCTIONS
     // **********************************

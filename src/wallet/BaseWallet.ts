@@ -48,8 +48,16 @@ import {
     LiskSignedTx,
     TezosSignedTx,
     BinanceSignTx,
-    CardanoSignedTx
+    CardanoSignedTx,
+    Success
  } from "../models/Prokey";
+
+ import { 
+    MessageSignature, 
+    LiskMessageSignature 
+} from '../models/Prokey';
+
+import * as Util from '../utils/utils';
 
 import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
@@ -139,6 +147,31 @@ export abstract class BaseWallet {
      */
     public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx>(tx: BitcoinTx | EthereumTx): Promise<T> {
         return await this._commands.SignTransaction(this._device, tx) as T;
+    }
+
+    /**
+     * Sign Message 
+     * @param path BIP32 Path to sign the message
+     * @param message Message to be signed
+     * @param coinName Optional, Only for Bitcoin based coins
+     */
+    public async SignMessage<T extends MessageSignature | LiskMessageSignature>(path: Array<number>, message: string, coinName?: string): Promise<T>{
+        const messageBytes = Util.StringToUint8Array(message)
+        return await this._commands.SignMessage(this._device, path, messageBytes, coinName) as T;
+    }
+
+    /**
+     * Verify message
+     * @param address Address
+     * @param message Signed message
+     * @param signature Signature
+     * @param coinName Optional, Only for Bitcoin based coins
+     * @returns 
+     */
+    public async VerifyMessage(address: string, message: string, signature: string, coinName?: string): Promise<Success>{
+        const messageBytes = Util.StringToUint8Array(message);
+        const signBytes = Util.HexStringToByteArray(signature);
+        return await this._commands.VerifyMessage(this._device, address, messageBytes, signBytes, coinName);
     }
 
     /**

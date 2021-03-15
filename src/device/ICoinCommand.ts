@@ -46,7 +46,6 @@ export interface ICoinCommands {
         device: Device,
         transaction:BitcoinTx | 
                     EthereumTx,
-
     ): Promise<ProkeyResponses.SignedTx |
         ProkeyResponses.EthereumSignedTx |
         ProkeyResponses.EosSignedTx |
@@ -54,4 +53,20 @@ export interface ICoinCommands {
         ProkeyResponses.TezosSignedTx |
         ProkeyResponses.BinanceSignTx |
         ProkeyResponses.CardanoSignedTx>;
+    
+    SignMessage(
+        device: Device,
+        path: Array<number>,
+        message: Uint8Array,
+        coinName?: string
+    ): Promise<ProkeyResponses.MessageSignature |
+        ProkeyResponses.LiskMessageSignature>;
+    
+    VerifyMessage(
+        device: Device,
+        address: string,
+        message: Uint8Array,
+        signature: Uint8Array,
+        coinName?: string,
+    ): Promise<ProkeyResponses.Success>;
 }
