@@ -459,7 +459,6 @@ export class BitcoinCommands implements ICoinCommands {
          coin?: string): Promise<ProkeyResponses.MessageSignature> {
 
         let scriptType = PathUtil.GetScriptType(address_n);
-        console.log(scriptType);
 
         let res = await device.SendMessage<ProkeyResponses.MessageSignature>('SignMessage', {
             address_n: address_n,
