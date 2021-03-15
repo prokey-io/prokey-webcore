@@ -273,51 +273,6 @@ export class Device {
         return await this.SendMessage<ProkeyResponses.Success>('ApplySettings', {use_passphrase: false} , 'Success');
     }
     
-    /**
-     * Sign Message
-     * @param address_n array of BIP32/44 Path
-     * @param message message to be signed
-     * @param coin coin name
-     */
-    public async SignMessage( address_n: Array<number>, message: Uint8Array, coin?: string): Promise<ProkeyResponses.MessageSignature> {
-
-        let scriptType = PathUtil.GetScriptType(address_n);
-        console.log(scriptType);
-
-        let res = await this.SendMessage<ProkeyResponses.MessageSignature>('SignMessage', {
-            address_n: address_n,
-            message,
-            coin_name: coin || 'Bitcoin',
-            script_type: scriptType,
-        },'MessageSignature');
-
-        if(res.signature){
-            res.signature = Util.ByteArrayToHexString(res.signature);
-        }
-
-        return res;
-    }
-    
-    /**
-     * Verify Message
-     * @param address address
-     * @param signature signature data
-     * @param message message
-     * @param coin coin name
-     */
-    public async VerifyMessage(
-        address: string,
-        signature: Uint8Array,
-        message: Uint8Array,
-        coin: string): Promise<ProkeyResponses.Success> {
-
-        return await this.SendMessage<ProkeyResponses.Success>('VerifyMessage', {
-            address,
-            signature,
-            message,
-            coin,
-        },'Success');
-    }
 
     /**
      * Cancel the last command
