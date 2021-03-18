@@ -112,3 +112,14 @@ export interface OmniCoinInfoModel {
     dust_limit: number,
     tx_url: string,
 }
+
+export interface RippleCoinInfoModel {
+    name: string;
+    shortcut: string;
+    slip44: number;
+    decimals: number;
+    on_device: string,
+    support: ProkeySupport;
+    test?: boolean,
+    tx_url: string,
+}

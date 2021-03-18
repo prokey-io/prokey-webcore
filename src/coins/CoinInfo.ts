@@ -29,6 +29,7 @@ export enum CoinBaseType {
     ERC20,
     NEM,
     OMNI,
+    Ripple,
     OTHERS
 }
 
@@ -67,6 +68,10 @@ export class CoinInfo {
                 break;
             case CoinBaseType.OMNI:
                 c = ProkeyCoinInfoModel.omni;
+                break;
+            case CoinBaseType.Ripple:
+                c = ProkeyCoinInfoModel.ripple;
+                break;
         }
 
         let ci: any;
@@ -145,6 +150,18 @@ export class CoinInfo {
             })
         });
 
+        // Add list of Ripple
+        ProkeyCoinInfoModel.ripple.forEach(element => {
+            list.push({
+                Name: element.name,
+                Shortcut: element.shortcut,
+                Type: CoinBaseType.Ripple,
+                Priority: element.priority,
+                ContractAddress: '',
+                Decimals: element.decimals,
+            })
+        });
+
         //! Sort the list by Priority
         list.sort( (a,b) => {
             if(a.Priority > b.Priority)
@@ -213,6 +230,18 @@ export class CoinInfo {
                     Priority: element.priority,
                     ContractAddress: element.address,
                     Decimals: element.divisible ? 8 : 0,
+                });
+            });
+        }
+        else if(ct == CoinBaseType.Ripple){
+            ProkeyCoinInfoModel.ripple.foreach(element => {
+                list.push({
+                    Name: element.name,
+                    Shortcut: element.shortcut,
+                    Type: CoinBaseType.Ripple,
+                    Priority: element.priority,
+                    ContractAddress: '',
+                    Decimals: element.decimals,
                 });
             });
         }
