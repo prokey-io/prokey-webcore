@@ -39,8 +39,11 @@ export class Protobuf {
         return this._instance;
     }
 
-    Init(callback?: (isSuccess: boolean) => void): void {
+    Init(callback?: (isSuccess: boolean) => void, protoPath?: string): void {
         let address = '/assets/data/protob/combined.proto.txt';
+        if(protoPath != undefined){
+            address = `${protoPath}/combined.proto.txt`;
+        }
 
         const opt: IParseOptions = {
             keepCase: true,
