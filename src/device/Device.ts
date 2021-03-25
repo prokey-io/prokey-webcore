@@ -44,14 +44,14 @@ export class Device {
      * 
      * @param callback this is an optional call back showing if protobuf successfully initialized
      */
-    constructor(callback?: (success: boolean) => void) {
+    constructor(callback?: (success: boolean) => void, pathToProtoFile?: string) {
         this.pb = Protobuf.Instance;
         if (!this.pb.IsInited) {
             this.pb.Init((isSuccess: boolean) => {
                 if(callback) {
                     callback(isSuccess);
                 }
-            });
+            }, pathToProtoFile);
         } else if(callback) {
             callback(true);
         }
