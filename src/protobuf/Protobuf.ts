@@ -41,7 +41,7 @@ export class Protobuf {
 
     Init(callback?: (isSuccess: boolean) => void, protoPath?: string): void {
         let address = '/assets/data/protob/combined.proto.txt';
-        if(protoPath != undefined){
+        if(protoPath != null){
             address = `${protoPath}/combined.proto.txt`;
         }
 
