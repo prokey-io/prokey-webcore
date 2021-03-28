@@ -398,7 +398,7 @@ export class WebUsb implements ITransport {
 
             return { success: true, payload: this._port };
         }
-        catch {
+        catch (_) {
             return { success: false, errorCode: GeneralErrors.CAN_NOT_OPEN_USB };
         }
     }
