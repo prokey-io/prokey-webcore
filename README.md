@@ -66,7 +66,7 @@ It is recommended to add this repository main branch to your project as a submod
    
    // Getting path to the desire address using a helper function
    let pathModel = Util.GetListOfBipPath(
-                          49, // BIP49
+                          0, // SLIP44 CoinId check:[Slip44](https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
                           0,  // Account
                           1,  // Number of paths
                           true, // Segwit
