@@ -199,19 +199,41 @@ export class EthereumWallet extends BaseWallet {
         // Get the gas price from server
         const gasPrice = await this._ethBlockChain.GetGasPrice();
 
-        // Check account balance
-        if(amount + (gasPrice * this._gasLimit) > account.balance) {
-            throw new Error("Insufficient balance");
-        }
-
-        // To ignore warning
-        if(account.addressModel == null)
-        {
+        if(account.addressModel == null) {
             throw new Error("Invalid data");
         }
 
-        // Reading nonce from ETH
-        const ethNonce = await this.GetNonceFromEth(account.addressModel.address);
+        let nonce = 0;
+        if(this._isErc20) {
+            // Reading balance & nonce from ETH
+            const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
+
+            // Check transaction fee
+            if( ethAddInfo.balance == null || gasPrice * this._gasLimit > ethAddInfo.balance) {
+                throw new Error("Insufficient balance in the Ethereum wallet to pay the transaction fee");
+            }
+
+            // Check account balance
+            if(amount > account.balance) {
+                throw new Error("Insufficient balance");
+            }
+
+            // Set the nonce
+            nonce = ethAddInfo.nonce || 0;
+        } else {
+            // Check account balance
+            if(amount > account.balance) {
+                throw new Error("Insufficient balance");
+            }
+
+            // Check account balance for pay the tx fee
+            if(amount + (gasPrice * this._gasLimit) > account.balance) {
+                throw new Error("Insufficient balance to pay the transaction fee");
+            }
+
+            // Set the nonce
+            nonce = account.nonce || 0;
+        }
 
         const coinInfo = super.GetCoinInfo() as (Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel);
         // Generate Transaction
@@ -220,7 +242,7 @@ export class EthereumWallet extends BaseWallet {
             to: receivedAddress,
             value: amount.toString(16),
 
-            nonce: ethNonce.toString(16),
+            nonce: nonce.toString(16),
             gasLimit: this._gasLimit.toString(16),
             gasPrice: gasPrice.toString(16),
             chainId: coinInfo.chain_id,
@@ -395,15 +417,20 @@ export class EthereumWallet extends BaseWallet {
     }
 
     /**
-     * Get nonce of ETH address, For signing an ERC20 transaction, The last nonce number of ETH address is needed
+     * Get address info of ETH address, For signing an ERC20 transaction, The last nonce number of ETH address is needed.
      * @param address ETH address
      */
-    private async GetNonceFromEth(address: string): Promise<number> {
+    private async GetEthAddressInfo(address: string): Promise<WalletModel.EthereumAddressInfo> {
         var ethBlockchain = new EthereumBlockchain(this._network);
         var addInfo = await ethBlockchain.GetAddressInfo({
             address: address
         });
-        return addInfo[0].nonce || 0;
+        
+        if(addInfo == null || addInfo.length == 0){
+            throw new Error("The ETH address is not valid");
+        }
+
+        return addInfo[0];
     }
 
     /**
