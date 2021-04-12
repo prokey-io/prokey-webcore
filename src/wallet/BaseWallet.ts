@@ -175,6 +175,33 @@ export abstract class BaseWallet {
     }
 
     /**
+     * Start searching blockchain to discovery(find) the wallet
+     * @param accountFindCallBack is an optional callback function, this function will be called when an account discovered
+     * @param allAccounts true means discover all account, false means discover only the first account
+     */
+    public abstract StartDiscovery(accountFindCallBack?: (accountInfo) => void, allAccounts?: boolean): Promise<any>;
+
+    /**
+     * Account Discovery
+     * @param accountNumber account number to be discovered
+     */
+    public abstract AccountDiscovery(accountNumber: number): Promise<any>;
+
+    /**
+     * Send/Broadcast a signed transaction
+     * @param txData Signed Transaction to be sent to the network
+     */
+    public abstract SendTransaction(txData: string): Promise<any>;
+
+    /**
+     * This function will return a list of transaction of the account, this function is useful for UI
+     * @param accountNumber Account number
+     * @param startIndex Transaction start index
+     * @param numberOfTransactions Number of transaction
+     */
+    public abstract GetTransactionViewList(accountNumber: number, startIndex: number, numberOfTransactions: number ): Promise<any>;
+
+    /**
      * Address validator
      * @param address address to be checked
      */
