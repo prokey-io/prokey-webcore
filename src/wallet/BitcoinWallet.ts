@@ -860,15 +860,19 @@ export class BitcoinWallet extends BaseWallet {
         }
 
         tx.refTxs = new Array<RefTransaction>();
-
+        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
+        
         prevTxs.forEach(prev => {
             let ref: RefTransaction = {
                 hash: prev.hash,
-                timestamp: prev.timeStamp,
                 version: prev.version,
                 lock_time: prev.lockTime,
                 bin_outputs: [],
                 inputs: [],
+            }
+
+            if(coinInfo.timestamp == true){
+                ref.timestamp = prev.timeStamp;
             }
 
             prev.inputs.forEach( inp => {

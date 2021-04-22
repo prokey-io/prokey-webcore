@@ -51,6 +51,7 @@ export interface BitcoinBaseCoinInfoModel {
     on_device: string,
     test?: boolean,
     tx_url: string,
+    timestamp: boolean,
 };
 
 export interface EthereumBaseCoinInfoModel {
