@@ -587,13 +587,8 @@ export class BitcoinWallet extends BaseWallet {
             }
         }
 
-        // Seqwit & Overwintered transactions don't need previous hash
-        if(coinInfo.segwit == false || isOverWintered == false) {
-            //! Load previous transactions
-            await this.LoadPrevTx(tx);
-
-            MyConsole.Info("BitcoinWallet::GenerateTransaction->RefTx:", tx);
-        }
+        //! Load previous transactions 
+        await this.LoadPrevTx(tx, coinInfo.timestamp);
 
         //! Set the TX's outputs
         receivers.forEach(o => {
@@ -840,7 +835,7 @@ export class BitcoinWallet extends BaseWallet {
      * Loading previous transaction of each input(s).
      * @param tx Bitcoin transaction 
      */
-    private async LoadPrevTx(tx: BitcoinTx) {
+    private async LoadPrevTx(tx: BitcoinTx, timestamp: boolean) {
         if(tx.inputs == undefined || tx.inputs.length == 0){
             throw new Error("Transaction inputs cannot be null or empty")
         }
@@ -860,8 +855,7 @@ export class BitcoinWallet extends BaseWallet {
         }
 
         tx.refTxs = new Array<RefTransaction>();
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-        
+
         prevTxs.forEach(prev => {
             let ref: RefTransaction = {
                 hash: prev.hash,
@@ -871,7 +865,7 @@ export class BitcoinWallet extends BaseWallet {
                 inputs: [],
             }
 
-            if(coinInfo.timestamp == true){
+            if(timestamp == true){
                 ref.timestamp = prev.timeStamp;
             }
 

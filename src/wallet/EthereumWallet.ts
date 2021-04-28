@@ -371,7 +371,7 @@ export class EthereumWallet extends BaseWallet {
         let coinInfo = this.GetCoinInfo();
 
         let symbol: string = coinInfo.shortcut;
-        if(this._isErc20 == true){
+        if(this._isErc20 == true || symbol.toLocaleLowerCase() == "trin"){
             symbol = "ETH";
         }
 

@@ -112,4 +112,5 @@ export interface OmniCoinInfoModel {
     test?: boolean,
     dust_limit: number,
     tx_url: string,
+    timestamp: boolean,
 }

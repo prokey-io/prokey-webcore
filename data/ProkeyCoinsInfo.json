@@ -115,7 +115,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 50,
+      "priority": 52,
       "on_device": "Dash",
       "test": false,
       "tx_url": "https://blockchair.com/dash/transaction/{hash}",
@@ -147,7 +147,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 61,
+      "priority": 70,
       "on_device": "DigiByte",
       "test": false,
       "tx_url": "https://digiexplorer.info/tx/{hash}",
@@ -275,7 +275,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 588,
+      "priority": 657,
       "on_device": "Namecoin",
       "test": false,
       "tx_url": "https://namecha.in/tx/{hash}",
@@ -307,7 +307,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 53,
+      "priority": 56,
       "on_device": "Zcash",
       "test": false,
       "tx_url": "https://blockchair.com/zcash/transaction/{hash}",
@@ -488,7 +488,7 @@
       "shortcut": "ABT",
       "decimals": 18,
       "name": "ArcBlock Token",
-      "priority": 744
+      "priority": 788
     },
     {
       "chain_id": 1,
@@ -496,7 +496,7 @@
       "shortcut": "ABYSS",
       "decimals": 18,
       "name": "Abyss Token",
-      "priority": 941
+      "priority": 942
     },
     {
       "chain_id": 1,
@@ -576,7 +576,7 @@
       "shortcut": "ADX",
       "decimals": 18,
       "name": "AdEx Network",
-      "priority": 310
+      "priority": 291
     },
     {
       "chain_id": 1,
@@ -600,7 +600,7 @@
       "shortcut": "AE",
       "decimals": 18,
       "name": "aeternity",
-      "priority": 329
+      "priority": 298
     },
     {
       "chain_id": 1,
@@ -608,7 +608,7 @@
       "shortcut": "aETH",
       "decimals": 18,
       "name": "Aave Interest bearing ETH",
-      "priority": 382
+      "priority": 375
     },
     {
       "chain_id": 1,
@@ -632,7 +632,7 @@
       "shortcut": "AGI",
       "decimals": 8,
       "name": "SingularityNET",
-      "priority": 181
+      "priority": 166
     },
     {
       "chain_id": 1,
@@ -664,7 +664,7 @@
       "shortcut": "AION",
       "decimals": 8,
       "name": "Aion",
-      "priority": 301
+      "priority": 281
     },
     {
       "chain_id": 1,
@@ -720,7 +720,7 @@
       "shortcut": "ALEPH",
       "decimals": 18,
       "name": "Aleph.im",
-      "priority": 621
+      "priority": 614
     },
     {
       "chain_id": 1,
@@ -800,7 +800,7 @@
       "shortcut": "AMLT",
       "decimals": 18,
       "name": "AMLT",
-      "priority": 657
+      "priority": 735
     },
     {
       "chain_id": 1,
@@ -832,7 +832,7 @@
       "shortcut": "AMP",
       "decimals": 18,
       "name": "Amp",
-      "priority": 68
+      "priority": 65
     },
     {
       "chain_id": 1,
@@ -840,7 +840,7 @@
       "shortcut": "AMPL",
       "decimals": 9,
       "name": "Ampleforth",
-      "priority": 159
+      "priority": 162
     },
     {
       "chain_id": 1,
@@ -864,7 +864,7 @@
       "shortcut": "ANJ",
       "decimals": 18,
       "name": "Aragon Network Juror",
-      "priority": 853
+      "priority": 871
     },
     {
       "chain_id": 1,
@@ -872,7 +872,7 @@
       "shortcut": "ANT",
       "decimals": 18,
       "name": "Aragon",
-      "priority": 172
+      "priority": 193
     },
     {
       "chain_id": 1,
@@ -880,7 +880,7 @@
       "shortcut": "AOA",
       "decimals": 18,
       "name": "Aurora",
-      "priority": 800
+      "priority": 809
     },
     {
       "chain_id": 1,
@@ -888,7 +888,7 @@
       "shortcut": "API3",
       "decimals": 18,
       "name": "API3",
-      "priority": 271
+      "priority": 286
     },
     {
       "chain_id": 1,
@@ -904,7 +904,7 @@
       "shortcut": "APPC",
       "decimals": 18,
       "name": "AppCoins",
-      "priority": 750
+      "priority": 755
     },
     {
       "chain_id": 1,
@@ -920,7 +920,7 @@
       "shortcut": "AQT",
       "decimals": 18,
       "name": "AlphaQuarkToken",
-      "priority": 524
+      "priority": 550
     },
     {
       "chain_id": 1,
@@ -1024,7 +1024,7 @@
       "shortcut": "AST",
       "decimals": 4,
       "name": "Airswap",
-      "priority": 454
+      "priority": 460
     },
     {
       "chain_id": 1,
@@ -1064,7 +1064,7 @@
       "shortcut": "ATM",
       "decimals": 8,
       "name": "ATMChain",
-      "priority": 100
+      "priority": 852
     },
     {
       "chain_id": 1,
@@ -1112,7 +1112,7 @@
       "shortcut": "AUC",
       "decimals": 18,
       "name": "Auctus",
-      "priority": 996
+      "priority": 100
     },
     {
       "chain_id": 1,
@@ -1152,7 +1152,7 @@
       "shortcut": "AUTO",
       "decimals": 18,
       "name": "Cube",
-      "priority": 462
+      "priority": 473
     },
     {
       "chain_id": 1,
@@ -1160,7 +1160,7 @@
       "shortcut": "AVA",
       "decimals": 4,
       "name": "AVA",
-      "priority": 218
+      "priority": 212
     },
     {
       "chain_id": 1,
@@ -1216,7 +1216,7 @@
       "shortcut": "BAC",
       "decimals": 18,
       "name": "Bowl A Coin",
-      "priority": 890
+      "priority": 840
     },
     {
       "chain_id": 1,
@@ -1224,7 +1224,7 @@
       "shortcut": "BAL",
       "decimals": 18,
       "name": "Balancer",
-      "priority": 125
+      "priority": 130
     },
     {
       "chain_id": 1,
@@ -1264,7 +1264,7 @@
       "shortcut": "BAR",
       "decimals": 18,
       "name": "Billionaire Ambition",
-      "priority": 319
+      "priority": 343
     },
     {
       "chain_id": 1,
@@ -1272,7 +1272,7 @@
       "shortcut": "BAS",
       "decimals": 8,
       "name": "BitAsean",
-      "priority": 903
+      "priority": 936
     },
     {
       "chain_id": 1,
@@ -1288,7 +1288,7 @@
       "shortcut": "BAX",
       "decimals": 18,
       "name": "BABB",
-      "priority": 787
+      "priority": 706
     },
     {
       "chain_id": 1,
@@ -1464,7 +1464,7 @@
       "shortcut": "BETR",
       "decimals": 18,
       "name": "BetterBetting",
-      "priority": 100
+      "priority": 743
     },
     {
       "chain_id": 1,
@@ -1480,7 +1480,7 @@
       "shortcut": "BFT",
       "decimals": 18,
       "name": "BnkToTheFuture",
-      "priority": 777
+      "priority": 795
     },
     {
       "chain_id": 1,
@@ -1544,7 +1544,7 @@
       "shortcut": "BIX",
       "decimals": 18,
       "name": "Bibox Token",
-      "priority": 780
+      "priority": 813
     },
     {
       "chain_id": 1,
@@ -1632,7 +1632,7 @@
       "shortcut": "BLZ",
       "decimals": 18,
       "name": "Bluzelle",
-      "priority": 368
+      "priority": 359
     },
     {
       "chain_id": 1,
@@ -1640,7 +1640,7 @@
       "shortcut": "BMC",
       "decimals": 8,
       "name": "Blackmoon Crypto BMC Token",
-      "priority": 100
+      "priority": 925
     },
     {
       "chain_id": 1,
@@ -1656,7 +1656,7 @@
       "shortcut": "BMX",
       "decimals": 18,
       "name": "BitMart Token",
-      "priority": 716
+      "priority": 711
     },
     {
       "chain_id": 1,
@@ -1696,7 +1696,7 @@
       "shortcut": "BNT",
       "decimals": 18,
       "name": "Bancor Network Token",
-      "priority": 91
+      "priority": 94
     },
     {
       "chain_id": 1,
@@ -1808,7 +1808,7 @@
       "shortcut": "BRD",
       "decimals": 18,
       "name": "Bread",
-      "priority": 725
+      "priority": 733
     },
     {
       "chain_id": 1,
@@ -1944,7 +1944,7 @@
       "shortcut": "BTM",
       "decimals": 8,
       "name": "Bytom",
-      "priority": 161
+      "priority": 189
     },
     {
       "chain_id": 1,
@@ -1992,7 +1992,7 @@
       "shortcut": "BTU",
       "decimals": 18,
       "name": "BTU Protocol",
-      "priority": 631
+      "priority": 512
     },
     {
       "chain_id": 1,
@@ -2048,7 +2048,7 @@
       "shortcut": "BZ",
       "decimals": 18,
       "name": "Bit-Z Token",
-      "priority": 508
+      "priority": 510
     },
     {
       "chain_id": 1,
@@ -2072,7 +2072,7 @@
       "shortcut": "C20",
       "decimals": 18,
       "name": "Crypto20s Token",
-      "priority": 304
+      "priority": 313
     },
     {
       "chain_id": 1,
@@ -2152,7 +2152,7 @@
       "shortcut": "cBAT",
       "decimals": 8,
       "name": "Compound Basic Attention Token",
-      "priority": 303
+      "priority": 290
     },
     {
       "chain_id": 1,
@@ -2160,7 +2160,7 @@
       "shortcut": "CBC",
       "decimals": 8,
       "name": "CashBet Coin",
-      "priority": 899
+      "priority": 974
     },
     {
       "chain_id": 1,
@@ -2248,7 +2248,7 @@
       "shortcut": "cDAI",
       "decimals": 8,
       "name": "Compound Dai",
-      "priority": 49
+      "priority": 48
     },
     {
       "chain_id": 1,
@@ -2264,7 +2264,7 @@
       "shortcut": "CDT",
       "decimals": 18,
       "name": "CoinDash",
-      "priority": 737
+      "priority": 700
     },
     {
       "chain_id": 1,
@@ -2280,7 +2280,7 @@
       "shortcut": "CELR",
       "decimals": 18,
       "name": "CelerToken",
-      "priority": 195
+      "priority": 172
     },
     {
       "chain_id": 1,
@@ -2312,7 +2312,7 @@
       "shortcut": "cETH",
       "decimals": 8,
       "name": "Compound Ether",
-      "priority": 35
+      "priority": 39
     },
     {
       "chain_id": 1,
@@ -2328,7 +2328,7 @@
       "shortcut": "CFI",
       "decimals": 18,
       "name": "Cofound.it",
-      "priority": 487
+      "priority": 451
     },
     {
       "chain_id": 1,
@@ -2368,7 +2368,7 @@
       "shortcut": "CHSB",
       "decimals": 8,
       "name": "SwissBorg",
-      "priority": 97
+      "priority": 103
     },
     {
       "chain_id": 1,
@@ -2488,7 +2488,7 @@
       "shortcut": "CMT",
       "decimals": 18,
       "name": "CyberMiles Token",
-      "priority": 779
+      "priority": 801
     },
     {
       "chain_id": 1,
@@ -2504,7 +2504,7 @@
       "shortcut": "CND",
       "decimals": 18,
       "name": "Cindicator",
-      "priority": 467
+      "priority": 463
     },
     {
       "chain_id": 1,
@@ -2512,7 +2512,7 @@
       "shortcut": "CNN",
       "decimals": 18,
       "name": "Content Neutrality Network",
-      "priority": 951
+      "priority": 981
     },
     {
       "chain_id": 1,
@@ -2568,7 +2568,7 @@
       "shortcut": "COMP",
       "decimals": 18,
       "name": "Compound",
-      "priority": 51
+      "priority": 49
     },
     {
       "chain_id": 1,
@@ -2592,7 +2592,7 @@
       "shortcut": "COV",
       "decimals": 18,
       "name": "Covesting",
-      "priority": 943
+      "priority": 952
     },
     {
       "chain_id": 1,
@@ -2696,7 +2696,7 @@
       "shortcut": "cREP",
       "decimals": 8,
       "name": "Compound Augur",
-      "priority": 909
+      "priority": 100
     },
     {
       "chain_id": 1,
@@ -2720,7 +2720,7 @@
       "shortcut": "CRPT",
       "decimals": 18,
       "name": "CrypteriumToken",
-      "priority": 656
+      "priority": 695
     },
     {
       "chain_id": 1,
@@ -2744,7 +2744,7 @@
       "shortcut": "CS",
       "decimals": 6,
       "name": "Credits",
-      "priority": 868
+      "priority": 849
     },
     {
       "chain_id": 1,
@@ -2816,7 +2816,7 @@
       "shortcut": "CTSI",
       "decimals": 18,
       "name": "Cartesi Token",
-      "priority": 267
+      "priority": 262
     },
     {
       "chain_id": 1,
@@ -2840,7 +2840,7 @@
       "shortcut": "CUR8",
       "decimals": 8,
       "name": "Curate",
-      "priority": 630
+      "priority": 690
     },
     {
       "chain_id": 1,
@@ -2848,7 +2848,7 @@
       "shortcut": "CURE",
       "decimals": 8,
       "name": "Curate",
-      "priority": 630
+      "priority": 690
     },
     {
       "chain_id": 1,
@@ -2856,7 +2856,7 @@
       "shortcut": "cUSDC",
       "decimals": 8,
       "name": "Compound USDCoin",
-      "priority": 36
+      "priority": 38
     },
     {
       "chain_id": 1,
@@ -2864,7 +2864,7 @@
       "shortcut": "cV",
       "decimals": 18,
       "name": "carVertical",
-      "priority": 1000
+      "priority": 890
     },
     {
       "chain_id": 1,
@@ -2872,7 +2872,7 @@
       "shortcut": "CVC",
       "decimals": 8,
       "name": "Civic",
-      "priority": 168
+      "priority": 178
     },
     {
       "chain_id": 1,
@@ -2920,7 +2920,7 @@
       "shortcut": "CXO",
       "decimals": 18,
       "name": "CargoX",
-      "priority": 603
+      "priority": 636
     },
     {
       "chain_id": 1,
@@ -2960,7 +2960,7 @@
       "shortcut": "cZRX",
       "decimals": 8,
       "name": "Compound 0x",
-      "priority": 263
+      "priority": 252
     },
     {
       "chain_id": 1,
@@ -2992,7 +2992,7 @@
       "shortcut": "DAI",
       "decimals": 18,
       "name": "Dai Stablecoin v2.0",
-      "priority": 43
+      "priority": 46
     },
     {
       "chain_id": 1,
@@ -3016,7 +3016,7 @@
       "shortcut": "DAO",
       "decimals": 1,
       "name": "DAO",
-      "priority": 293
+      "priority": 311
     },
     {
       "chain_id": 1,
@@ -3032,7 +3032,7 @@
       "shortcut": "DATA",
       "decimals": 18,
       "name": "Streamr DATAcoin",
-      "priority": 369
+      "priority": 366
     },
     {
       "chain_id": 1,
@@ -3128,7 +3128,7 @@
       "shortcut": "DCN",
       "decimals": 0,
       "name": "Dentacoin",
-      "priority": 437
+      "priority": 477
     },
     {
       "chain_id": 1,
@@ -3160,7 +3160,7 @@
       "shortcut": "DEC",
       "decimals": 8,
       "name": "Token Decentralized Ecosystem Coorperation",
-      "priority": 766
+      "priority": 763
     },
     {
       "chain_id": 1,
@@ -3184,7 +3184,7 @@
       "shortcut": "DENT",
       "decimals": 8,
       "name": "DENT",
-      "priority": 113
+      "priority": 98
     },
     {
       "chain_id": 1,
@@ -3216,7 +3216,7 @@
       "shortcut": "DF",
       "decimals": 18,
       "name": "dForce Platform Token",
-      "priority": 450
+      "priority": 449
     },
     {
       "chain_id": 1,
@@ -3224,7 +3224,7 @@
       "shortcut": "DGD",
       "decimals": 9,
       "name": "Digix DAO",
-      "priority": 547
+      "priority": 540
     },
     {
       "chain_id": 1,
@@ -3272,7 +3272,7 @@
       "shortcut": "DIP",
       "decimals": 18,
       "name": "Decentralized Insurance Protocol",
-      "priority": 522
+      "priority": 584
     },
     {
       "chain_id": 1,
@@ -3400,7 +3400,7 @@
       "shortcut": "DLT",
       "decimals": 18,
       "name": "Agrello",
-      "priority": 863
+      "priority": 891
     },
     {
       "chain_id": 1,
@@ -3456,7 +3456,7 @@
       "shortcut": "DMT",
       "decimals": 8,
       "name": "DMarket Token",
-      "priority": 473
+      "priority": 468
     },
     {
       "chain_id": 1,
@@ -3472,7 +3472,7 @@
       "shortcut": "DNT",
       "decimals": 18,
       "name": "District0x Network Token",
-      "priority": 230
+      "priority": 246
     },
     {
       "chain_id": 1,
@@ -3488,7 +3488,7 @@
       "shortcut": "DOCK",
       "decimals": 18,
       "name": "Dock",
-      "priority": 537
+      "priority": 489
     },
     {
       "chain_id": 1,
@@ -3512,7 +3512,7 @@
       "shortcut": "DOV",
       "decimals": 18,
       "name": "Dovu",
-      "priority": 738
+      "priority": 853
     },
     {
       "chain_id": 1,
@@ -3528,7 +3528,7 @@
       "shortcut": "DRC",
       "decimals": 18,
       "name": "Dmaarc",
-      "priority": 733
+      "priority": 605
     },
     {
       "chain_id": 1,
@@ -3544,7 +3544,7 @@
       "shortcut": "DRGN",
       "decimals": 18,
       "name": "Dragon",
-      "priority": 391
+      "priority": 368
     },
     {
       "chain_id": 1,
@@ -3960,7 +3960,7 @@
       "shortcut": "EDR",
       "decimals": 18,
       "name": "Endor Protocol Token",
-      "priority": 549
+      "priority": 541
     },
     {
       "chain_id": 1,
@@ -3992,7 +3992,7 @@
       "shortcut": "EGG",
       "decimals": 18,
       "name": "Egg Token",
-      "priority": 704
+      "priority": 769
     },
     {
       "chain_id": 1,
@@ -4000,7 +4000,7 @@
       "shortcut": "EGT",
       "decimals": 18,
       "name": "Egretia Token",
-      "priority": 782
+      "priority": 838
     },
     {
       "chain_id": 1,
@@ -4048,7 +4048,7 @@
       "shortcut": "ELF",
       "decimals": 18,
       "name": "ELF Token",
-      "priority": 257
+      "priority": 242
     },
     {
       "chain_id": 1,
@@ -4128,7 +4128,7 @@
       "shortcut": "ENG",
       "decimals": 8,
       "name": "Enigma",
-      "priority": 827
+      "priority": 100
     },
     {
       "chain_id": 1,
@@ -4144,7 +4144,7 @@
       "shortcut": "ENJ",
       "decimals": 18,
       "name": "ENJIN",
-      "priority": 59
+      "priority": 60
     },
     {
       "chain_id": 1,
@@ -4152,7 +4152,7 @@
       "shortcut": "ENQ",
       "decimals": 10,
       "name": "Enecuum",
-      "priority": 623
+      "priority": 672
     },
     {
       "chain_id": 1,
@@ -4320,7 +4320,7 @@
       "shortcut": "EURS",
       "decimals": 2,
       "name": "STASIS EURS",
-      "priority": 625
+      "priority": 606
     },
     {
       "chain_id": 1,
@@ -4392,7 +4392,7 @@
       "shortcut": "EVX",
       "decimals": 4,
       "name": "EVX Token",
-      "priority": 719
+      "priority": 729
     },
     {
       "chain_id": 1,
@@ -4520,7 +4520,7 @@
       "shortcut": "FARM",
       "decimals": 18,
       "name": "Farm Partner",
-      "priority": 326
+      "priority": 381
     },
     {
       "chain_id": 1,
@@ -4624,7 +4624,7 @@
       "shortcut": "FLX",
       "decimals": 18,
       "name": "BitFlux",
-      "priority": 632
+      "priority": 703
     },
     {
       "chain_id": 1,
@@ -4672,7 +4672,7 @@
       "shortcut": "FOAM",
       "decimals": 18,
       "name": "FOAM Token",
-      "priority": 723
+      "priority": 825
     },
     {
       "chain_id": 1,
@@ -4760,7 +4760,7 @@
       "shortcut": "FSN",
       "decimals": 18,
       "name": "Fusion",
-      "priority": 416
+      "priority": 450
     },
     {
       "chain_id": 1,
@@ -4792,7 +4792,7 @@
       "shortcut": "FTM",
       "decimals": 18,
       "name": "Fantom Token",
-      "priority": 104
+      "priority": 92
     },
     {
       "chain_id": 1,
@@ -4808,7 +4808,7 @@
       "shortcut": "FTT",
       "decimals": 18,
       "name": "FarmaTrust Token",
-      "priority": 34
+      "priority": 35
     },
     {
       "chain_id": 1,
@@ -4832,7 +4832,7 @@
       "shortcut": "FUEL",
       "decimals": 18,
       "name": "Etherparty FUEL",
-      "priority": 809
+      "priority": 842
     },
     {
       "chain_id": 1,
@@ -4840,7 +4840,7 @@
       "shortcut": "FUN",
       "decimals": 8,
       "name": "Funfair",
-      "priority": 169
+      "priority": 182
     },
     {
       "chain_id": 1,
@@ -4904,7 +4904,7 @@
       "shortcut": "GAM",
       "decimals": 8,
       "name": "Gambit",
-      "priority": 686
+      "priority": 747
     },
     {
       "chain_id": 1,
@@ -5024,7 +5024,7 @@
       "shortcut": "GEN",
       "decimals": 18,
       "name": "DAOstack",
-      "priority": 942
+      "priority": 987
     },
     {
       "chain_id": 1,
@@ -5040,7 +5040,7 @@
       "shortcut": "GET",
       "decimals": 18,
       "name": "GET Protocol",
-      "priority": 414
+      "priority": 373
     },
     {
       "chain_id": 1,
@@ -5064,7 +5064,7 @@
       "shortcut": "GHX",
       "decimals": 18,
       "name": "GamerCoin",
-      "priority": 100
+      "priority": 196
     },
     {
       "chain_id": 1,
@@ -5112,7 +5112,7 @@
       "shortcut": "GMT",
       "decimals": 18,
       "name": "GMT",
-      "priority": 686
+      "priority": 747
     },
     {
       "chain_id": 1,
@@ -5120,7 +5120,7 @@
       "shortcut": "GNO",
       "decimals": 18,
       "name": "Gnosis",
-      "priority": 201
+      "priority": 200
     },
     {
       "chain_id": 1,
@@ -5136,7 +5136,7 @@
       "shortcut": "GNX",
       "decimals": 9,
       "name": "Genaro Network",
-      "priority": 910
+      "priority": 888
     },
     {
       "chain_id": 1,
@@ -5144,7 +5144,7 @@
       "shortcut": "GNY",
       "decimals": 18,
       "name": "GNY",
-      "priority": 252
+      "priority": 308
     },
     {
       "chain_id": 1,
@@ -5168,7 +5168,7 @@
       "shortcut": "GOVI",
       "decimals": 18,
       "name": "GOVI",
-      "priority": 710
+      "priority": 731
     },
     {
       "chain_id": 1,
@@ -5272,7 +5272,7 @@
       "shortcut": "GTO",
       "decimals": 5,
       "name": "Gifto",
-      "priority": 484
+      "priority": 515
     },
     {
       "chain_id": 1,
@@ -5304,7 +5304,7 @@
       "shortcut": "GUSD",
       "decimals": 2,
       "name": "Gemini dollar",
-      "priority": 328
+      "priority": 362
     },
     {
       "chain_id": 1,
@@ -5312,7 +5312,7 @@
       "shortcut": "GVT",
       "decimals": 18,
       "name": "Genesis Vision",
-      "priority": 601
+      "priority": 613
     },
     {
       "chain_id": 1,
@@ -5320,7 +5320,7 @@
       "shortcut": "GXC",
       "decimals": 10,
       "name": "GXC",
-      "priority": 488
+      "priority": 487
     },
     {
       "chain_id": 1,
@@ -5600,7 +5600,7 @@
       "shortcut": "HPB",
       "decimals": 18,
       "name": "High Performance Blockchain",
-      "priority": 937
+      "priority": 972
     },
     {
       "chain_id": 1,
@@ -5616,7 +5616,7 @@
       "shortcut": "HT",
       "decimals": 18,
       "name": "Huobi Token",
-      "priority": 42
+      "priority": 47
     },
     {
       "chain_id": 1,
@@ -5672,7 +5672,7 @@
       "shortcut": "HVN",
       "decimals": 8,
       "name": "Hiveterminal Token",
-      "priority": 826
+      "priority": 928
     },
     {
       "chain_id": 1,
@@ -5728,7 +5728,7 @@
       "shortcut": "ICE",
       "decimals": 18,
       "name": "ICE",
-      "priority": 692
+      "priority": 841
     },
     {
       "chain_id": 1,
@@ -5768,7 +5768,7 @@
       "shortcut": "ICX",
       "decimals": 18,
       "name": "ICON",
-      "priority": 88
+      "priority": 87
     },
     {
       "chain_id": 1,
@@ -5968,7 +5968,7 @@
       "shortcut": "INT",
       "decimals": 6,
       "name": "Internet Node Token",
-      "priority": 926
+      "priority": 995
     },
     {
       "chain_id": 1,
@@ -5976,7 +5976,7 @@
       "shortcut": "INV",
       "decimals": 8,
       "name": "Invacio",
-      "priority": 666
+      "priority": 721
     },
     {
       "chain_id": 1,
@@ -6000,7 +6000,7 @@
       "shortcut": "IOST",
       "decimals": 18,
       "name": "IOSToken",
-      "priority": 94
+      "priority": 95
     },
     {
       "chain_id": 1,
@@ -6016,7 +6016,7 @@
       "shortcut": "IOTX",
       "decimals": 18,
       "name": "IoTeX Network",
-      "priority": 208
+      "priority": 192
     },
     {
       "chain_id": 1,
@@ -6040,7 +6040,7 @@
       "shortcut": "IQN",
       "decimals": 18,
       "name": "IQeon",
-      "priority": 875
+      "priority": 895
     },
     {
       "chain_id": 1,
@@ -6080,7 +6080,7 @@
       "shortcut": "ITC",
       "decimals": 18,
       "name": "IoT Chain",
-      "priority": 961
+      "priority": 980
     },
     {
       "chain_id": 1,
@@ -6216,7 +6216,7 @@
       "shortcut": "JNT",
       "decimals": 18,
       "name": "Jibrel Network",
-      "priority": 760
+      "priority": 782
     },
     {
       "chain_id": 1,
@@ -6248,7 +6248,7 @@
       "shortcut": "KAN",
       "decimals": 18,
       "name": "BitKan",
-      "priority": 671
+      "priority": 679
     },
     {
       "chain_id": 1,
@@ -6272,7 +6272,7 @@
       "shortcut": "KCS",
       "decimals": 6,
       "name": "KuCoin",
-      "priority": 102
+      "priority": 106
     },
     {
       "chain_id": 1,
@@ -6288,7 +6288,7 @@
       "shortcut": "KIN",
       "decimals": 18,
       "name": "Kin Foundation",
-      "priority": 182
+      "priority": 161
     },
     {
       "chain_id": 1,
@@ -6368,7 +6368,7 @@
       "shortcut": "KRL",
       "decimals": 18,
       "name": "Kryll",
-      "priority": 979
+      "priority": 982
     },
     {
       "chain_id": 1,
@@ -6424,7 +6424,7 @@
       "shortcut": "LA",
       "decimals": 18,
       "name": "LATOKEN",
-      "priority": 856
+      "priority": 898
     },
     {
       "chain_id": 1,
@@ -6440,7 +6440,7 @@
       "shortcut": "LAMB",
       "decimals": 18,
       "name": "Lambda",
-      "priority": 279
+      "priority": 288
     },
     {
       "chain_id": 1,
@@ -6496,7 +6496,7 @@
       "shortcut": "LEND",
       "decimals": 18,
       "name": "ETHLend",
-      "priority": 231
+      "priority": 215
     },
     {
       "chain_id": 1,
@@ -6536,7 +6536,7 @@
       "shortcut": "LGO",
       "decimals": 8,
       "name": "LGO Token",
-      "priority": 464
+      "priority": 394
     },
     {
       "chain_id": 1,
@@ -6584,7 +6584,7 @@
       "shortcut": "LIKE",
       "decimals": 18,
       "name": "LikeCoin",
-      "priority": 892
+      "priority": 901
     },
     {
       "chain_id": 1,
@@ -6640,7 +6640,7 @@
       "shortcut": "LOC",
       "decimals": 18,
       "name": "LockChain",
-      "priority": 405
+      "priority": 361
     },
     {
       "chain_id": 1,
@@ -6696,7 +6696,7 @@
       "shortcut": "LPT",
       "decimals": 18,
       "name": "Livepeer Token",
-      "priority": 117
+      "priority": 122
     },
     {
       "chain_id": 1,
@@ -6712,7 +6712,7 @@
       "shortcut": "LRC",
       "decimals": 18,
       "name": "Loopring",
-      "priority": 120
+      "priority": 126
     },
     {
       "chain_id": 1,
@@ -6720,7 +6720,7 @@
       "shortcut": "[deprecated] LRC (old)",
       "decimals": 18,
       "name": "Loopring",
-      "priority": 120
+      "priority": 126
     },
     {
       "chain_id": 1,
@@ -6800,7 +6800,7 @@
       "shortcut": "MAN",
       "decimals": 18,
       "name": "Matrix AI Network",
-      "priority": 841
+      "priority": 855
     },
     {
       "chain_id": 1,
@@ -6808,7 +6808,7 @@
       "shortcut": "MANA",
       "decimals": 18,
       "name": "Decentraland MANA",
-      "priority": 73
+      "priority": 72
     },
     {
       "chain_id": 1,
@@ -6832,7 +6832,7 @@
       "shortcut": "MATIC",
       "decimals": 18,
       "name": "Matic Token",
-      "priority": 64
+      "priority": 36
     },
     {
       "chain_id": 1,
@@ -6880,7 +6880,7 @@
       "shortcut": "MDA",
       "decimals": 18,
       "name": "Moeda Loyalty Points",
-      "priority": 722
+      "priority": 740
     },
     {
       "chain_id": 1,
@@ -6888,7 +6888,7 @@
       "shortcut": "MDT",
       "decimals": 18,
       "name": "Measurable Data Token",
-      "priority": 622
+      "priority": 607
     },
     {
       "chain_id": 1,
@@ -6896,7 +6896,7 @@
       "shortcut": "MDX",
       "decimals": 18,
       "name": "Mandala Exchange Token",
-      "priority": 158
+      "priority": 176
     },
     {
       "chain_id": 1,
@@ -6912,7 +6912,7 @@
       "shortcut": "MEME",
       "decimals": 8,
       "name": "Meme",
-      "priority": 550
+      "priority": 627
     },
     {
       "chain_id": 1,
@@ -6936,7 +6936,7 @@
       "shortcut": "MET",
       "decimals": 18,
       "name": "Metronome",
-      "priority": 614
+      "priority": 575
     },
     {
       "chain_id": 1,
@@ -6952,7 +6952,7 @@
       "shortcut": "MFG",
       "decimals": 18,
       "name": "SyncFab Smart Manufacturing Blockchain",
-      "priority": 925
+      "priority": 961
     },
     {
       "chain_id": 1,
@@ -6960,7 +6960,7 @@
       "shortcut": "MFT",
       "decimals": 18,
       "name": "Mainframe Token",
-      "priority": 288
+      "priority": 279
     },
     {
       "chain_id": 1,
@@ -7016,7 +7016,7 @@
       "shortcut": "MITH",
       "decimals": 18,
       "name": "Mithril",
-      "priority": 491
+      "priority": 443
     },
     {
       "chain_id": 1,
@@ -7024,7 +7024,7 @@
       "shortcut": "MITX",
       "decimals": 18,
       "name": "Morpheus Infrastructure Token",
-      "priority": 553
+      "priority": 557
     },
     {
       "chain_id": 1,
@@ -7032,7 +7032,7 @@
       "shortcut": "MKR",
       "decimals": 18,
       "name": "MakerDAO",
-      "priority": 38
+      "priority": 41
     },
     {
       "chain_id": 1,
@@ -7096,7 +7096,7 @@
       "shortcut": "MOC",
       "decimals": 18,
       "name": "Moss Coin",
-      "priority": 566
+      "priority": 519
     },
     {
       "chain_id": 1,
@@ -7104,7 +7104,7 @@
       "shortcut": "MOD",
       "decimals": 0,
       "name": "Modum",
-      "priority": 100
+      "priority": 678
     },
     {
       "chain_id": 1,
@@ -7176,7 +7176,7 @@
       "shortcut": "MTA",
       "decimals": 18,
       "name": "mStable Meta",
-      "priority": 447
+      "priority": 454
     },
     {
       "chain_id": 1,
@@ -7184,7 +7184,7 @@
       "shortcut": "MTH",
       "decimals": 5,
       "name": "Monetha",
-      "priority": 894
+      "priority": 873
     },
     {
       "chain_id": 1,
@@ -7192,7 +7192,7 @@
       "shortcut": "MTL",
       "decimals": 8,
       "name": "Metal",
-      "priority": 204
+      "priority": 222
     },
     {
       "chain_id": 1,
@@ -7224,7 +7224,7 @@
       "shortcut": "MTX",
       "decimals": 18,
       "name": "Matryx",
-      "priority": 100
+      "priority": 906
     },
     {
       "chain_id": 1,
@@ -7264,7 +7264,7 @@
       "shortcut": "MWAT",
       "decimals": 18,
       "name": "RED MWAT",
-      "priority": 991
+      "priority": 988
     },
     {
       "chain_id": 1,
@@ -7280,7 +7280,7 @@
       "shortcut": "MYST",
       "decimals": 18,
       "name": "Mysterium",
-      "priority": 849
+      "priority": 856
     },
     {
       "chain_id": 1,
@@ -7288,7 +7288,7 @@
       "shortcut": "[deprecated] MYST",
       "decimals": 8,
       "name": "Mysterium",
-      "priority": 849
+      "priority": 856
     },
     {
       "chain_id": 1,
@@ -7360,7 +7360,7 @@
       "shortcut": "NCASH",
       "decimals": 18,
       "name": "Nucleus Vision",
-      "priority": 829
+      "priority": 826
     },
     {
       "chain_id": 1,
@@ -7376,7 +7376,7 @@
       "shortcut": "NCT",
       "decimals": 18,
       "name": "Nectar",
-      "priority": 854
+      "priority": 910
     },
     {
       "chain_id": 1,
@@ -7392,7 +7392,7 @@
       "shortcut": "NDX",
       "decimals": 18,
       "name": "nDEX",
-      "priority": 648
+      "priority": 712
     },
     {
       "chain_id": 1,
@@ -7440,7 +7440,7 @@
       "shortcut": "NEXO",
       "decimals": 18,
       "name": "Nexo",
-      "priority": 65
+      "priority": 66
     },
     {
       "chain_id": 1,
@@ -7464,7 +7464,7 @@
       "shortcut": "NKN",
       "decimals": 18,
       "name": "NKN",
-      "priority": 148
+      "priority": 151
     },
     {
       "chain_id": 1,
@@ -7480,7 +7480,7 @@
       "shortcut": "NMR",
       "decimals": 18,
       "name": "Numerai",
-      "priority": 153
+      "priority": 170
     },
     {
       "chain_id": 1,
@@ -7544,7 +7544,7 @@
       "shortcut": "NPXS",
       "decimals": 18,
       "name": "Pundi X Token",
-      "priority": 108
+      "priority": 114
     },
     {
       "chain_id": 1,
@@ -7576,7 +7576,7 @@
       "shortcut": "NU",
       "decimals": 18,
       "name": "NuCypher Network",
-      "priority": 290
+      "priority": 285
     },
     {
       "chain_id": 1,
@@ -7600,7 +7600,7 @@
       "shortcut": "NULS",
       "decimals": 18,
       "name": "NULS",
-      "priority": 325
+      "priority": 330
     },
     {
       "chain_id": 1,
@@ -7648,7 +7648,7 @@
       "shortcut": "OAX",
       "decimals": 18,
       "name": "OAX",
-      "priority": 753
+      "priority": 797
     },
     {
       "chain_id": 1,
@@ -7656,7 +7656,7 @@
       "shortcut": "OCC",
       "decimals": 18,
       "name": "Original Crypto Coin",
-      "priority": 545
+      "priority": 624
     },
     {
       "chain_id": 1,
@@ -7664,7 +7664,7 @@
       "shortcut": "OCEAN",
       "decimals": 18,
       "name": "Ocean Token",
-      "priority": 133
+      "priority": 132
     },
     {
       "chain_id": 1,
@@ -7680,7 +7680,7 @@
       "shortcut": "OCN",
       "decimals": 18,
       "name": "Odyssey",
-      "priority": 802
+      "priority": 817
     },
     {
       "chain_id": 1,
@@ -7688,7 +7688,7 @@
       "shortcut": "OCTO",
       "decimals": 18,
       "name": "OctoFi",
-      "priority": 772
+      "priority": 789
     },
     {
       "chain_id": 1,
@@ -7696,7 +7696,7 @@
       "shortcut": "ODE",
       "decimals": 18,
       "name": "ODEM Token",
-      "priority": 100
+      "priority": 879
     },
     {
       "chain_id": 1,
@@ -7712,7 +7712,7 @@
       "shortcut": "OGN",
       "decimals": 18,
       "name": "OriginToken",
-      "priority": 149
+      "priority": 157
     },
     {
       "chain_id": 1,
@@ -7736,7 +7736,7 @@
       "shortcut": "OKB",
       "decimals": 18,
       "name": "OKB",
-      "priority": 30
+      "priority": 34
     },
     {
       "chain_id": 1,
@@ -7776,7 +7776,7 @@
       "shortcut": "OMG",
       "decimals": 18,
       "name": "OmiseGO",
-      "priority": 98
+      "priority": 105
     },
     {
       "chain_id": 1,
@@ -7800,7 +7800,7 @@
       "shortcut": "ONE",
       "decimals": 18,
       "name": "Menlo One",
-      "priority": 96
+      "priority": 90
     },
     {
       "chain_id": 1,
@@ -7840,7 +7840,7 @@
       "shortcut": "OPQ",
       "decimals": 18,
       "name": "Opacity",
-      "priority": 688
+      "priority": 718
     },
     {
       "chain_id": 1,
@@ -7872,7 +7872,7 @@
       "shortcut": "ORBS",
       "decimals": 18,
       "name": "Orbs",
-      "priority": 175
+      "priority": 191
     },
     {
       "chain_id": 1,
@@ -7896,7 +7896,7 @@
       "shortcut": "ORN",
       "decimals": 8,
       "name": "Orion Protocol",
-      "priority": 177
+      "priority": 179
     },
     {
       "chain_id": 1,
@@ -7928,7 +7928,7 @@
       "shortcut": "OST",
       "decimals": 18,
       "name": "Simple Token OST",
-      "priority": 783
+      "priority": 776
     },
     {
       "chain_id": 1,
@@ -8008,7 +8008,7 @@
       "shortcut": "PAI",
       "decimals": 18,
       "name": "PCHAIN",
-      "priority": 636
+      "priority": 664
     },
     {
       "chain_id": 1,
@@ -8072,7 +8072,7 @@
       "shortcut": "PAX",
       "decimals": 18,
       "name": "Paxos Standard (PAX)",
-      "priority": 99
+      "priority": 102
     },
     {
       "chain_id": 1,
@@ -8080,7 +8080,7 @@
       "shortcut": "PAXG",
       "decimals": 18,
       "name": "Paxos Gold",
-      "priority": 356
+      "priority": 374
     },
     {
       "chain_id": 1,
@@ -8088,7 +8088,7 @@
       "shortcut": "PAY",
       "decimals": 18,
       "name": "TenX",
-      "priority": 922
+      "priority": 921
     },
     {
       "chain_id": 1,
@@ -8216,7 +8216,7 @@
       "shortcut": "PICKLE",
       "decimals": 18,
       "name": "Pickle Finance",
-      "priority": 883
+      "priority": 965
     },
     {
       "chain_id": 1,
@@ -8272,7 +8272,7 @@
       "shortcut": "PLA",
       "decimals": 18,
       "name": "PlayChip",
-      "priority": 974
+      "priority": 996
     },
     {
       "chain_id": 1,
@@ -8296,7 +8296,7 @@
       "shortcut": "PLR",
       "decimals": 18,
       "name": "Pillar Project",
-      "priority": 955
+      "priority": 909
     },
     {
       "chain_id": 1,
@@ -8312,7 +8312,7 @@
       "shortcut": "PLU",
       "decimals": 18,
       "name": "Pluton",
-      "priority": 872
+      "priority": 907
     },
     {
       "chain_id": 1,
@@ -8320,7 +8320,7 @@
       "shortcut": "PMA",
       "decimals": 18,
       "name": "PumaPay",
-      "priority": 917
+      "priority": 943
     },
     {
       "chain_id": 1,
@@ -8336,7 +8336,7 @@
       "shortcut": "PNK",
       "decimals": 18,
       "name": "Pinakion",
-      "priority": 404
+      "priority": 408
     },
     {
       "chain_id": 1,
@@ -8376,7 +8376,7 @@
       "shortcut": "POLY",
       "decimals": 18,
       "name": "Polymath Network",
-      "priority": 193
+      "priority": 183
     },
     {
       "chain_id": 1,
@@ -8384,7 +8384,7 @@
       "shortcut": "POOL",
       "decimals": 8,
       "name": "Stake Pool",
-      "priority": 626
+      "priority": 685
     },
     {
       "chain_id": 1,
@@ -8408,7 +8408,7 @@
       "shortcut": "POWR",
       "decimals": 6,
       "name": "PowerLedger",
-      "priority": 272
+      "priority": 268
     },
     {
       "chain_id": 1,
@@ -8424,7 +8424,7 @@
       "shortcut": "PPT",
       "decimals": 8,
       "name": "Populous",
-      "priority": 269
+      "priority": 270
     },
     {
       "chain_id": 1,
@@ -8432,7 +8432,7 @@
       "shortcut": "PRE",
       "decimals": 18,
       "name": "Presearch",
-      "priority": 676
+      "priority": 701
     },
     {
       "chain_id": 1,
@@ -8472,7 +8472,7 @@
       "shortcut": "PROPS",
       "decimals": 18,
       "name": "Props",
-      "priority": 799
+      "priority": 808
     },
     {
       "chain_id": 1,
@@ -8616,7 +8616,7 @@
       "shortcut": "QASH",
       "decimals": 6,
       "name": "QASH",
-      "priority": 637
+      "priority": 633
     },
     {
       "chain_id": 1,
@@ -8656,7 +8656,7 @@
       "shortcut": "QKC",
       "decimals": 18,
       "name": "QuarkChain",
-      "priority": 245
+      "priority": 256
     },
     {
       "chain_id": 1,
@@ -8664,7 +8664,7 @@
       "shortcut": "QNT",
       "decimals": 18,
       "name": "Quant",
-      "priority": 134
+      "priority": 141
     },
     {
       "chain_id": 1,
@@ -8680,7 +8680,7 @@
       "shortcut": "QRL",
       "decimals": 8,
       "name": "QRL",
-      "priority": 609
+      "priority": 621
     },
     {
       "chain_id": 1,
@@ -8688,7 +8688,7 @@
       "shortcut": "QSP",
       "decimals": 18,
       "name": "Quantstamp Token",
-      "priority": 511
+      "priority": 506
     },
     {
       "chain_id": 1,
@@ -8704,7 +8704,7 @@
       "shortcut": "QTUM",
       "decimals": 18,
       "name": "Qtum",
-      "priority": 76
+      "priority": 79
     },
     {
       "chain_id": 1,
@@ -8776,7 +8776,7 @@
       "shortcut": "RCN",
       "decimals": 18,
       "name": "Ripio Credit Network",
-      "priority": 472
+      "priority": 488
     },
     {
       "chain_id": 1,
@@ -8784,7 +8784,7 @@
       "shortcut": "RDN",
       "decimals": 18,
       "name": "Raiden Network",
-      "priority": 481
+      "priority": 470
     },
     {
       "chain_id": 1,
@@ -8840,7 +8840,7 @@
       "shortcut": "REEF",
       "decimals": 18,
       "name": "Reef Finance",
-      "priority": 152
+      "priority": 146
     },
     {
       "chain_id": 1,
@@ -8872,7 +8872,7 @@
       "shortcut": "REN",
       "decimals": 18,
       "name": "Republic Token",
-      "priority": 116
+      "priority": 117
     },
     {
       "chain_id": 1,
@@ -8880,7 +8880,7 @@
       "shortcut": "REP",
       "decimals": 18,
       "name": "Augur",
-      "priority": 226
+      "priority": 232
     },
     {
       "chain_id": 1,
@@ -8888,7 +8888,7 @@
       "shortcut": "[deprecated] REP",
       "decimals": 18,
       "name": "Augur",
-      "priority": 226
+      "priority": 232
     },
     {
       "chain_id": 1,
@@ -8904,7 +8904,7 @@
       "shortcut": "REQ",
       "decimals": 18,
       "name": "Request Network",
-      "priority": 359
+      "priority": 382
     },
     {
       "chain_id": 1,
@@ -8936,7 +8936,7 @@
       "shortcut": "RFR",
       "decimals": 4,
       "name": "Refereum",
-      "priority": 362
+      "priority": 358
     },
     {
       "chain_id": 1,
@@ -8992,7 +8992,7 @@
       "shortcut": "RLC",
       "decimals": 9,
       "name": "IEx.ec",
-      "priority": 270
+      "priority": 250
     },
     {
       "chain_id": 1,
@@ -9040,7 +9040,7 @@
       "shortcut": "RNDR",
       "decimals": 18,
       "name": "Render Token",
-      "priority": 274
+      "priority": 299
     },
     {
       "chain_id": 1,
@@ -9104,7 +9104,7 @@
       "shortcut": "ROOBEE",
       "decimals": 18,
       "name": "ROOBEE",
-      "priority": 891
+      "priority": 811
     },
     {
       "chain_id": 1,
@@ -9128,7 +9128,7 @@
       "shortcut": "RPL",
       "decimals": 18,
       "name": "Rocket Pool",
-      "priority": 196
+      "priority": 206
     },
     {
       "chain_id": 1,
@@ -9168,7 +9168,7 @@
       "shortcut": "RUFF",
       "decimals": 18,
       "name": "Ruff",
-      "priority": 771
+      "priority": 744
     },
     {
       "chain_id": 1,
@@ -9176,7 +9176,7 @@
       "shortcut": "RUNE",
       "decimals": 18,
       "name": "Rune",
-      "priority": 48
+      "priority": 45
     },
     {
       "chain_id": 1,
@@ -9232,7 +9232,7 @@
       "shortcut": "SAI",
       "decimals": 18,
       "name": "Dai Stablecoin v1.0",
-      "priority": 576
+      "priority": 544
     },
     {
       "chain_id": 1,
@@ -9240,7 +9240,7 @@
       "shortcut": "SALT",
       "decimals": 8,
       "name": "Salt Lending Token",
-      "priority": 568
+      "priority": 615
     },
     {
       "chain_id": 1,
@@ -9248,7 +9248,7 @@
       "shortcut": "SAN",
       "decimals": 18,
       "name": "Santiment",
-      "priority": 808
+      "priority": 844
     },
     {
       "chain_id": 1,
@@ -9272,7 +9272,7 @@
       "shortcut": "sBTC",
       "decimals": 18,
       "name": "Synth sBTC",
-      "priority": 381
+      "priority": 422
     },
     {
       "chain_id": 1,
@@ -9392,7 +9392,7 @@
       "shortcut": "sEUR",
       "decimals": 18,
       "name": "Synth sEUR",
-      "priority": 747
+      "priority": 618
     },
     {
       "chain_id": 1,
@@ -9576,7 +9576,7 @@
       "shortcut": "sLINK",
       "decimals": 18,
       "name": "Synth sLINK",
-      "priority": 523
+      "priority": 525
     },
     {
       "chain_id": 1,
@@ -9584,7 +9584,7 @@
       "shortcut": "SLT",
       "decimals": 3,
       "name": "Smartlands",
-      "priority": 420
+      "priority": 378
     },
     {
       "chain_id": 1,
@@ -9656,7 +9656,7 @@
       "shortcut": "SNGLS",
       "decimals": 0,
       "name": "SingularDTV",
-      "priority": 757
+      "priority": 785
     },
     {
       "chain_id": 1,
@@ -9672,7 +9672,7 @@
       "shortcut": "SNM",
       "decimals": 18,
       "name": "SONM",
-      "priority": 640
+      "priority": 724
     },
     {
       "chain_id": 1,
@@ -9688,7 +9688,7 @@
       "shortcut": "SNT",
       "decimals": 18,
       "name": "Status Network Token",
-      "priority": 122
+      "priority": 120
     },
     {
       "chain_id": 1,
@@ -9712,7 +9712,7 @@
       "shortcut": "SOC",
       "decimals": 18,
       "name": "All Sports",
-      "priority": 702
+      "priority": 708
     },
     {
       "chain_id": 1,
@@ -9720,7 +9720,7 @@
       "shortcut": "SOCKS",
       "decimals": 18,
       "name": "Unisocks Edition 0",
-      "priority": 709
+      "priority": 799
     },
     {
       "chain_id": 1,
@@ -9728,7 +9728,7 @@
       "shortcut": "SOL",
       "decimals": 6,
       "name": "Sola Token",
-      "priority": 18
+      "priority": 15
     },
     {
       "chain_id": 1,
@@ -9744,7 +9744,7 @@
       "shortcut": "SOUL",
       "decimals": 18,
       "name": "CryptoSoul",
-      "priority": 500
+      "priority": 527
     },
     {
       "chain_id": 1,
@@ -9752,7 +9752,7 @@
       "shortcut": "SPANK",
       "decimals": 18,
       "name": "SpankChain",
-      "priority": 743
+      "priority": 749
     },
     {
       "chain_id": 1,
@@ -9768,7 +9768,7 @@
       "shortcut": "SPARTA",
       "decimals": 4,
       "name": "SPARTA",
-      "priority": 444
+      "priority": 442
     },
     {
       "chain_id": 1,
@@ -9784,7 +9784,7 @@
       "shortcut": "SPC",
       "decimals": 18,
       "name": "SpaceChain",
-      "priority": 886
+      "priority": 857
     },
     {
       "chain_id": 1,
@@ -9864,7 +9864,7 @@
       "shortcut": "SRN",
       "decimals": 18,
       "name": "Sirin Labs",
-      "priority": 954
+      "priority": 931
     },
     {
       "chain_id": 1,
@@ -9968,7 +9968,7 @@
       "shortcut": "STN",
       "decimals": 4,
       "name": "Saturn Network",
-      "priority": 765
+      "priority": 815
     },
     {
       "chain_id": 1,
@@ -9976,7 +9976,7 @@
       "shortcut": "STORJ",
       "decimals": 8,
       "name": "STORJ",
-      "priority": 211
+      "priority": 199
     },
     {
       "chain_id": 1,
@@ -10040,7 +10040,7 @@
       "shortcut": "STX",
       "decimals": 18,
       "name": "StoxToken",
-      "priority": 56
+      "priority": 62
     },
     {
       "chain_id": 1,
@@ -10072,7 +10072,7 @@
       "shortcut": "SUSHI",
       "decimals": 18,
       "name": "SushiToken",
-      "priority": 66
+      "priority": 64
     },
     {
       "chain_id": 1,
@@ -10096,7 +10096,7 @@
       "shortcut": "SWAP",
       "decimals": 18,
       "name": "SWAPS.NETWORK",
-      "priority": 214
+      "priority": 208
     },
     {
       "chain_id": 1,
@@ -10104,7 +10104,7 @@
       "shortcut": "SWFTC",
       "decimals": 8,
       "name": "SwftCoin",
-      "priority": 556
+      "priority": 583
     },
     {
       "chain_id": 1,
@@ -10112,7 +10112,7 @@
       "shortcut": "SWM",
       "decimals": 18,
       "name": "Swarm Fund Token",
-      "priority": 790
+      "priority": 868
     },
     {
       "chain_id": 1,
@@ -10224,7 +10224,7 @@
       "shortcut": "TAU",
       "decimals": 18,
       "name": "Lamden Tau",
-      "priority": 731
+      "priority": 640
     },
     {
       "chain_id": 1,
@@ -10272,7 +10272,7 @@
       "shortcut": "TBTC",
       "decimals": 18,
       "name": "TBTC",
-      "priority": 448
+      "priority": 472
     },
     {
       "chain_id": 1,
@@ -10328,7 +10328,7 @@
       "shortcut": "TCT",
       "decimals": 18,
       "name": "The Crypto Tech",
-      "priority": 745
+      "priority": 723
     },
     {
       "chain_id": 1,
@@ -10368,7 +10368,7 @@
       "shortcut": "TENX",
       "decimals": 18,
       "name": "TENX",
-      "priority": 922
+      "priority": 921
     },
     {
       "chain_id": 1,
@@ -10376,7 +10376,7 @@
       "shortcut": "TFD",
       "decimals": 18,
       "name": "TE-FOOD",
-      "priority": 100
+      "priority": 653
     },
     {
       "chain_id": 1,
@@ -10416,7 +10416,7 @@
       "shortcut": "THETA",
       "decimals": 18,
       "name": "Theta Token",
-      "priority": 16
+      "priority": 17
     },
     {
       "chain_id": 1,
@@ -10512,7 +10512,7 @@
       "shortcut": "TKN",
       "decimals": 8,
       "name": "TokenCard",
-      "priority": 882
+      "priority": 877
     },
     {
       "chain_id": 1,
@@ -10560,7 +10560,7 @@
       "shortcut": "TNB",
       "decimals": 18,
       "name": "Time Bank",
-      "priority": 798
+      "priority": 820
     },
     {
       "chain_id": 1,
@@ -10592,7 +10592,7 @@
       "shortcut": "TOMO",
       "decimals": 18,
       "name": "Tomocoin",
-      "priority": 258
+      "priority": 266
     },
     {
       "chain_id": 1,
@@ -10608,7 +10608,7 @@
       "shortcut": "TRAC",
       "decimals": 18,
       "name": "OriginTrail",
-      "priority": 240
+      "priority": 255
     },
     {
       "chain_id": 1,
@@ -10656,7 +10656,7 @@
       "shortcut": "TRYB",
       "decimals": 6,
       "name": "Bilira",
-      "priority": 530
+      "priority": 775
     },
     {
       "chain_id": 1,
@@ -10712,7 +10712,7 @@
       "shortcut": "TUSD",
       "decimals": 18,
       "name": "TrueUSD",
-      "priority": 184
+      "priority": 185
     },
     {
       "chain_id": 1,
@@ -10760,7 +10760,7 @@
       "shortcut": "UBT",
       "decimals": 8,
       "name": "Unibright",
-      "priority": 188
+      "priority": 214
     },
     {
       "chain_id": 1,
@@ -10952,7 +10952,7 @@
       "shortcut": "UMB",
       "decimals": 18,
       "name": "Umbrella",
-      "priority": 629
+      "priority": 650
     },
     {
       "chain_id": 1,
@@ -12896,7 +12896,7 @@
       "shortcut": "UPP",
       "decimals": 18,
       "name": "Sentinel Protocol",
-      "priority": 507
+      "priority": 517
     },
     {
       "chain_id": 1,
@@ -12904,7 +12904,7 @@
       "shortcut": "UQC",
       "decimals": 18,
       "name": "Uquid Coin",
-      "priority": 213
+      "priority": 211
     },
     {
       "chain_id": 1,
@@ -13008,7 +13008,7 @@
       "shortcut": "USDx",
       "decimals": 18,
       "name": "dForce Stablecoin",
-      "priority": 525
+      "priority": 533
     },
     {
       "chain_id": 1,
@@ -13176,7 +13176,7 @@
       "shortcut": "UTK",
       "decimals": 18,
       "name": "Utrust",
-      "priority": 233
+      "priority": 228
     },
     {
       "chain_id": 1,
@@ -13184,7 +13184,7 @@
       "shortcut": "[deprecated] UTK",
       "decimals": 18,
       "name": "Utrust",
-      "priority": 233
+      "priority": 228
     },
     {
       "chain_id": 1,
@@ -13192,7 +13192,7 @@
       "shortcut": "UTNP",
       "decimals": 18,
       "name": "Universa",
-      "priority": 888
+      "priority": 863
     },
     {
       "chain_id": 1,
@@ -13216,7 +13216,7 @@
       "shortcut": "VALOR",
       "decimals": 18,
       "name": "ValorToken",
-      "priority": 848
+      "priority": 836
     },
     {
       "chain_id": 1,
@@ -13256,7 +13256,7 @@
       "shortcut": "VEE",
       "decimals": 18,
       "name": "BLOCKv",
-      "priority": 858
+      "priority": 800
     },
     {
       "chain_id": 1,
@@ -13280,7 +13280,7 @@
       "shortcut": "VENUS",
       "decimals": 3,
       "name": "VENUS",
-      "priority": 115
+      "priority": 118
     },
     {
       "chain_id": 1,
@@ -13288,7 +13288,7 @@
       "shortcut": "VERI",
       "decimals": 18,
       "name": "Veritaseum",
-      "priority": 561
+      "priority": 558
     },
     {
       "chain_id": 1,
@@ -13304,7 +13304,7 @@
       "shortcut": "VIB",
       "decimals": 18,
       "name": "Viberate",
-      "priority": 785
+      "priority": 806
     },
     {
       "chain_id": 1,
@@ -13328,7 +13328,7 @@
       "shortcut": "VID",
       "decimals": 18,
       "name": "VideoCoin",
-      "priority": 449
+      "priority": 494
     },
     {
       "chain_id": 1,
@@ -13336,7 +13336,7 @@
       "shortcut": "VIDT",
       "decimals": 18,
       "name": "V-ID Token",
-      "priority": 591
+      "priority": 589
     },
     {
       "chain_id": 1,
@@ -13512,7 +13512,7 @@
       "shortcut": "WABI",
       "decimals": 18,
       "name": "Tael",
-      "priority": 713
+      "priority": 671
     },
     {
       "chain_id": 1,
@@ -13536,7 +13536,7 @@
       "shortcut": "WAX",
       "decimals": 8,
       "name": "WAX",
-      "priority": 183
+      "priority": 173
     },
     {
       "chain_id": 1,
@@ -13592,7 +13592,7 @@
       "shortcut": "WCT",
       "decimals": 18,
       "name": "WePower",
-      "priority": 594
+      "priority": 684
     },
     {
       "chain_id": 1,
@@ -13648,7 +13648,7 @@
       "shortcut": "WIN",
       "decimals": 8,
       "name": "WCOIN",
-      "priority": 107
+      "priority": 104
     },
     {
       "chain_id": 1,
@@ -13704,7 +13704,7 @@
       "shortcut": "WPR",
       "decimals": 18,
       "name": "WePower Token",
-      "priority": 594
+      "priority": 684
     },
     {
       "chain_id": 1,
@@ -13736,7 +13736,7 @@
       "shortcut": "WTC",
       "decimals": 18,
       "name": "Waltonchain",
-      "priority": 560
+      "priority": 555
     },
     {
       "chain_id": 1,
@@ -13952,7 +13952,7 @@
       "shortcut": "XIO",
       "decimals": 18,
       "name": "XIO Network",
-      "priority": 967
+      "priority": 947
     },
     {
       "chain_id": 1,
@@ -14000,7 +14000,7 @@
       "shortcut": "XMX",
       "decimals": 8,
       "name": "XMax",
-      "priority": 840
+      "priority": 865
     },
     {
       "chain_id": 1,
@@ -14080,7 +14080,7 @@
       "shortcut": "XPR",
       "decimals": 4,
       "name": "Proton",
-      "priority": 502
+      "priority": 532
     },
     {
       "chain_id": 1,
@@ -14112,7 +14112,7 @@
       "shortcut": "XSGD",
       "decimals": 6,
       "name": "Singapore-Dollar Backed Stablecoin",
-      "priority": 585
+      "priority": 608
     },
     {
       "chain_id": 1,
@@ -14128,7 +14128,7 @@
       "shortcut": "XYO",
       "decimals": 18,
       "name": "XYO",
-      "priority": 579
+      "priority": 559
     },
     {
       "chain_id": 1,
@@ -14136,7 +14136,7 @@
       "shortcut": "YAM",
       "decimals": 18,
       "name": "YAM V1",
-      "priority": 685
+      "priority": 689
     },
     {
       "chain_id": 1,
@@ -14160,7 +14160,7 @@
       "shortcut": "YFI",
       "decimals": 18,
       "name": "yearn.finance",
-      "priority": 75
+      "priority": 76
     },
     {
       "chain_id": 1,
@@ -14168,7 +14168,7 @@
       "shortcut": "YFII",
       "decimals": 18,
       "name": "YFII.finance",
-      "priority": 379
+      "priority": 386
     },
     {
       "chain_id": 1,
@@ -14216,7 +14216,7 @@
       "shortcut": "ZAP",
       "decimals": 18,
       "name": "ZAP",
-      "priority": 619
+      "priority": 623
     },
     {
       "chain_id": 1,
@@ -14224,7 +14224,7 @@
       "shortcut": "ZCN",
       "decimals": 10,
       "name": "0chain",
-      "priority": 441
+      "priority": 502
     },
     {
       "chain_id": 1,
@@ -14272,7 +14272,7 @@
       "shortcut": "ZIL",
       "decimals": 12,
       "name": "Zilliqa",
-      "priority": 62
+      "priority": 58
     },
     {
       "chain_id": 1,
@@ -14344,7 +14344,7 @@
       "shortcut": "ZRX",
       "decimals": 18,
       "name": "0x Project",
-      "priority": 87
+      "priority": 85
     },
     {
       "chain_id": 1,
@@ -14376,7 +14376,7 @@
       "shortcut": "AETH",
       "decimals": 18,
       "name": "AKASHA Tokens",
-      "priority": 382
+      "priority": 375
     },
     {
       "chain_id": 4,
@@ -14432,7 +14432,7 @@
       "shortcut": "RDN",
       "decimals": 18,
       "name": "Raiden",
-      "priority": 481
+      "priority": 470
     },
     {
       "chain_id": 4,
@@ -14440,7 +14440,7 @@
       "shortcut": "RLC",
       "decimals": 9,
       "name": "iExec RLC",
-      "priority": 270
+      "priority": 250
     },
     {
       "chain_id": 4,
@@ -14465,6 +14465,24 @@
       "priority": 2,
       "test": false,
       "tx_url": "https://etherscan.io/tx/{hash}",
+      "wallets": [
+        "wallet.prokey.io"
+      ],
+      "decimals": 18
+    },
+    {
+      "chain": "trin",
+      "chain_id": 4,
+      "name": "Rinkeby",
+      "rskip60": false,
+      "shortcut": "tRIN",
+      "slip44": 1,
+      "support": {
+        "optimum": "1.8.0"
+      },
+      "priority": 100,
+      "test": true,
+      "tx_url": "https://rinkeby.etherscan.io/tx/{hash}",
       "wallets": [
         "wallet.prokey.io"
       ],
@@ -14508,7 +14526,8 @@
       "tx_url": "https://omniexplorer.info/search/{hash}",
       "wallets": [
         "wallet.prokey.io"
-      ]
+      ],
+      "timestamp": false
     },
     {
       "shortcut": "MAID",
@@ -14528,7 +14547,8 @@
       "tx_url": "https://omniexplorer.info/search/{hash}",
       "wallets": [
         "wallet.prokey.io"
-      ]
+      ],
+      "timestamp": false
     }
   ],
   "ripple": []
