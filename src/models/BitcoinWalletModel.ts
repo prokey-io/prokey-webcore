@@ -116,8 +116,9 @@ export interface BitcoinTransactionInput {
     scriptHex: string,
     type: string,
     address: string,
-    value: number,
+    value: string,
     sequence: number,
+    valueNumber: number,
 }
 /**
  * Model of Bitcoin Transaction Output
@@ -129,8 +130,9 @@ export interface BitcoinTransactionOutput {
     scriptHex: string,
     type: string,
     address: string,
-    value: number,
-    isSpent: boolean
+    value: string,
+    isSpent: boolean,
+    valueNumber: number,
 }
 
 export interface BitcoinFee {
