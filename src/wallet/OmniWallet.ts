@@ -458,7 +458,7 @@ export class OmniWallet extends BaseWallet {
 
             prev.outputs.forEach( out => {
                 ref.bin_outputs.push({
-                    amount: out.value.toString(),
+                    amount: out.value,
                     script_pubkey: out.scriptHex,
                 })
             });
