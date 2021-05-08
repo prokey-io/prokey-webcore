@@ -658,6 +658,19 @@ export class BitcoinWallet extends BaseWallet {
             throw new Error('The list of receivers can not be empty');
         }
 
+        const coinInfo = this.GetCoinInfo() as BitcoinBaseCoinInfoModel;
+
+        //! Fixed fees
+        if(super.GetCoinInfo().name == "Dogecoin") {
+            return <BitcoinFeeSelectionModel>{
+                economy: coinInfo.minfee_kb.toString(),
+                normal: coinInfo.minfee_kb.toString(),
+                priotity: coinInfo.minfee_kb.toString(),
+                decimal: coinInfo.decimals,
+                unit: coinInfo.shortcut,
+            }
+        }
+
         // Account
         let acc = this._bitcoinWallet.accounts[fromAccount];
 
@@ -667,7 +680,7 @@ export class BitcoinWallet extends BaseWallet {
         // Calculate transaction length
         let txLen = this.CalculateTxLen(receivers, acc, txFees);
 
-        const coinInfo = this.GetCoinInfo() as BitcoinBaseCoinInfoModel;
+        
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
@@ -720,7 +733,7 @@ export class BitcoinWallet extends BaseWallet {
         //! Create list of account UTXO
         let sortedUtoxs = this.CreateSortedUtxoList(acc);
 
-        console.debug(sortedUtoxs);
+        MyConsole.Info("Sorted UTXO", sortedUtoxs);
 
         //! Input addresses
         let utxoBal = 0;
