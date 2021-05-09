@@ -25,13 +25,15 @@ import { BitcoinTx } from '../models/BitcoinTx';
 import * as WalletModel from '../models/OmniWalletModel';
 import * as GenericWalletModel from '../models/GenericWalletModel';
 import { OmniBlockchain } from '../blockchain/OmniBlockchain';
-import { EnumOutputScriptType } from '../models/Prokey';
+import { EnumOutputScriptType, RefTransaction } from '../models/Prokey';
 import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel';
 import { BaseWallet } from './BaseWallet';
 var WAValidator = require('multicoin-address-validator');
 import * as Utility from '../utils/utils';
 import { MyConsole } from '../utils/console';
 import { OmniCoinInfoModel } from '../models/CoinInfoModel'
+import { BitcoinBlockchain } from '../blockchain/BitcoinBlockchain';
+import { BitcoinTxInfo } from '../models/BitcoinWalletModel';
 
 /**
  * If you wish to discover and use the omni wallet, you need to use this class. 
@@ -248,6 +250,9 @@ export class OmniWallet extends BaseWallet {
             amount: selectedUtxo.amount.toString(),
         });
 
+        //! Load previous transactions 
+        await this.LoadPrevTx(tx);
+
         // first address is CHANGE which should be the same as account address
         tx.outputs.push({
             address_n: acc.addressModel.path,
@@ -400,5 +405,77 @@ export class OmniWallet extends BaseWallet {
         //! We should calculate the size of this transaction to calculate the actual fee
         //     BTC + 1*INP + 3*OUT + DATA + OPRETURN
         return (10 +  148  + 3*180 + 16   + 10);
+    }
+
+    /**
+     * Loading previous transaction of each input(s).
+     * @param tx Bitcoin transaction 
+     */
+    private async LoadPrevTx(tx: BitcoinTx) {
+        if(tx.inputs == undefined || tx.inputs.length == 0){
+            throw new Error("Transaction inputs cannot be null or empty")
+        }
+
+        let txHashIds = "";
+        tx.inputs.forEach(element => {
+            txHashIds += "," + element.prev_hash;
+        });
+
+        //! Removing the first ','
+        txHashIds = txHashIds.substring(1);
+
+        // Load prev. transactions from BTC blockchain
+        let prevTxs = await this.GetBtcTransactions(txHashIds);
+
+        if(prevTxs == null || prevTxs.length != tx.inputs.length) {
+            throw new Error("PrevTx are not set correctly")
+        }
+
+        tx.refTxs = new Array<RefTransaction>();
+        const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
+        
+        prevTxs.forEach(prev => {
+            let ref: RefTransaction = {
+                hash: prev.hash,
+                version: prev.version,
+                lock_time: prev.lockTime,
+                bin_outputs: [],
+                inputs: [],
+            }
+
+            if(coinInfo.timestamp == true){
+                ref.timestamp = prev.timeStamp;
+            }
+
+            prev.inputs.forEach( inp => {
+                ref.inputs.push({
+                    prev_hash: inp.spentTxHash,
+                    prev_index: inp.spentOutputIndex,
+                    sequence: inp.sequence,
+                    script_sig: inp.scriptHex,
+                });
+            });
+
+            prev.outputs.forEach( out => {
+                ref.bin_outputs.push({
+                    amount: out.value,
+                    script_pubkey: out.scriptHex,
+                })
+            });
+
+            if(tx.refTxs){
+                tx.refTxs.push(ref);
+            }
+        });
+    }
+
+    /**
+     * Get Bitcoin Transaction data which is used for prev. tx info
+     * @param hash Hash of transactions
+     * @returns Array of BitcoinTxInfo
+     */
+    private async GetBtcTransactions(hash: string): Promise<Array<BitcoinTxInfo>>{
+        const btcBlockchain = new BitcoinBlockchain('BTC');
+        return btcBlockchain.GetTransactions(hash);
     }
 }

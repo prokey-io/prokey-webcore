@@ -107,6 +107,16 @@ export class BitcoinBlockChain {
             try {
                 let res = await this.GetFromServer<Array<WalletModel.BitcoinTxInfo>>(`Transaction/${this._coinName}/${hash}`);
 
+                res.forEach(tx => {
+                    tx.inputs.forEach(inp => {
+                        inp.valueNumber = +inp.value;
+                    });
+
+                    tx.outputs.forEach(out => {
+                        out.valueNumber = +out.value;
+                    })
+                });
+
                 resolve(res);
             }
             catch(ex) {
@@ -191,7 +201,11 @@ export class BitcoinBlockChain {
 
         const request = new Request("https://blocks.prokey.org/" + toServer, {method: 'GET'});
 
-        return JSON.parse(await client.execute<string>(request));
+        let json = await client.execute<string>(request);
+
+        json = json.replace(new RegExp('"value":([0-9]+),',"g"),'"value":"$1",');
+
+        return JSON.parse(json);
     }
     
 }

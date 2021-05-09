@@ -51,6 +51,7 @@ export interface BitcoinBaseCoinInfoModel {
     on_device: string,
     test?: boolean,
     tx_url: string,
+    timestamp: boolean,
 };
 
 export interface EthereumBaseCoinInfoModel {
@@ -111,4 +112,5 @@ export interface OmniCoinInfoModel {
     test?: boolean,
     dust_limit: number,
     tx_url: string,
+    timestamp: boolean,
 }
