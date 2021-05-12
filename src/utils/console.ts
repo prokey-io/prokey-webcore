@@ -63,7 +63,7 @@ export class MyConsole {
             return;
         }
 
-        console.warn(message, params);
+        console.log(message, params);
 
 
         if (this._save_logs) {
@@ -88,6 +88,8 @@ export class MyConsole {
             return;
         }
 
+        console.error(message, params);
+
         if (this._save_logs) {
             const current_log = {
                 message: message,
@@ -103,6 +105,8 @@ export class MyConsole {
         if (this._isDebug === false) {
             return;
         }
+
+        console.error(message, params);
 
         if (this._save_logs) {
 
