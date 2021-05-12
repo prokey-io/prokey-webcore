@@ -27,10 +27,10 @@ export enum LogLevel {
 }
 
 export class MyConsole {
-    static _logLevel = LogLevel.INFO;
+    private static _logLevel = LogLevel.INFO;
 
-    static _isDebug = true;
-    static _save_logs = true;
+    private static _isDebug = true;
+    private static _save_logs = true;
 
 
     public static Info(message, ...params) {
@@ -50,7 +50,7 @@ export class MyConsole {
                 status: LogLevel.INFO,
                 time: new Date()
             };
-            this.save_log_to_local(current_log);
+            this.saveLogToLocal(current_log);
         }
     }
 
@@ -74,7 +74,7 @@ export class MyConsole {
                 status: LogLevel.WARNING,
                 time: new Date()
             };
-            this.save_log_to_local(current_log);
+            this.saveLogToLocal(current_log);
 
         }
     }
@@ -95,7 +95,7 @@ export class MyConsole {
                 status: LogLevel.ERROR,
                 time: new Date()
             };
-            this.save_log_to_local(current_log);
+            this.saveLogToLocal(current_log);
         }
     }
 
@@ -112,22 +112,32 @@ export class MyConsole {
                 status: LogLevel.EXCEPTION,
                 time: new Date()
             };
-            this.save_log_to_local(current_log);
+            this.saveLogToLocal(current_log);
 
         }
     }
 
-    private static save_log_to_local(current_log: { time: Date; message: any; params: any[]; status: LogLevel }) {
+    public static setSaveLogs(action: boolean) {
+        this._save_logs = action;
+    }
+
+    public static getSaveLogs() {
+        return this._save_logs;
+    }
+
+    private static saveLogToLocal(current_log: { time: Date; message: any; params: any[]; status: LogLevel }) {
         let logs = [];
-        let older_logs = localStorage.getItem('logs');
-        if (typeof older_logs === "string") {
+        const older_logs = localStorage.getItem('logs');
+        if (typeof older_logs === 'string') {
             logs = JSON.parse(older_logs);
         } else {
-            logs = []
+            logs = [];
         }
+        // @ts-ignore
         logs.push(current_log);
 
         // Re-serialize the array back into a string and store it in localStorage
         localStorage.setItem('logs', JSON.stringify(logs));
     }
+
 }
