@@ -57,7 +57,7 @@ export class EthereumWallet extends BaseWallet {
         this._isErc20 = isErc20;
 
         if(isErc20) {
-            this._gasLimit = 110000
+            this._gasLimit = 65000;
             const ci = (super.GetCoinInfo() as Erc20BaseCoinInfoModel);
             this._network = this.GetNetworkByChainId(ci.chain_id);
             this._ethBlockChain = new EthereumBlockchain(this._network, true, ci.address);
