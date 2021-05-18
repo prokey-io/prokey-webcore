@@ -40,7 +40,9 @@ export class MyConsole {
 
         if (this._logLevel > LogLevel.INFO) {
             return;
-        }
+      }
+
+      console.log(message, params);
 
 
         if (this._save_logs) {
