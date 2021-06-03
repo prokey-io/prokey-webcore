@@ -863,8 +863,7 @@ export class BitcoinWallet extends BaseWallet {
             
             for(let j=0; j<perRequest; j++)
             {
-                txHashIds += "," + tx.inputs[i].prev_hash;
-                i++;
+                txHashIds += "," + tx.inputs[i++].prev_hash;
                 n--;
             }
 
