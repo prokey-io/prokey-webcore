@@ -78,6 +78,7 @@ export interface BitcoinBlockchainAddress {
     totalSent: number,
     utxOs: Array<BitcoinUtxo>,
     transactionIds: Array<number>,
+    transactions: Array<BitcoinTransactionInfo>,
 }
 
 /**
@@ -87,6 +88,7 @@ export interface BitcoinUtxo {
     hash: string,
     index: number,
     amount: number,
+    blockNumber?: number,
 }
 
 /**
@@ -149,6 +151,14 @@ export interface BitcoinTransactionView {
     sent?: Array<BitcoinSentView>,
     fee?: number
     isOmni: boolean,
+}
+
+export interface BitcoinTransactionInfo {
+    blockNumber: number,
+    hash: string,
+    timeStamp: number,
+    balanceChange: number,
+    txId: number,
 }
 
 export interface BitcoinReceivedView {
