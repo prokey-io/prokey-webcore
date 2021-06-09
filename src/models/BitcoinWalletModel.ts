@@ -77,8 +77,8 @@ export interface BitcoinBlockchainAddress {
     totalReceive: number,
     totalSent: number,
     utxOs: Array<BitcoinUtxo>,
-    transactionIds: Array<number>,
-    transactions: Array<BitcoinTransactionInfo>,
+    transactionIds?: Array<number>,
+    transactions?: Array<BitcoinTransactionInfo>,
 }
 
 /**

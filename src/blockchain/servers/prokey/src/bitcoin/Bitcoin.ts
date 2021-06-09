@@ -127,39 +127,32 @@ export class BitcoinBlockChain {
 
     /**
      * Load/Get Transactions list
-     * @param addresses List of addresses to get info
-     * @param count Number of transaction
+     * @param addresses List of transactions' database ID to get info
+     * @param count Number of transactions
      * @param offset Offset of first transaction
      */
-    public async GetLatestTransactions(addresses: Array<WalletModel.BitcoinAddressInfo>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
+    public async GetLatestTransactionsByDbId(trDbIds: Array<number>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
         return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
-            let trs: Array<number> = [];
-            addresses.forEach(add => {
-                add.txInfo.transactionIds.forEach(tr => {
-                    trs.push(tr);
-                });
-            });
-
             if (count > 1000)
                 count = 1000;
             if (offset < 0)
                 offset = 0;
 
             // Sort the tr numbers desc
-            trs = trs.sort((a, b) => b - a);
+            trDbIds = trDbIds.sort((a, b) => b - a);
             // Remove the duplicates
-            trs = trs.filter((v, pos) => {
-                return trs.indexOf(v) == pos;
+            trDbIds = trDbIds.filter((v, pos) => {
+                return trDbIds.indexOf(v) == pos;
             });
 
-            count = Math.min(trs.length - offset, count);
+            count = Math.min(trDbIds.length - offset, count);
             if (count > 0)
             {
                 count += offset;
                 let ids = "";
                 for (let i = offset; i < count; i++)
                 {
-                    ids += ',' + trs[i];
+                    ids += ',' + trDbIds[i];
                 }
                 ids = ids.substring(1);
                 try {
@@ -175,6 +168,43 @@ export class BitcoinBlockChain {
             resolve([]);
         });
     }
+
+    /**
+     * Load/Get Transactions list
+     * @param transactionHashList List of transactions' hash
+     * @param count Number of transactions
+     * @param offset Offset of first transaction
+     */
+    public async GetLatestTransactionsByTxHash(transactionHashList: Array<string>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
+        return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
+            if (count > 1000)
+                count = 1000;
+            if (offset < 0)
+                offset = 0;
+
+            count = Math.min(transactionHashList.length - offset, count);
+            if (count > 0)
+            {
+                count += offset;
+                let allHash = "";
+                for (let i = offset; i < count; i++)
+                {
+                    allHash += ',' + transactionHashList[i];
+                }
+                allHash = allHash.substring(1);
+                try {
+                    let res = await this.GetTransactions(allHash);
+                    resolve(res);
+                    return;
+                } catch (error) {
+                    reject(error);
+                    return;
+                }
+            }
+
+            resolve([]);
+        });
+    } 
 
     /**
      * Get Bitcoin transaction fee from server
