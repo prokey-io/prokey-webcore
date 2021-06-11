@@ -84,15 +84,15 @@ export class BitcoinBlockchain {
         }
         // If we have Transaction Hash list
         else if(addresses[0].txInfo.transactions != null) {
-            let allTxHash: Array<string> = new Array<string>();
+            let trs: Array<number> = new Array<number>();
 
             addresses.forEach(add => {
                 add.txInfo.transactions!.forEach(tr => {
-                    allTxHash.push(tr.hash);
+                    trs.push(tr.txId);
                 });
             });
 
-            return this._prokeyBtcBlockchain.GetLatestTransactionsByTxHash(allTxHash, count, offset);
+            return this._prokeyBtcBlockchain.GetLatestTransactionsByDbId(trs, count, offset);
         } else {
             return Array<BitcoinTxInfo>();
         }

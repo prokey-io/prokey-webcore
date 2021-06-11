@@ -170,43 +170,6 @@ export class BitcoinBlockChain {
     }
 
     /**
-     * Load/Get Transactions list
-     * @param transactionHashList List of transactions' hash
-     * @param count Number of transactions
-     * @param offset Offset of first transaction
-     */
-    public async GetLatestTransactionsByTxHash(transactionHashList: Array<string>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
-        return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
-            if (count > 1000)
-                count = 1000;
-            if (offset < 0)
-                offset = 0;
-
-            count = Math.min(transactionHashList.length - offset, count);
-            if (count > 0)
-            {
-                count += offset;
-                let allHash = "";
-                for (let i = offset; i < count; i++)
-                {
-                    allHash += ',' + transactionHashList[i];
-                }
-                allHash = allHash.substring(1);
-                try {
-                    let res = await this.GetTransactions(allHash);
-                    resolve(res);
-                    return;
-                } catch (error) {
-                    reject(error);
-                    return;
-                }
-            }
-
-            resolve([]);
-        });
-    } 
-
-    /**
      * Get Bitcoin transaction fee from server
      * @returns ProkeyResBitcoinFee
      */
