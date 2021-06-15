@@ -19,7 +19,8 @@
 */
 
 import { Device } from "../device/Device";
-import { BitcoinBaseCoinInfoModel, 
+import {
+    BitcoinBaseCoinInfoModel,
     EthereumBaseCoinInfoModel,
     Erc20BaseCoinInfoModel,
     OmniCoinInfoModel
@@ -50,17 +51,18 @@ import {
     BinanceSignTx,
     CardanoSignedTx,
     Success
- } from "../models/Prokey";
+} from "../models/Prokey";
 
- import { 
-    MessageSignature, 
-    LiskMessageSignature 
+import {
+    MessageSignature,
+    LiskMessageSignature
 } from '../models/Prokey';
 
 import * as Util from '../utils/utils';
 
 import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
+import { RippleCommands } from "../device/RippleCommands";
 
 /**
  * This is the base class for all implemented wallets
@@ -76,21 +78,31 @@ export abstract class BaseWallet {
      * @param _coinType Coin type BitcoinBase | EthereumBase | ERC20 | NEM | OMNI | OTHERS
      */
     constructor(private _device: Device, private _coinName: string, private _coinType: CoinBaseType) {
-        if(_device == null)
+        if (_device == null)
             throw new Error('Device can not be null');
-        
+
         // will threw an exception if coin can not be found
         this._coinInfo = CoinInfo.Get(_coinName, _coinType);
 
         // create the device commands
-        if(_coinType == CoinBaseType.BitcoinBase) {
-            this._commands = new BitcoinCommands(_coinName);
-        } 
-        else if(_coinType == CoinBaseType.EthereumBase || _coinType == CoinBaseType.ERC20) {
-            this._commands = new EthereumCommands(_coinName, _coinType == CoinBaseType.ERC20);
-        }
-        else if(_coinType == CoinBaseType.OMNI){
-            this._commands = new BitcoinCommands(_coinName, true);
+        switch (_coinType) {
+            case CoinBaseType.BitcoinBase:
+            case CoinBaseType.OMNI:
+                this._commands = new BitcoinCommands(_coinName, _coinType == CoinBaseType.OMNI);
+                break;
+
+            case CoinBaseType.EthereumBase:
+            case CoinBaseType.ERC20:
+                this._commands = new EthereumCommands(_coinName, _coinType == CoinBaseType.ERC20);
+                break;
+
+            case CoinBaseType.Ripple:
+                this._commands = new RippleCommands(_coinName);
+                break;
+
+            default:
+                throw new Error("Unknown coin type");
+                break;
         }
     }
 
@@ -155,7 +167,7 @@ export abstract class BaseWallet {
      * @param message Message to be signed
      * @param coinName Optional, Only for Bitcoin based coins
      */
-    public async SignMessage<T extends MessageSignature | LiskMessageSignature>(path: Array<number>, message: string, coinName?: string): Promise<T>{
+    public async SignMessage<T extends MessageSignature | LiskMessageSignature>(path: Array<number>, message: string, coinName?: string): Promise<T> {
         const messageBytes = Util.StringToUint8Array(message)
         return await this._commands.SignMessage(this._device, path, messageBytes, coinName) as T;
     }
@@ -168,7 +180,7 @@ export abstract class BaseWallet {
      * @param coinName Optional, Only for Bitcoin based coins
      * @returns 
      */
-    public async VerifyMessage(address: string, message: string, signature: string, coinName?: string): Promise<Success>{
+    public async VerifyMessage(address: string, message: string, signature: string, coinName?: string): Promise<Success> {
         const messageBytes = Util.StringToUint8Array(message);
         const signBytes = Util.HexStringToByteArray(signature);
         return await this._commands.VerifyMessage(this._device, address, messageBytes, signBytes, coinName);

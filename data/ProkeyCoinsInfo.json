@@ -14481,7 +14481,7 @@
       "on_device": "Ripple",
       "test": false,
       "support": {
-        "optimum": "1.8.0"
+        "optimum": "1.9.0"
       },
       "tx_url": "https://xrpscan.com/tx/{hash}",
       "wallets": [
@@ -14491,13 +14491,13 @@
     {
       "name": "Ripple Testnet",
       "shortcut": "tXRP",
-      "slip44": 1,
+      "slip44": 144,
       "decimals": 6,
       "priority": 100,
       "on_device": "Ripple Testnet",
       "test": true,
       "support": {
-        "optimum": "1.8.0"
+        "optimum": "1.9.0"
       },
       "tx_url": "https://testnet.xrpl.org/transactions/{hash}",
       "wallets": [

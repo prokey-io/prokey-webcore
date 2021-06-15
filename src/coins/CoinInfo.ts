@@ -34,7 +34,7 @@ export enum CoinBaseType {
 }
 
 export interface CoinNameModel {
-    Name: string;    
+    Name: string;
     Shortcut: string;
     Type: CoinBaseType;
     Priority: Number;
@@ -49,14 +49,14 @@ export class CoinInfo {
      * @param coinName The coin name or shortcut
      * @param ct Which coin type are you looking for? BitcoinBase, ERC20 or Ethereum.
      */
-    public static Get<T>(coinName: string, ct: CoinBaseType) : T {
-        if(ct == undefined)
+    public static Get<T>(coinName: string, ct: CoinBaseType): T {
+        if (ct == undefined)
             throw new Error();
 
         let f = coinName.toLowerCase();
-        
+
         let c: any;
-        switch(ct){
+        switch (ct) {
             case CoinBaseType.BitcoinBase:
                 c = ProkeyCoinInfoModel.bitcoin;
                 break;
@@ -75,17 +75,17 @@ export class CoinInfo {
         }
 
         let ci: any;
-        if(ct == CoinBaseType.ERC20) {
-            ci = c.find( obj => {
+        if (ct == CoinBaseType.ERC20) {
+            ci = c.find(obj => {
                 return obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f;
             });
         } else {
-            ci = c.find( obj => {
+            ci = c.find(obj => {
                 return obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f;
             });
         }
 
-        if(ci)
+        if (ci)
             return ci;
         else
             throw new Error(`cannot find ${coinName}`);
@@ -95,12 +95,12 @@ export class CoinInfo {
      * Returning the sorted list of all coins
      * @param firmwareVersion Specific Version of Prokey which support this coin
      */
-    public static GetAllCoinsName(firmwareVersion: string) : Array<CoinNameModel> {
+    public static GetAllCoinsName(firmwareVersion: string): Array<CoinNameModel> {
         let list = new Array<CoinNameModel>();
 
         // Add list of bitcoin base coins
         ProkeyCoinInfoModel.bitcoin.forEach(element => {
-            if(compareVersions(firmwareVersion, element.support.optimum) >= 0){
+            if (compareVersions(firmwareVersion, element.support.optimum) >= 0) {
                 list.push({
                     Name: element.name,
                     Shortcut: element.shortcut,
@@ -114,7 +114,7 @@ export class CoinInfo {
 
         // Add list of ethereum base coins
         ProkeyCoinInfoModel.eth.forEach(element => {
-            if(compareVersions(firmwareVersion, element.support.optimum) >= 0){
+            if (compareVersions(firmwareVersion, element.support.optimum) >= 0) {
                 list.push({
                     Name: element.name,
                     Shortcut: element.shortcut,
@@ -163,12 +163,12 @@ export class CoinInfo {
         });
 
         //! Sort the list by Priority
-        list.sort( (a,b) => {
-            if(a.Priority > b.Priority)
+        list.sort((a, b) => {
+            if (a.Priority > b.Priority)
                 return 1;
-            else if( a.Priority < b.Priority)
+            else if (a.Priority < b.Priority)
                 return -1;
-            else 
+            else
                 return 0;
         });
 
@@ -179,10 +179,10 @@ export class CoinInfo {
      * Returning the sorted list of a specific coin
      * @param firmwareVersion Specific Version of Prokey which support this coin
      */
-    public static GetCoinsByType(ct: CoinBaseType) : Array<CoinNameModel> {
+    public static GetCoinsByType(ct: CoinBaseType): Array<CoinNameModel> {
         let list = new Array<CoinNameModel>();
 
-        if(ct == CoinBaseType.BitcoinBase){
+        if (ct == CoinBaseType.BitcoinBase) {
             // Add list of bitcoin base coins
             ProkeyCoinInfoModel.bitcoin.forEach(element => {
                 list.push({
@@ -195,7 +195,7 @@ export class CoinInfo {
                 });
             });
         }
-        else if(ct == CoinBaseType.EthereumBase){
+        else if (ct == CoinBaseType.EthereumBase) {
             // Add list of ethereum base coins
             ProkeyCoinInfoModel.eth.forEach(element => {
                 list.push({
@@ -208,7 +208,7 @@ export class CoinInfo {
                 });
             });
         }
-        else if(ct == CoinBaseType.ERC20){
+        else if (ct == CoinBaseType.ERC20) {
             // Add list of ERC20 coins
             ProkeyCoinInfoModel.erc20.forEach(element => {
                 list.push({
@@ -221,7 +221,7 @@ export class CoinInfo {
                 });
             });
         }
-        else if(ct == CoinBaseType.OMNI){
+        else if (ct == CoinBaseType.OMNI) {
             ProkeyCoinInfoModel.omni.forEach(element => {
                 list.push({
                     Name: element.name,
@@ -247,12 +247,12 @@ export class CoinInfo {
         }
 
         //! Sort the list by Priority
-        list.sort( (a,b) => {
-            if(a.Priority > b.Priority)
+        list.sort((a, b) => {
+            if (a.Priority > b.Priority)
                 return 1;
-            else if( a.Priority < b.Priority)
+            else if (a.Priority < b.Priority)
                 return -1;
-            else 
+            else
                 return 0;
         });
 

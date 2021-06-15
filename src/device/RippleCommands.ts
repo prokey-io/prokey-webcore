@@ -3,6 +3,7 @@
  * Copyright (C) Prokey.io
  * 
  * Hadi Robati, hadi@prokey.io
+ * Ali Akbar Mohammadi
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +28,10 @@ import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
 import { Device } from './Device';
 import { GeneralResponse, GeneralErrors } from '../models/GeneralResponse';
 import { RippleTransaction } from '../models/Responses-V6';
+import { RippleAddress } from '../models/Prokey';
 
 export class RippleCommands implements ICoinCommands {
+    
     private _coinInfo: RippleCoinInfoModel;
 
     constructor(coinName: string) {
@@ -78,7 +81,7 @@ export class RippleCommands implements ICoinCommands {
             show_display: showDisplay,
         }
 
-        return await device.SendMessage<ProkeyResponses.EthereumAddress>('RippleGetAddress', param, 'RippleAddress');
+        return await device.SendMessage<ProkeyResponses.RippleAddress>('RippleGetAddress', param, 'RippleAddress');
     }
 
     /**
@@ -117,7 +120,7 @@ export class RippleCommands implements ICoinCommands {
             }
 
             try{
-                let address = await device.SendMessage<ProkeyResponses.EthereumAddress>('RippleGetAddress', param, 'RippleAddress');
+                let address = await device.SendMessage<ProkeyResponses.RippleAddress>('RippleGetAddress', param, 'RippleAddress');
                 lstAddress.push(address);
             } catch(e) {
                 Promise.reject(e);
@@ -171,7 +174,7 @@ export class RippleCommands implements ICoinCommands {
      * @param transaction transaction to be signed 
      */
     public async SignTransaction(device: Device, transaction: RippleTransaction): Promise<ProkeyResponses.SignedTx>{
-        return <ProkeyResponses.SignedTx>{};
+        throw new Error("Method not implemented.");
     }
 
     /**
@@ -186,8 +189,8 @@ export class RippleCommands implements ICoinCommands {
         address_n: Array<number>, 
         message: Uint8Array, 
         coin?: string): Promise<ProkeyResponses.MessageSignature> {
-            return <ProkeyResponses.MessageSignature>{};
-    }
+            throw new Error("Method not implemented.");
+        }
 
     /**
      * Verify Message
@@ -203,7 +206,7 @@ export class RippleCommands implements ICoinCommands {
         message: Uint8Array,
         signature: Uint8Array,
         coinName: string): Promise<ProkeyResponses.Success> {
-            return <ProkeyResponses.Success>{};
-    }
+            throw new Error("Method not implemented.");
+        }
 
 }
