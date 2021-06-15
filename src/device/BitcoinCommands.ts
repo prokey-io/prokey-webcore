@@ -277,8 +277,6 @@ export class BitcoinCommands implements ICoinCommands {
                 reject(`Signing transaction failed: ${reason.message}`);
             };
 
-            device.AddOnFailureCallBack(OnFailure);
-
             // Validate the parameters
             try {
                 // TODO: This validator needs test
@@ -436,6 +434,7 @@ export class BitcoinCommands implements ICoinCommands {
             MyConsole.Info(param);
         
             try{
+                device.AddOnFailureCallBack(OnFailure);
                 let txReq = await device.SendMessage<ProkeyResponses.TxRequest>('SignTx', param, 'TxRequest');
                 await this.TxReqHandler(device, dicRefTx, txReq, resolve, reject);
             }catch(e){

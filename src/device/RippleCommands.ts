@@ -29,15 +29,16 @@ import { Device } from './Device';
 import { GeneralResponse, GeneralErrors } from '../models/GeneralResponse';
 import { RippleTransaction } from '../models/Responses-V6';
 import { RippleAddress } from '../models/Prokey';
+import { MyConsole } from '../utils/console';
+import { validateParams } from '../utils/paramsValidator';
 
 export class RippleCommands implements ICoinCommands {
-    
+
     private _coinInfo: RippleCoinInfoModel;
 
     constructor(coinName: string) {
         this._coinInfo = CoinInfo.Get<RippleCoinInfoModel>(coinName, CoinBaseType.Ripple);
-        if(this._coinInfo == null)
-        {
+        if (this._coinInfo == null) {
             throw new Error(`Cannot load CoinInfo for ${coinName}`);
         }
     }
@@ -45,16 +46,16 @@ export class RippleCommands implements ICoinCommands {
     /**
      * Get Coin Info
      */
-     public GetCoinInfo() : RippleCoinInfoModel {
+    public GetCoinInfo(): RippleCoinInfoModel {
         return this._coinInfo;
-     }
+    }
 
-     /**
-     * Get Bitcoin/Litecoin and etc address
-     * @param device Prokey device instance
-     * @param path BIP path 
-     * @param showOnProkey true means show the address on device display
-     */
+    /**
+    * Get Bitcoin/Litecoin and etc address
+    * @param device Prokey device instance
+    * @param path BIP path 
+    * @param showOnProkey true means show the address on device display
+    */
     public async GetAddress(device: Device, path: Array<number>, showOnProkey?: boolean): Promise<ProkeyResponses.RippleAddress> {
         if (device == null || path == null) {
             return Promise.reject({ success: false, errorCode: GeneralErrors.INVALID_PARAM });
@@ -89,27 +90,26 @@ export class RippleCommands implements ICoinCommands {
      * @param device the prokey device instance
      * @param paths list of paths to retrive the addresses
      */
-     public async GetAddresses(device: Device, paths: Array<Array<number>>): Promise<Array<ProkeyResponses.RippleAddress>> {
+    public async GetAddresses(device: Device, paths: Array<Array<number>>): Promise<Array<ProkeyResponses.RippleAddress>> {
         if (device == null || paths == null) {
-            return Promise.reject({ 
-                success: false, 
-                errorCode: GeneralErrors.INVALID_PARAM 
+            return Promise.reject({
+                success: false,
+                errorCode: GeneralErrors.INVALID_PARAM
             });
         }
 
         let lstAddress = new Array<ProkeyResponses.RippleAddress>();
 
-        paths.forEach(async (path) => 
-        {
+        paths.forEach(async (path) => {
             let pn: Array<number>;
-            if(typeof path == "string") {
+            if (typeof path == "string") {
                 try {
                     pn = PathUtil.getHDPath(path);
                 }
                 catch (e) {
                     return Promise.reject({ success: false, errorCode: GeneralErrors.PATH_NOT_VALID });
                 }
-            } 
+            }
             else {
                 pn = path;
             }
@@ -119,10 +119,10 @@ export class RippleCommands implements ICoinCommands {
                 show_display: false,
             }
 
-            try{
+            try {
                 let address = await device.SendMessage<ProkeyResponses.RippleAddress>('RippleGetAddress', param, 'RippleAddress');
                 lstAddress.push(address);
-            } catch(e) {
+            } catch (e) {
                 Promise.reject(e);
             }
         });
@@ -136,7 +136,7 @@ export class RippleCommands implements ICoinCommands {
      * @param path BIP path
      * @param showOnProkey true means show the public key on prokey display
      */
-     public async GetPublicKey(device: Device,
+    public async GetPublicKey(device: Device,
         path: Array<number> | string,
         showOnProkey?: boolean): Promise<ProkeyResponses.PublicKey> {
 
@@ -173,8 +173,68 @@ export class RippleCommands implements ICoinCommands {
      * @param device Prokey device instance
      * @param transaction transaction to be signed 
      */
-    public async SignTransaction(device: Device, transaction: RippleTransaction): Promise<ProkeyResponses.SignedTx>{
-        throw new Error("Method not implemented.");
+    public async SignTransaction(device: Device, transaction: RippleTransaction): Promise<ProkeyResponses.RippleSignedTx> {
+        MyConsole.Info("RippleSignTx", transaction);
+        if (!device) {
+            let e: GeneralResponse = {
+                success: false,
+                errorCode: GeneralErrors.INVALID_PARAM,
+                errorMessage: "RippleCommands::SignTransaction->parameter Device cannot be null",
+            }
+
+            throw e;
+        }
+
+        if (!transaction) {
+            let e: GeneralResponse = {
+                success: false,
+                errorCode: GeneralErrors.INVALID_PARAM,
+                errorMessage: "RippleCommands::SignTransaction->parameter transaction cannot be null",
+            }
+
+            throw e;
+        }
+
+        if (!transaction.payment) {
+            let e: GeneralResponse = {
+                success: false,
+                errorCode: GeneralErrors.INVALID_PARAM,
+                errorMessage: "RippleCommands::SignTransaction->parameter transaction.payment cannot be null",
+            }
+
+            throw e;
+        }
+
+        return new Promise<ProkeyResponses.RippleSignedTx>(async (resolve, reject) => {
+            var OnFailure = (reason: any) => {
+                device.RemoveOnFailureCallBack(OnFailure);
+
+                reject(`Signing transaction failed: ${reason.message}`);
+            };
+
+            // Validate the parameters
+            try {
+                validateParams(transaction, [
+                    { name: "address_n", type: "array", obligatory: true },
+                    { name: "fee", type: "number", obligatory: true },
+                    { name: "flags", type: "number" },
+                    { name: "sequence", type: "number", obligatory: true },
+                    { name: "last_ledger_sequence", type: "number" },
+                ]);
+
+                validateParams(transaction.payment, [
+                    { name: "amount", type: "number", obligatory: true },
+                    { name: "destination", type: "string", obligatory: true },
+                    { name: "destination_tag", type: "number" }
+                ]);
+            }
+            catch (ex) {
+                MyConsole.Info(ex);
+                return reject(ex);
+            }
+
+            resolve(await device.SendMessage<ProkeyResponses.RippleSignedTx>('RippleSignTx', transaction, 'RippleSignedTx'));
+        }
     }
 
     /**
@@ -184,13 +244,13 @@ export class RippleCommands implements ICoinCommands {
      * @param message message to be signed
      * @param coin coin name
      */
-     public async SignMessage(
-        device: Device, 
-        address_n: Array<number>, 
-        message: Uint8Array, 
+    public async SignMessage(
+        device: Device,
+        address_n: Array<number>,
+        message: Uint8Array,
         coin?: string): Promise<ProkeyResponses.MessageSignature> {
-            throw new Error("Method not implemented.");
-        }
+        throw new Error("Method not implemented.");
+    }
 
     /**
      * Verify Message
@@ -200,13 +260,13 @@ export class RippleCommands implements ICoinCommands {
      * @param signature signature data
      * @param coinName coin name
      */
-     public async VerifyMessage(
+    public async VerifyMessage(
         device: Device,
         address: string,
         message: Uint8Array,
         signature: Uint8Array,
         coinName: string): Promise<ProkeyResponses.Success> {
-            throw new Error("Method not implemented.");
-        }
+        throw new Error("Method not implemented.");
+    }
 
 }
