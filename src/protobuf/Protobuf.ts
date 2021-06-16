@@ -19,8 +19,8 @@
 */
 
 import { MyConsole } from './../utils/console';
-import { Root, Type, IParseOptions } from 'protobufjs';
-
+import { Root, Type, IParseOptions, util, configure } from 'protobufjs';
+import * as Long from '../../node_modules/long' 
 
 export class Protobuf {
     private static _instance: Protobuf;
@@ -34,13 +34,20 @@ export class Protobuf {
     public static get Instance() {
         if (this._instance === undefined) {
             this._instance = new Protobuf();
+
+            // Force protobuf to use Long module for uint64
+            util.Long = Long;
+            configure();
         }
 
         return this._instance;
     }
 
-    Init(callback?: (isSuccess: boolean) => void): void {
+    Init(callback?: (isSuccess: boolean) => void, protoPath?: string): void {
         let address = '/assets/data/protob/combined.proto.txt';
+        if(protoPath != null){
+            address = `${protoPath}/combined.proto.txt`;
+        }
 
         const opt: IParseOptions = {
             keepCase: true,

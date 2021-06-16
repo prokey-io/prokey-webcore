@@ -21,13 +21,14 @@
 import { MyConsole } from '../utils/console';
 import { Protobuf } from '../protobuf/Protobuf';
 import * as ProkeyResponses from '../models/Prokey';
-import { ITransport } from '../transport/ITransport';
+import { ITransport, TransportType } from '../transport/ITransport';
 import { WebUsb } from '../transport/WebUsb';
 import { IMessagePayload } from '../transport/ITransport';
 import * as PathUtil from '../utils/pathUtils';
 import * as Util from '../utils/utils';
 import { GeneralResponse, GeneralErrors } from '../models/GeneralResponse';
 import { EventEmitter } from 'events' 
+import { WebSocketTransport } from '../transport/WebSocketTransport';
 
 
 export class Device {
@@ -44,14 +45,14 @@ export class Device {
      * 
      * @param callback this is an optional call back showing if protobuf successfully initialized
      */
-    constructor(callback?: (success: boolean) => void) {
+    constructor(callback?: (success: boolean) => void, pathToProtoFile?: string) {
         this.pb = Protobuf.Instance;
         if (!this.pb.IsInited) {
             this.pb.Init((isSuccess: boolean) => {
                 if(callback) {
                     callback(isSuccess);
                 }
-            });
+            }, pathToProtoFile);
         } else if(callback) {
             callback(true);
         }
@@ -160,8 +161,18 @@ export class Device {
      * Initializing the Trabsport layer and up and running the webusb
      * This function MUST be called first before executing any function 
      */
-    public async TransportConnect(): Promise<GeneralResponse> {
-        this._transport = new WebUsb();
+    public async TransportConnect(transportType: TransportType = TransportType.WebUsb): Promise<GeneralResponse> {
+        switch (transportType) {
+            case TransportType.WebUsb:
+                this._transport = new WebUsb();                
+                break;
+
+            case TransportType.WebSocket:
+                this._transport = new WebSocketTransport();
+        
+            default:
+                break;
+        }
 
         let res = await this._transport.Init(true,
             // OnReceice call back

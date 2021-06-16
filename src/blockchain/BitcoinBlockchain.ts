@@ -99,7 +99,9 @@ export class BitcoinBlockchain {
             }
         }
         
+        
         var fees = await this._prokeyBtcBlockchain.GetTxFee();
+        // BTC -> Satoshi/Byte
         fee.economy = fees.ecoFees[5].feerate * 100000;
         fee.normal = fees.fees[3].feerate * 100000;
         fee.high = fees.fees[1].feerate * 100000;
@@ -108,11 +110,13 @@ export class BitcoinBlockchain {
         // Server may return the negative fee, so we should use the next returned fee
         if (fee.high < 0)
             fee.high = fees.fees[2].feerate * 100000;
+
         if (fee.high < 0)
         {
             
             // We need to use the fee from coin info
-            fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( this._prokeyBtcBlockchain._coinName, CoinBaseType.BitcoinBase).minfee_kb;
+            // satoshi/kB -> satoshi/Byte
+            fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( this._prokeyBtcBlockchain._coinName, CoinBaseType.BitcoinBase).minfee_kb / 1000;
         }
 
         return fee;

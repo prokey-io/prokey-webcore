@@ -16,25 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { CoinBaseType } from "../coins/CoinInfo";
-import { Device } from "../device/Device";
-import { BaseWallet } from "./BaseWallet";
-var WAValidator = require('multicoin-address-validator');
+import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
+import { RippleAccount } from "./RippleModel";
 
-export class RippleWallet extends BaseWallet {
+export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
 
-    constructor(device: Device, coinName: string)
+    _coinName: string;
+
+    constructor(coinNameOrShortcut: string = "xrp")
     {
-        super(device, coinName, CoinBaseType.Ripple);        
-    }
-    
-    public IsAddressValid(address: string): boolean {
-        if(WAValidator.validate(address, "xrp")) {
-            return true;
-        }
-
-        return false;
+        super();
+        this._coinName = coinNameOrShortcut;
     }
 
-    
+    public async GetAccountInfo(account: string): Promise<RippleAccount>
+    {        
+        return await this.GetFromServer<RippleAccount>(`address/${this._coinName}/${account}`);
+    }
+
+    public async GetAccountTransactions(account: string, limit: number = 10): Promise<any>
+    {
+        return await this.GetFromServer<any>(`address/transactions/${this._coinName}/${account}/${limit}`);
+    }
 }

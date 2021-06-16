@@ -305,7 +305,7 @@ export class BitcoinWallet extends BaseWallet {
             let isOmni = false;
             // Check if any of the wallet addresses is available in TX outputs which means the address received fund.
             for(let i=0;i<tx.outputs.length; i++) {
-                totalReceived += tx.outputs[i].value;
+                totalReceived += tx.outputs[i].valueNumber;
 
                 // To ignore the warning: this._bitcoinWallet.Accounts is possibly undefined
                 if(this._bitcoinWallet.accounts == undefined)
@@ -344,7 +344,7 @@ export class BitcoinWallet extends BaseWallet {
                     let status : 'RECEIVED' | 'RECEIVED_FROM_OWN' | 'OMNI_RECEIVED' | 'OMNI_CHANGE' = 'RECEIVED';
                     
                     if(isOpReturn) {
-                        if(tx.outputs[i].value == 546) {
+                        if(tx.outputs[i].valueNumber == 546) {
                             status = 'OMNI_RECEIVED';
                             isOmni = true;
                         } else if(isFromOwnWallet) {
@@ -359,7 +359,7 @@ export class BitcoinWallet extends BaseWallet {
                     received.push({
                        address: addressInOutputs.address,
                        status:  status,
-                       value: tx.outputs[i].value,
+                       value: tx.outputs[i].valueNumber,
                     });
                 }
             }
@@ -376,7 +376,7 @@ export class BitcoinWallet extends BaseWallet {
             }
 
             for(let i=0; i < tx.inputs.length; i++) {
-                totalSent += tx.inputs[i].value;
+                totalSent += tx.inputs[i].valueNumber;
             }
 
             let sent = new Array<WalletModel.BitcoinSentView>();
@@ -407,7 +407,7 @@ export class BitcoinWallet extends BaseWallet {
                             isOpReturn = true;
                         }
 
-                        if(tx.outputs[k].value == 546) {
+                        if(tx.outputs[k].valueNumber == 546) {
                             isDust = true;
                         }
                     }
@@ -427,22 +427,22 @@ export class BitcoinWallet extends BaseWallet {
                         if(account.addresses.find(aa => aa.address == tx.outputs[j].address)){
                             sent.push({
                                 address: tx.outputs[j].address,
-                                value: tx.outputs[j].value,
-                                status: (isDust && isOpReturn) ? ((tx.outputs[j].value == 546) ? 'OMNI_SENT' : 'OMNI_CHANGE') : 'SENT_TO_OWN',
+                                value: tx.outputs[j].valueNumber,
+                                status: (isDust && isOpReturn) ? ((tx.outputs[j].valueNumber == 546) ? 'OMNI_SENT' : 'OMNI_CHANGE') : 'SENT_TO_OWN',
                             });
 
                             continue;
                         }
 
                         //! Ignore OP_RETURN VALUE 0 TX
-                        if(isOpReturn && tx.outputs[j].value == 0) {
+                        if(isOpReturn && tx.outputs[j].valueNumber == 0) {
                             continue;
                         }
 
                         sent.push({
                             address: tx.outputs[j].address,
-                            status: (isOpReturn && tx.outputs[j].value == 546) ? 'OMNI_SENT' : 'SENT',
-                            value: tx.outputs[j].value,
+                            status: (isOpReturn && tx.outputs[j].valueNumber == 546) ? 'OMNI_SENT' : 'SENT',
+                            value: tx.outputs[j].valueNumber,
                         });
                     }
 
@@ -587,13 +587,8 @@ export class BitcoinWallet extends BaseWallet {
             }
         }
 
-        // Seqwit & Overwintered transactions don't need previous hash
-        if(coinInfo.segwit == false || isOverWintered == false) {
-            //! Load previous transactions
-            await this.LoadPrevTx(tx);
-
-            MyConsole.Info("BitcoinWallet::GenerateTransaction->RefTx:", tx);
-        }
+        //! Load previous transactions 
+        await this.LoadPrevTx(tx, coinInfo.timestamp);
 
         //! Set the TX's outputs
         receivers.forEach(o => {
@@ -663,6 +658,19 @@ export class BitcoinWallet extends BaseWallet {
             throw new Error('The list of receivers can not be empty');
         }
 
+        const coinInfo = this.GetCoinInfo() as BitcoinBaseCoinInfoModel;
+
+        //! Fixed fees
+        if(super.GetCoinInfo().name == "Dogecoin") {
+            return <BitcoinFeeSelectionModel>{
+                economy: coinInfo.minfee_kb.toString(),
+                normal: coinInfo.minfee_kb.toString(),
+                priotity: coinInfo.minfee_kb.toString(),
+                decimal: coinInfo.decimals,
+                unit: coinInfo.shortcut,
+            }
+        }
+
         // Account
         let acc = this._bitcoinWallet.accounts[fromAccount];
 
@@ -672,7 +680,7 @@ export class BitcoinWallet extends BaseWallet {
         // Calculate transaction length
         let txLen = this.CalculateTxLen(receivers, acc, txFees);
 
-        const coinInfo = this.GetCoinInfo() as BitcoinBaseCoinInfoModel;
+        
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
@@ -725,7 +733,7 @@ export class BitcoinWallet extends BaseWallet {
         //! Create list of account UTXO
         let sortedUtoxs = this.CreateSortedUtxoList(acc);
 
-        console.debug(sortedUtoxs);
+        MyConsole.Info("Sorted UTXO", sortedUtoxs);
 
         //! Input addresses
         let utxoBal = 0;
@@ -840,7 +848,7 @@ export class BitcoinWallet extends BaseWallet {
      * Loading previous transaction of each input(s).
      * @param tx Bitcoin transaction 
      */
-    private async LoadPrevTx(tx: BitcoinTx) {
+    private async LoadPrevTx(tx: BitcoinTx, timestamp: boolean) {
         if(tx.inputs == undefined || tx.inputs.length == 0){
             throw new Error("Transaction inputs cannot be null or empty")
         }
@@ -864,11 +872,14 @@ export class BitcoinWallet extends BaseWallet {
         prevTxs.forEach(prev => {
             let ref: RefTransaction = {
                 hash: prev.hash,
-                timestamp: prev.timeStamp,
                 version: prev.version,
                 lock_time: prev.lockTime,
                 bin_outputs: [],
                 inputs: [],
+            }
+
+            if(timestamp == true){
+                ref.timestamp = prev.timeStamp;
             }
 
             prev.inputs.forEach( inp => {
@@ -882,7 +893,7 @@ export class BitcoinWallet extends BaseWallet {
 
             prev.outputs.forEach( out => {
                 ref.bin_outputs.push({
-                    amount: out.value.toString(),
+                    amount: out.value,
                     script_pubkey: out.scriptHex,
                 })
             });

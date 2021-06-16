@@ -20,6 +20,12 @@
 
 import { GeneralResponse } from '../models/GeneralResponse';
 
+export enum TransportType
+{
+    WebUsb,
+    WebSocket
+}
+
 export interface IMessagePayload {
     MsgId: number,
     Lenght: number,

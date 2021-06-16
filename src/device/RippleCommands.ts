@@ -234,7 +234,7 @@ export class RippleCommands implements ICoinCommands {
             }
 
             resolve(await device.SendMessage<ProkeyResponses.RippleSignedTx>('RippleSignTx', transaction, 'RippleSignedTx'));
-        }
+        });
     }
 
     /**
