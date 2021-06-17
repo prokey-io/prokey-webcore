@@ -12,7 +12,7 @@ export class ProkeyBaseBlockChain {
 
         const request = new Request('https://blocks.prokey.org/' + toServer, { method: 'GET' });
 
-        return JSON.parse(await client.execute<string>(request));
+        return JSON.parse(await client.execute<string>(request)) as T;
     }
 
 }

@@ -18,19 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as GenericWalletModel from '../models/GenericWalletModel';
-import { RippleAccountInfo } from "../models/RippleWalletModel";
+import { ProkeyRippleBlockchain } from './servers/prokey/src/ripple/ProkeyRippleBlockChain';
+import { RippleAccountInfo } from './servers/prokey/src/ripple/RippleModel';
 
 export class RippleBlockchain {
-
-    _coinName: string;
+    _prokeyChain: ProkeyRippleBlockchain;
 
     constructor(coinName: string){
-        this._coinName = coinName;
+        this._prokeyChain = new ProkeyRippleBlockchain(coinName);
+    }
+   
+    public async GetAccountInfo(rippleAddress: string): Promise<RippleAccountInfo> {
+        return await this._prokeyChain.GetAccountInfo(rippleAddress);
     }
 
-    
-    public async GetAccountInfo(reqAddresses: GenericWalletModel.RequestAddressInfo): Promise<RippleAccountInfo> {
-        return <RippleAccountInfo>{};
+    public async GetAccountTransactions(account: string, limit: number = 10): Promise<any> {
+        return await this._prokeyChain.GetAccountTransactions(account, limit);
     }
 }
