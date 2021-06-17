@@ -17,7 +17,7 @@
 */
 
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
-import { RippleAccountInfo } from "./RippleModel";
+import { RippleAccountInfo, RippleTransactionDataInfo } from "./RippleModel";
 
 export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
 
@@ -38,8 +38,13 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         }
     }
 
-    public async GetAccountTransactions(account: string, limit: number = 10): Promise<any>
+    public async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>>
     {
-        return await this.GetFromServer<any>(`address/transactions/${this._coinName}/${account}/${limit}`);
+        let trs = await this.GetFromServer<any>(`address/transactions/${this._coinName}/${account}/${limit}`);
+        if (trs != null && trs.result.transactions != null)
+        {
+            return trs.result.transactions;
+        }
+        return [];
     }
 }

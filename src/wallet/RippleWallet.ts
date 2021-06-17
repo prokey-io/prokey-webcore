@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { RippleAccountInfo } from "../blockchain/servers/prokey/src/ripple/RippleModel";
+import { RippleAccountInfo, RippleTransactionDataInfo } from "../blockchain/servers/prokey/src/ripple/RippleModel";
 import { CoinBaseType } from "../coins/CoinInfo";
 import { Device } from "../device/Device";
 import { RippleCoinInfoModel } from "../models/CoinInfoModel";
 import { BaseWallet } from "./BaseWallet";
 import * as PathUtil from '../utils/pathUtils';
-import { RippleAddress } from "../models/Prokey";
+import { RippleAddress, RippleTransaction } from "../models/Prokey";
 import { RippleBlockchain } from "../blockchain/RippleBlockchain";
 var WAValidator = require('multicoin-address-validator');
 
@@ -82,5 +82,9 @@ export class RippleWallet extends BaseWallet {
         let address = await this.GetAddress<RippleAddress>(path[0].path, false);
 
         return await this._block_chain.GetAccountInfo(address.address);
+    }
+
+    public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
+        return await this._block_chain.GetAccountTransactions(account);
     }
 }

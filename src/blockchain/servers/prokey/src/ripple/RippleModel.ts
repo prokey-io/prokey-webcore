@@ -35,3 +35,25 @@ export interface RippleAccountInfo
     Flags: number,
     index: string
 }
+
+export interface RippleTransactionInfo
+{
+    Account: string,
+    Amount: string,
+    Destination: string,
+    Fee: string,
+    Flags: number,
+    Sequence: number,
+    SigningPubKey: string,
+    TransactionType: string,
+    TxnSignature: string,
+    hash: string,
+    date: number,
+}
+
+export interface RippleTransactionDataInfo
+{
+    meta: any,
+    tx: RippleTransactionInfo,
+    validated: boolean
+}

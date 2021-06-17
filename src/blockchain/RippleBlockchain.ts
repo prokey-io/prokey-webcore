@@ -19,7 +19,7 @@
 */
 
 import { ProkeyRippleBlockchain } from './servers/prokey/src/ripple/ProkeyRippleBlockChain';
-import { RippleAccountInfo } from './servers/prokey/src/ripple/RippleModel';
+import { RippleAccountInfo, RippleTransactionDataInfo } from './servers/prokey/src/ripple/RippleModel';
 
 export class RippleBlockchain {
     _prokeyChain: ProkeyRippleBlockchain;
@@ -32,7 +32,7 @@ export class RippleBlockchain {
         return await this._prokeyChain.GetAccountInfo(rippleAddress);
     }
 
-    public async GetAccountTransactions(account: string, limit: number = 10): Promise<any> {
+    public async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>> {
         return await this._prokeyChain.GetAccountTransactions(account, limit);
     }
 }
