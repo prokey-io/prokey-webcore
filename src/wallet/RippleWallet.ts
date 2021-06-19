@@ -16,24 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { RippleAccountInfo, RippleTransactionDataInfo } from "../blockchain/servers/prokey/src/ripple/RippleModel";
+import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "../blockchain/servers/prokey/src/ripple/RippleModel";
 import { CoinBaseType } from "../coins/CoinInfo";
 import { Device } from "../device/Device";
 import { RippleCoinInfoModel } from "../models/CoinInfoModel";
 import { BaseWallet } from "./BaseWallet";
 import * as PathUtil from '../utils/pathUtils';
-import { RippleAddress, RippleTransaction } from "../models/Prokey";
+import { RippleAddress, RippleSignedTx, RippleTransaction } from "../models/Prokey";
 import { RippleBlockchain } from "../blockchain/RippleBlockchain";
 var WAValidator = require('multicoin-address-validator');
 
 export class RippleWallet extends BaseWallet {
 
     _block_chain : RippleBlockchain;
+    _accounts: Array<RippleAccountInfo>;
 
     constructor(device: Device, coinName: string)
     {
         super(device, coinName, CoinBaseType.Ripple);        
         this._block_chain = new RippleBlockchain(this.GetCoinInfo().shortcut);
+        this._accounts = [];
     }
     
     public IsAddressValid(address: string): boolean {
@@ -50,16 +52,16 @@ export class RippleWallet extends BaseWallet {
     {
         return new Promise<Array<RippleAccountInfo>>(async (resolve, reject) => {
             let an = 0;
-            let res = new Array<RippleAccountInfo>();
+            this._accounts = new Array<RippleAccountInfo>();
             do
             {
                 let account = await this.GetAccountInfo(an);
                 if (account == null)
                 {
                     // there is nothing here
-                    return resolve(res);
+                    return resolve(this._accounts);
                 }
-                res.push(account);
+                this._accounts.push(account);
                 if (accountFindCallBack) {
                     accountFindCallBack(account);
                 }
@@ -86,5 +88,42 @@ export class RippleWallet extends BaseWallet {
 
     public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
         return await this._block_chain.GetAccountTransactions(account);
+    }
+
+    public async GetCurrentFee(): Promise<RippleFee>
+    {
+        return await this._block_chain.GetCurrentFee();
+    }
+
+    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string): RippleTransaction
+    {
+        // Validate accountNumber
+        if(accountNumber >= this._accounts.length){
+            throw new Error('Account number is wrong');
+        }
+
+        let ci = super.GetCoinInfo() as RippleCoinInfoModel
+        let slip44 = ci.slip44;
+        let path = PathUtil.GetListOfBipPath(
+        slip44,                 
+            0,                      // Ripple, each address is considered as an account
+            1,                      // We only need an address
+            false,                  // Segwit not defined so we should use 44'
+            false,                  // No change address defined in ripple
+            accountNumber);
+            
+        return {
+            address_n: path[0].path,
+            fee: +selectedFee,
+            sequence: this._accounts[accountNumber].Sequence,
+            payment: {
+                amount: amount,
+                destination: toAccount
+            }
+        };
+    }
+
+    public async SendTransaction(tx: RippleSignedTx): Promise<any> {
+        return await this._block_chain.BroadCastTransaction(tx.serialized_tx);
     }
 }

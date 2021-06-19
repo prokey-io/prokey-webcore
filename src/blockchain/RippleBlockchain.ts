@@ -19,7 +19,8 @@
 */
 
 import { ProkeyRippleBlockchain } from './servers/prokey/src/ripple/ProkeyRippleBlockChain';
-import { RippleAccountInfo, RippleTransactionDataInfo } from './servers/prokey/src/ripple/RippleModel';
+import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from './servers/prokey/src/ripple/RippleModel';
+import * as Utils from '../utils/utils';
 
 export class RippleBlockchain {
     _prokeyChain: ProkeyRippleBlockchain;
@@ -35,4 +36,18 @@ export class RippleBlockchain {
     public async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>> {
         return await this._prokeyChain.GetAccountTransactions(account, limit);
     }
+
+    public async GetCurrentFee(): Promise<RippleFee> {
+        return await this._prokeyChain.GetCurrentFee();
+    }
+
+    public async BroadCastTransaction(data: string): Promise<any> {
+        let data_any = data as any;
+        if (data_any instanceof Uint8Array)
+        {            
+            return await this._prokeyChain.BroadCastTransaction(Utils.ByteArrayToHexString(data_any).toUpperCase());            
+        }
+        return await this._prokeyChain.BroadCastTransaction(data);
+    }
+
 }

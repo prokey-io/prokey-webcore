@@ -57,3 +57,24 @@ export interface RippleTransactionDataInfo
     tx: RippleTransactionInfo,
     validated: boolean
 }
+
+export interface RippleDrop 
+{
+    base_fee: string,
+    median_fee: string,
+    minimum_fee: string,
+    open_ledger_fee: string
+}
+
+export interface RippleFee 
+{
+    current_ledger_size: string,
+    current_queue_size: string,
+    drops: RippleDrop,
+    expected_ledger_size: string,
+    ledger_current_index: number,
+    levels: any,
+    max_queue_size: string,
+    status: string,
+    validated: boolean
+}

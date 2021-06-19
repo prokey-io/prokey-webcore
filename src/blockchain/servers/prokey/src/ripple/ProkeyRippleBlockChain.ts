@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { MyConsole } from "../../../../../utils/console";
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
-import { RippleAccountInfo, RippleTransactionDataInfo } from "./RippleModel";
+import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "./RippleModel";
 
 export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
 
@@ -47,4 +48,14 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         }
         return [];
     }
+
+    public async GetCurrentFee(): Promise<RippleFee> {
+        return await this.GetFromServer<RippleFee>(`transaction/fee/${this._coinName}`);
+    }
+
+    public async BroadCastTransaction(data: string): Promise<any> {
+        MyConsole.Info("RippleTxHex", data);
+        return await this.GetFromServer<any>(`Transaction/send/${this._coinName}/${data}`);
+    }
+
 }

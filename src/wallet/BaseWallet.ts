@@ -63,6 +63,7 @@ import * as Util from '../utils/utils';
 import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
 import { RippleCommands } from "../device/RippleCommands";
+import { RippleSignedTx, RippleTransaction } from "../models/Responses-V6";
 
 /**
  * This is the base class for all implemented wallets
@@ -157,7 +158,9 @@ export abstract class BaseWallet {
      * Sign Transaction
      * @param tx transaction to be signed by device
      */
-    public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx>(tx: BitcoinTx | EthereumTx): Promise<T> {
+    public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx | RippleSignedTx>
+        (tx: BitcoinTx | EthereumTx | RippleTransaction): Promise<T> 
+    {
         return await this._commands.SignTransaction(this._device, tx) as T;
     }
 
