@@ -102,6 +102,15 @@ export class RippleWallet extends BaseWallet {
             throw new Error('Account number is wrong');
         }
 
+        // Check balance
+        let bal = +this._accounts[accountNumber].Balance;
+        bal = bal 
+            - 20000000 // 20 XRP for reserve
+            - amount
+            - (+selectedFee);
+        if (bal < 0)
+            throw new Error("Insufficient balance you need to hold 20 XRP in your account.");
+
         let ci = super.GetCoinInfo() as RippleCoinInfoModel
         let slip44 = ci.slip44;
         let path = PathUtil.GetListOfBipPath(
