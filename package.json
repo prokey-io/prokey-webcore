@@ -21,7 +21,8 @@
         "multicoin-address-validator": "^0.4.8",
         "protobufjs": "^6.11.2",
         "rxjs": "~6.2.0",
-        "typescript-http-client": "^0.10.1"
+        "typescript-http-client": "^0.10.1",
+        "websocket": "^1.0.34"
     },
     "scripts": {
         "build": "tsc"
