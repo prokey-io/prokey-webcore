@@ -75,11 +75,11 @@ export class RippleWallet extends BaseWallet {
         let slip44 = (super.GetCoinInfo() as RippleCoinInfoModel).slip44;
         let path = PathUtil.GetListOfBipPath(
         slip44,                 
-            0,                      // Ripple, each address is considered as an account
+            accountNumber,          // Ripple, each address is considered as an account
             1,                      // We only need an address
             false,                  // Segwit not defined so we should use 44'
             false,                  // No change address defined in ripple
-            accountNumber);
+            0);
         
         let address = await this.GetAddress<RippleAddress>(path[0].path, false);
 
@@ -115,11 +115,11 @@ export class RippleWallet extends BaseWallet {
         let slip44 = ci.slip44;
         let path = PathUtil.GetListOfBipPath(
         slip44,                 
-            0,                      // Ripple, each address is considered as an account
+            accountNumber,          // Ripple, each address is considered as an account
             1,                      // We only need an address
             false,                  // Segwit not defined so we should use 44'
             false,                  // No change address defined in ripple
-            accountNumber);
+            0);
             
         let tx: RippleTransaction = {
             address_n: path[0].path,
