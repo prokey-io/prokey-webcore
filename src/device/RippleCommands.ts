@@ -249,7 +249,21 @@ export class RippleCommands implements ICoinCommands {
         address_n: Array<number>,
         message: Uint8Array,
         coin?: string): Promise<ProkeyResponses.MessageSignature> {
-        throw new Error("Method not implemented.");
+
+        let scriptType = PathUtil.GetScriptType(address_n);
+
+        let res = await device.SendMessage<ProkeyResponses.MessageSignature>('SignMessage', {
+            address_n: address_n,
+            message: message,
+            coin_name: coin || 'Ripple',
+            script_type: scriptType,
+        }, 'MessageSignature');
+
+        if (res.signature) {
+            res.signature = Utility.ByteArrayToHexString(res.signature);
+        }
+
+        return res;
     }
 
     /**
@@ -266,7 +280,13 @@ export class RippleCommands implements ICoinCommands {
         message: Uint8Array,
         signature: Uint8Array,
         coinName: string): Promise<ProkeyResponses.Success> {
-        throw new Error("Method not implemented.");
+
+        return await device.SendMessage<ProkeyResponses.Success>('VerifyMessage', {
+            address: address,
+            signature: signature,
+            message: message,
+            coin_name: coinName || 'Ripple',
+        }, 'Success');
     }
 
 }
