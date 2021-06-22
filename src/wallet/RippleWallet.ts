@@ -95,7 +95,7 @@ export class RippleWallet extends BaseWallet {
         return await this._block_chain.GetCurrentFee();
     }
 
-    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string): RippleTransaction
+    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string, destinationTag?: number): RippleTransaction
     {
         // Validate accountNumber
         if(accountNumber >= this._accounts.length){
@@ -127,7 +127,8 @@ export class RippleWallet extends BaseWallet {
             sequence: this._accounts[accountNumber].Sequence,
             payment: {
                 amount: amount,
-                destination: toAccount
+                destination: toAccount,
+                destination_tag: destinationTag
             }
         };
     }

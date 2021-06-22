@@ -726,6 +726,7 @@ export type RippleTransaction = {
     payment: {
         amount: number,
         destination: string,
+        destination_tag?: number
     },
 }
 
