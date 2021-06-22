@@ -62,7 +62,40 @@ export class BitcoinBlockchain {
     }
 
     public async GetLatestTransactions(addresses: Array<BitcoinAddressInfo>, count = 10, offset = 0) : Promise<Array<BitcoinTxInfo>> {
-        return this._prokeyBtcBlockchain.GetLatestTransactions(addresses, count, offset);
+        if(addresses == null) {
+            throw new Error("BitcoinBlockchain::GetLatestTransactions: Parameter addresses can not be null");
+        }
+
+        if(addresses.length == 0) {
+            return Array<BitcoinTxInfo>();
+        }
+
+        // if we have transactionId(array of number) (will be depricated in new API version)
+        // We have to check it for blockchain API backward compatibility
+        if(addresses[0].txInfo.transactionIds != null) {
+            let trs: Array<number> = new Array<number>();
+            addresses.forEach(add => {
+                add.txInfo.transactionIds!.forEach(tr => {
+                    trs.push(tr);
+                });
+            });
+
+            return this._prokeyBtcBlockchain.GetLatestTransactionsByDbId(trs, count, offset);
+        }
+        // If we have Transaction Hash list
+        else if(addresses[0].txInfo.transactions != null) {
+            let trs: Array<number> = new Array<number>();
+
+            addresses.forEach(add => {
+                add.txInfo.transactions!.forEach(tr => {
+                    trs.push(tr.txId);
+                });
+            });
+
+            return this._prokeyBtcBlockchain.GetLatestTransactionsByDbId(trs, count, offset);
+        } else {
+            return Array<BitcoinTxInfo>();
+        }
     }
         
     

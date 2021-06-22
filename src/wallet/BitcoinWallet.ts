@@ -818,18 +818,34 @@ export class BitcoinWallet extends BaseWallet {
        var utxos = new Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>();
        acc.addresses.forEach(element => {
            let path = (element.addressModel == undefined) ? undefined : element.addressModel.path;
-           if (element.exist && element.txInfo != undefined && element.txInfo.utxOs)
-               element.txInfo.utxOs.forEach(utxo => {                    
-                   utxos.push([utxo, path]);
+           if (element.exist && element.txInfo != undefined && element.txInfo.utxOs) {
+               element.txInfo.utxOs.forEach(utxo => {  
+                    // for backward compatibility 
+                    if(utxo.blockNumber == null) {
+                        utxos.push([utxo, path]);
+                    }
+                    // If the transaction has confirmed
+                    else if(utxo.blockNumber != 0) {
+                        utxos.push([utxo, path]);
+                    }
                });
+            }
        });
 
        acc.changeAddresses.forEach(element => {
            let path = (element.addressModel == undefined) ? undefined : element.addressModel.path;
-           if (element.exist && element.txInfo != undefined && element.txInfo.utxOs)
-               element.txInfo.utxOs.forEach(utxo => {
-                   utxos.push([utxo, path]);
-               });
+           if (element.exist && element.txInfo != undefined && element.txInfo.utxOs) {
+                element.txInfo.utxOs.forEach(utxo => {
+                    // for backward compatibility 
+                    if(utxo.blockNumber == null) {
+                        utxos.push([utxo, path]);
+                    }
+                    // If the transaction has confirmed
+                    else if(utxo.blockNumber != 0) {
+                        utxos.push([utxo, path]);
+                    }
+                });
+            }
        });
 
        let sortedUtoxs = utxos.sort( (a,b) => {
