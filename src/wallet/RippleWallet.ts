@@ -121,16 +121,20 @@ export class RippleWallet extends BaseWallet {
             false,                  // No change address defined in ripple
             accountNumber);
             
-        return {
+        let tx: RippleTransaction = {
             address_n: path[0].path,
             fee: +selectedFee,
             sequence: this._accounts[accountNumber].Sequence,
             payment: {
                 amount: amount,
-                destination: toAccount,
-                destination_tag: destinationTag
+                destination: toAccount,                
             }
         };
+        if (destinationTag)
+        {
+            tx.payment.destination_tag = destinationTag;
+        }
+        return tx;
     }
 
     public async SendTransaction(tx: RippleSignedTx): Promise<any> {
