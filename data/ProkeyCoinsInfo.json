@@ -2544,7 +2544,7 @@
       "shortcut": "CNN",
       "decimals": 18,
       "name": "Content Neutrality Network",
-      "priority": 100
+      "priority": 976
     },
     {
       "chain_id": 1,
@@ -3048,7 +3048,7 @@
       "shortcut": "DAO",
       "decimals": 1,
       "name": "DAO",
-      "priority": 293
+      "priority": 321
     },
     {
       "chain_id": 1,
@@ -3544,7 +3544,7 @@
       "shortcut": "DOV",
       "decimals": 18,
       "name": "Dovu",
-      "priority": 100
+      "priority": 548
     },
     {
       "chain_id": 1,
@@ -4400,7 +4400,7 @@
       "shortcut": "EVED",
       "decimals": 18,
       "name": "Evedo Token",
-      "priority": 100
+      "priority": 956
     },
     {
       "chain_id": 1,
@@ -4464,7 +4464,7 @@
       "shortcut": "EXRN",
       "decimals": 0,
       "name": "EXRNchain",
-      "priority": 100
+      "priority": 984
     },
     {
       "chain_id": 1,
@@ -7800,7 +7800,7 @@
       "shortcut": "OLT",
       "decimals": 18,
       "name": "OneLedger Token",
-      "priority": 100
+      "priority": 958
     },
     {
       "chain_id": 1,
@@ -13408,11 +13408,7 @@
       "shortcut": "VITE",
       "decimals": 18,
       "name": "Vite",
-      "priority": 422
-    },
-    {
       "chain_id": 1,
-      "address": "0x519475b31653e46d20cd09f9fdcf3b12bdacb4f5",
       "shortcut": "VIU",
       "decimals": 18,
       "name": "Viuly",
@@ -13592,11 +13588,7 @@
       "shortcut": "WBTC",
       "decimals": 8,
       "name": "Wrapped Bitcoin",
-      "priority": 22
-    },
-    {
       "chain_id": 1,
-      "address": "0xbb97e381f1d1e94ffa2a5844f6875e6146981009",
       "shortcut": "WBX",
       "decimals": 18,
       "name": "WiBX Utility Token",
@@ -13688,7 +13680,7 @@
       "shortcut": "WINGS",
       "decimals": 18,
       "name": "WINGS",
-      "priority": 100
+      "priority": 975
     },
     {
       "chain_id": 1,
@@ -14160,11 +14152,7 @@
       "shortcut": "XYO",
       "decimals": 18,
       "name": "XYO",
-      "priority": 398
-    },
-    {
       "chain_id": 1,
-      "address": "0x0e2298e3b3390e3b945a5456fbf59ecc3f55da16",
       "shortcut": "YAM",
       "decimals": 18,
       "name": "YAM V1",
@@ -14184,11 +14172,7 @@
       "shortcut": "YEE",
       "decimals": 18,
       "name": "Yee Token",
-      "priority": 100
-    },
-    {
       "chain_id": 1,
-      "address": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
       "shortcut": "YFI",
       "decimals": 18,
       "name": "yearn.finance",
@@ -14200,11 +14184,7 @@
       "shortcut": "YFII",
       "decimals": 18,
       "name": "YFII.finance",
-      "priority": 363
-    },
-    {
       "chain_id": 1,
-      "address": "0x45f24baeef268bb6d63aee5129015d69702bcdfa",
       "shortcut": "YFV",
       "decimals": 18,
       "name": "YFValue",
@@ -14232,7 +14212,7 @@
       "shortcut": "YOYOW",
       "decimals": 18,
       "name": "YOYOW",
-      "priority": 100
+      "priority": 995
     },
     {
       "chain_id": 1,
@@ -14583,5 +14563,38 @@
       "timestamp": false
     }
   ],
-  "ripple": []
+  "ripple": [
+    {
+      "name": "Ripple",
+      "shortcut": "XRP",
+      "slip44": 144,
+      "decimals": 6,
+      "priority": 7,
+      "on_device": "Ripple",
+      "test": false,
+      "support": {
+        "optimum": "1.10.0"
+      },
+      "tx_url": "https://xrpscan.com/tx/{hash}",
+      "wallets": [
+        "https://wallet.prokey.io"
+      ]
+    },
+    {
+      "name": "Ripple Testnet",
+      "shortcut": "tXRP",
+      "slip44": 144,
+      "decimals": 6,
+      "priority": 100,
+      "on_device": "Ripple Testnet",
+      "test": true,
+      "support": {
+        "optimum": "1.10.0"
+      },
+      "tx_url": "https://testnet.xrpl.org/transactions/{hash}",
+      "wallets": [
+        "https://wallet.prokey.io"
+      ]
+    }
+  ]
 }

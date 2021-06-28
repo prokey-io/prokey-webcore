@@ -51,7 +51,7 @@ export const validateParams = (values: Object, fields: Array<Param>): void => {
 export const fixPath = (utxo: any): any => {
     // make sure bip32 indices are unsigned
     if (utxo.address_n && Array.isArray(utxo.address_n)) {
-        utxo.address_n = utxo.address_n.map((i:number) => i >>> 0);
+        utxo.address_n = utxo.address_n.map((i: number) => i >>> 0);
     }
     return utxo;
 };
