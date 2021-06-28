@@ -152,14 +152,16 @@ export class CoinInfo {
 
         // Add list of Ripple
         ProkeyCoinInfoModel.ripple.forEach(element => {
-            list.push({
-                Name: element.name,
-                Shortcut: element.shortcut,
-                Type: CoinBaseType.Ripple,
-                Priority: element.priority,
-                ContractAddress: '',
-                Decimals: element.decimals,
-            })
+            if (compareVersions(firmwareVersion, element.support.optimum) >= 0) {
+                list.push({
+                    Name: element.name,
+                    Shortcut: element.shortcut,
+                    Type: CoinBaseType.Ripple,
+                    Priority: element.priority,
+                    ContractAddress: '',
+                    Decimals: element.decimals,
+                })
+            }
         });
 
         //! Sort the list by Priority
