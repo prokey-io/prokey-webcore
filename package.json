@@ -4,9 +4,10 @@
     "license": "GPL-3.0",
     "main": "dist/index.js",
     "types": "dist/**/*.d.ts",
+    "files": ["dist/**/*", "protob/**/*"],
     "description": "This module can be used to communicate with Prokey device",
     "author": "Prokey Techologies Sdn. Bhd. <info@prokey.io>",
-    "prepublish": "tsc && cp data/ProkeyCoinsInfo.json dist/data/ProkeyCoinsInfo.json",
+    "prepublish": "tsc && cp data/ProkeyCoinsInfo.json dist/src/data/ProkeyCoinsInfo.json",
     "dependencies": {
         "@types/bytebuffer": "^5.0.40",
         "assert": "^2.0.0",
