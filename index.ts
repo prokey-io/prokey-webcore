@@ -18,22 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Device } from './src/device/Device';
-import { BitcoinCommands } from './src/device/BitcoinCommands';
-import { EthereumCommands } from './src/device/EthereumCommands';
-import { BitcoinWallet } from './src/wallet/BitcoinWallet';
-import { EthereumWallet } from './src/wallet/EthereumWallet';
-import { OmniWallet } from './src/wallet/OmniWallet';
-import { CoinInfo, CoinBaseType } from './src/coins/CoinInfo';
-
-module.exports = {
-    Device,
-    BitcoinCommands,
-    EthereumCommands,
-    BitcoinWallet,
-    EthereumWallet,
-    OmniWallet,
-    CoinInfo,
-    CoinBaseType,
-}
+export { Device } from './src/device/Device';
+export { BitcoinCommands } from './src/device/BitcoinCommands';
+export { EthereumCommands } from './src/device/EthereumCommands';
+export { BitcoinWallet } from './src/wallet/BitcoinWallet';
+export { EthereumWallet } from './src/wallet/EthereumWallet';
+export { OmniWallet } from './src/wallet/OmniWallet';
+export { CoinInfo, CoinBaseType } from './src/coins/CoinInfo';
 

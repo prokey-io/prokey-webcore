@@ -71,7 +71,7 @@ export class RippleWallet extends BaseWallet {
     }
 
     // Get ripple account info from blockchain
-    private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo> {
+    private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo | null> {
         let slip44 = (super.GetCoinInfo() as RippleCoinInfoModel).slip44;
         let path = PathUtil.GetListOfBipPath(
         slip44,                 
@@ -103,7 +103,12 @@ export class RippleWallet extends BaseWallet {
         }
 
         // Check balance
-        let bal = +this._accounts[accountNumber].Balance;
+        let bal = 0;
+        var acc = this._accounts[accountNumber];
+        if (acc != null && acc.Balance != null) {
+            bal = +acc.Balance;
+        }
+
         bal = bal 
             - 20000000 // 20 XRP for reserve
             - amount
