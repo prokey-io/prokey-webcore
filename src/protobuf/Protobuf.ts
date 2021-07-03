@@ -20,7 +20,7 @@
 
 import { MyConsole } from './../utils/console';
 import { Root, Type, IParseOptions, util, configure } from 'protobufjs';
-import * as Long from '../../node_modules/long' 
+import Long = require('./long');
 
 export class Protobuf {
     private static _instance: Protobuf;
