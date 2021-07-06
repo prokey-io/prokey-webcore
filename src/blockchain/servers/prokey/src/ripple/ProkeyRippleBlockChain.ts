@@ -30,7 +30,7 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         this._coinName = coinNameOrShortcut;
     }
 
-    public async GetAccountInfo(account: string): Promise<RippleAccountInfo>
+    public async GetAccountInfo(account: string): Promise<RippleAccountInfo | null>
     {        
         try {
             return await this.GetFromServer<RippleAccountInfo>(`address/${this._coinName}/${account}`);            

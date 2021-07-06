@@ -32,6 +32,11 @@ export class WebSocketTransport implements ITransport {
     _msgBuffer: Array<Uint8Array> = new Array<Uint8Array>();
     _msgResolver: any;
 
+    constructor()
+    {
+        this._ws = new WebSocket("ws://localhost:55500");
+    }
+
     public async Init(isDebug?: boolean, onReceiveCallback?: (msgPayload: IMessagePayload) => void): Promise<GeneralResponse> {
         if (onReceiveCallback) {
             this.onReceiveCallback = onReceiveCallback;
@@ -40,8 +45,7 @@ export class WebSocketTransport implements ITransport {
     }
 
     public async Open(path?: string): Promise<GeneralResponse> {
-        if (this._ws == null || !this._isConnected) {
-            this._ws = new WebSocket("ws://localhost:55500");
+        if (!this._isConnected) {
             this._ws.binaryType = 'arraybuffer';
             this._ws.onmessage = (message: IMessageEvent) => {
                 console.debug(message);

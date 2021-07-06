@@ -29,7 +29,7 @@ export class RippleBlockchain {
         this._prokeyChain = new ProkeyRippleBlockchain(coinName);
     }
    
-    public async GetAccountInfo(rippleAddress: string): Promise<RippleAccountInfo> {
+    public async GetAccountInfo(rippleAddress: string): Promise<RippleAccountInfo | null> {
         return await this._prokeyChain.GetAccountInfo(rippleAddress);
     }
 
