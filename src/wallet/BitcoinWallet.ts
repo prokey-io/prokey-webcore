@@ -25,8 +25,8 @@ import { BitcoinBaseCoinInfoModel } from '../models/CoinInfoModel';
 import { Device } from '../device/Device'
 import * as PathUtil from '../utils/pathUtils';
 import { BitcoinOutputModel, BitcoinTx } from '../models/BitcoinTx';
-import { BitcoinBlockchain } from '../blockchain/BitcoinBlockchain';
-import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel'; 
+import { BitcoinBlockChain } from '../blockchain/servers/prokey/src/bitcoin/Bitcoin';
+import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel';
 import {
     RefTransaction,
     TransactionInput,
@@ -44,7 +44,7 @@ var WAValidator = require('multicoin-address-validator');
  */
 export class BitcoinWallet extends BaseWallet {
     private _bitcoinWallet!: WalletModel.BitcoinWalletModel 
-    private _blockchain: BitcoinBlockchain;
+    private _blockchain: BitcoinBlockChain;
 
 
     // -----------------  Segwit TX -----------------------
@@ -69,7 +69,7 @@ export class BitcoinWallet extends BaseWallet {
         super(device, coinName, CoinBaseType.BitcoinBase);
 
         // Initial Bitcoin Blockchain
-        this._blockchain = new BitcoinBlockchain(super.GetCoinInfo().shortcut);
+        this._blockchain = new BitcoinBlockChain(super.GetCoinInfo().shortcut);
     }
 
     /**
@@ -136,7 +136,7 @@ export class BitcoinWallet extends BaseWallet {
     /**
      * Get blockchain 
      */
-    public GetBlockChain(): BitcoinBlockchain {
+    public GetBlockChain(): BitcoinBlockChain {
         return this._blockchain;
     }
 
@@ -657,7 +657,7 @@ export class BitcoinWallet extends BaseWallet {
      * @param txData Signed Transaction to be sent to the network
      */
     public async SendTransaction(txData: string){
-        return this._blockchain.BroadcastTransaction(txData);
+        return this._blockchain.BroadCastTransaction(txData);
     }
 
     /**

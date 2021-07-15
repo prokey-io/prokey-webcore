@@ -28,21 +28,26 @@ import { httpclient } from 'typescript-http-client'
 import Request = httpclient.Request
 import { ProkeySendTransactionResponse } from '../models/ProkeyGenericModel';
 import { RequestAddressInfo } from '../../../../../models/GenericWalletModel';
+import {ProkeyBaseBlockChain} from "../ProkeyBaseBlockChain";
+import {BitcoinFee} from "../../../../../models/BitcoinWalletModel";
+import {CoinBaseType, CoinInfo} from "../../../../../coins/CoinInfo";
+import {BitcoinBaseCoinInfoModel} from "../../../../../models/CoinInfoModel";
 
 
-export class BitcoinBlockChain {
+export class BitcoinBlockChain extends ProkeyBaseBlockChain {
     _coinName: string;
 
     // Constructor
     constructor(coinName: string)
     {
+        super();
         this._coinName = coinName;
     }
 
     /**
      * Request: Getting Bitcoin Address Info from blocks.prokey.io
-     * @param List of ReqBitcoinAddressInfo
-     * @returns List of ResBitcoinAddressInfo  
+     * @param reqAddresses an Array of ReqBitcoinAddressInfo
+     * @returns BitcoinAddressInfo an Array of BitcoinAddressInfo
      */
     public async GetAddressInfo(reqAddresses: Array<RequestAddressInfo>): Promise<Array<WalletModel.BitcoinAddressInfo>> {
         return new Promise<Array<WalletModel.BitcoinAddressInfo>>(async (resolve,reject)=>{
@@ -104,7 +109,7 @@ export class BitcoinBlockChain {
     public async GetTransactions(hash: string): Promise<Array<WalletModel.BitcoinTxInfo>> {
         return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
             try {
-                let res = await this.GetFromServer<Array<WalletModel.BitcoinTxInfo>>(`Transaction/${this._coinName}/${hash}`);
+                let res = await this.CustomGet<Array<WalletModel.BitcoinTxInfo>>(`Transaction/${this._coinName}/${hash}`);
 
                 res.forEach(tx => {
                     tx.inputs.forEach(inp => {
@@ -188,32 +193,67 @@ export class BitcoinBlockChain {
      * Get Bitcoin transaction fee from server
      * @returns ProkeyResBitcoinFee
      */
-    public async GetTxFee(): Promise<BtcFees> {
-        return this.GetFromServer<BtcFees>('Transaction/fee/' + this._coinName );
+    public async GetTxFeeFromServer(): Promise<BtcFees> {
+        return this.CustomGet<BtcFees>('Transaction/fee/' + this._coinName );
     }
 
     public async BroadCastTransaction(data: string): Promise<ProkeySendTransactionResponse> {
-        return this.GetFromServer<ProkeySendTransactionResponse>(`Transaction/send/${this._coinName}/${data}`);
+        return this.CustomGet<ProkeySendTransactionResponse>(`Transaction/send/${this._coinName}/${data}`);
     }
 
-    private async PostToServer<T>(toServer: string, body: any): Promise<T> {
-        const client = httpclient.newHttpClient();
+    /**
+     * Get Bitcoin transaction fee from server
+     * @returns BitcoinFee
+     */
+    public async GetTxFee(): Promise<BitcoinFee> {
+        var fee = <BitcoinFee>{};
+        if (this._coinName === 'BTC')
+        {
+            try {
 
-        const request = new Request("https://blocks.prokey.org/" + toServer, {body: body, method: 'POST'});
+                // get fee from https://bitcoinfees.earn.com/api/v1/fees/list
+                const client = httpclient.newHttpClient();
 
-        return JSON.parse(await client.execute<string>(request));
+                const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
+
+                var r = await client.execute<any>(request);
+                r.fees.forEach(element => {
+                    if (element.maxMinutes == 360 && fee.economy == null) {
+                        fee.economy = element.minFee;
+                    } else if (element.maxMinutes == 180 && fee.normal == null) {
+                        fee.normal = element.minFee;
+                    } else if (element.maxMinutes == 60 && fee.high == null) {
+                        fee.high = element.minFee;
+                    }
+                });
+
+                return fee;
+            }
+            catch (error) {
+            }
+        }
+
+
+        var fees = await this.GetTxFeeFromServer();
+        // BTC -> Satoshi/Byte
+        fee.economy = fees.ecoFees[5].feerate * 100000;
+        fee.normal = fees.fees[3].feerate * 100000;
+        fee.high = fees.fees[1].feerate * 100000;
+
+
+        // Server may return the negative fee, so we should use the next returned fee
+        if (fee.high < 0)
+            fee.high = fees.fees[2].feerate * 100000;
+
+            // We need to use the fee from coin info
+            // satoshi/kB -> satoshi/Byte
+            fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( this._coinName, CoinBaseType.BitcoinBase).minfee_kb / 1000;
+        }
+
+        return fee;
     }
 
-    private async GetFromServer<T>(toServer: string): Promise<T> {
-        const client = httpclient.newHttpClient();
-
-        const request = new Request("https://blocks.prokey.org/" + toServer, {method: 'GET'});
-
-        let json = await client.execute<string>(request);
-
-        json = json.replace(new RegExp('"value":([0-9]+),',"g"),'"value":"$1",');
-
-        return JSON.parse(json);
+    private async CustomGet<T>(toServer: string): Promise<T> {
+        return await this.GetFromServer(toServer, json => json.replace(new RegExp('"value":([0-9]+),',"g"),'"value":"$1",'));
     }
-    
 }

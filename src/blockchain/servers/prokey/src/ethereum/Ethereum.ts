@@ -19,19 +19,18 @@
 */
 
 import { RequestAddressInfo } from '../../../../../models/GenericWalletModel';
-import { httpclient } from 'typescript-http-client'
-import Request = httpclient.Request
 import { ProkeySendTransactionResponse } from '../models/ProkeyGenericModel';
 import * as WalletModel from '../../../../../models/EthereumWalletModel'
-import { MyConsole } from '../../../../../utils/console';
+import {ProkeyBaseBlockChain} from "../ProkeyBaseBlockChain";
 
-export class EthereumBlockChain {
+export class EthereumBlockChain extends ProkeyBaseBlockChain {
     
     _contractAddress: string;
     _isErc20: boolean;
     _network: string;
     constructor(network = "eth", isErc20 = false, contractAddress = '')
     {
+        super();
         this._contractAddress = contractAddress.toLowerCase();
         this._isErc20 = isErc20;
         this._network = network;
@@ -39,7 +38,7 @@ export class EthereumBlockChain {
 
     /**
      * Request: Getting Ethereum Address Info from blocks.prokey.io
-     * @param ReqEthereumAddressInfo
+     * @param reqAddress
      * @returns ResEthereumAddressInfo  
      */
     public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<Array<WalletModel.EthereumAddressInfo>> {
@@ -138,19 +137,6 @@ export class EthereumBlockChain {
             resolve([]);
 
         });
-    }
-
-    /**
-     * This is a private helper function to GET data from server
-     * @param toServer URL + data
-     */
-    private async GetFromServer<T>(toServer: string) {        
-
-        const client = httpclient.newHttpClient();
-
-        const request = new Request('https://blocks.prokey.org/' + toServer, {method: 'GET'});
-
-        return JSON.parse(await client.execute<string>(request));
     }
 }
 

@@ -57,5 +57,4 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         MyConsole.Info("RippleTxHex", data);
         return await this.GetFromServer<any>(`Transaction/send/${this._coinName}/${data}`);
     }
-
 }
