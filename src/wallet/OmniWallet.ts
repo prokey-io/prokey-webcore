@@ -24,7 +24,7 @@ import * as PathUtil from '../utils/pathUtils';
 import { BitcoinTx } from '../models/BitcoinTx';
 import * as WalletModel from '../models/OmniWalletModel';
 import * as GenericWalletModel from '../models/GenericWalletModel';
-import { OmniBlockchain } from '../blockchain/OmniBlockchain';
+import { OmniBlockChain } from '../blockchain/servers/prokey/src/omni/Omni';
 import { EnumOutputScriptType, RefTransaction } from '../models/Prokey';
 import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel';
 import { BaseWallet } from './BaseWallet';
@@ -32,7 +32,7 @@ var WAValidator = require('multicoin-address-validator');
 import * as Utility from '../utils/utils';
 import { MyConsole } from '../utils/console';
 import { OmniCoinInfoModel } from '../models/CoinInfoModel'
-import { BitcoinBlockchain } from '../blockchain/BitcoinBlockchain';
+import { BitcoinBlockChain } from '../blockchain/servers/prokey/src/bitcoin/Bitcoin';
 import { BitcoinTxInfo } from '../models/BitcoinWalletModel';
 
 /**
@@ -41,7 +41,7 @@ import { BitcoinTxInfo } from '../models/BitcoinWalletModel';
  */
 export class OmniWallet extends BaseWallet {
     _wallet!: WalletModel.OmniWalletModel;
-    _blockchain: OmniBlockchain;
+    _blockchain: OmniBlockChain;
 
     _TX_DEFAULT_INPUT_SIZE = 148;
     _TX_DEFAULT_OUTPUT_SIZE = 180;
@@ -57,7 +57,7 @@ export class OmniWallet extends BaseWallet {
         
         const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
         
-        this._blockchain = new OmniBlockchain('omni', coinInfo.proparty_id, coinInfo.blockchain || 'BTC');
+        this._blockchain = new OmniBlockChain('omni', coinInfo.proparty_id, coinInfo.blockchain || 'BTC');
     }
 
     /**
@@ -145,7 +145,7 @@ export class OmniWallet extends BaseWallet {
             addressModel: path[0],
         });
 
-        if(coinInfo.divisible == true) {
+        if(coinInfo.divisible) {
             addInfo.balance *= 100000000;
         }
 
@@ -325,7 +325,7 @@ export class OmniWallet extends BaseWallet {
         // Decimal Factor
         // for divisible coins or tokens, the value in this field is to be divided by 100,000,000
         // for indivisible coins or tokens, the value in this field is the integer number of Omni Protocol coins or tokens (e.g. 1 represents 1 indivisible token)
-        const decimalFactor = ((super.GetCoinInfo() as OmniCoinInfoModel).divisible == true) ? 100000000 : 1;
+        const decimalFactor = (super.GetCoinInfo() as OmniCoinInfoModel).divisible ? 100000000 : 1;
 
         listOfTransactions.forEach(tx => {
             let tv: WalletModel.OmniTransactionView = {
@@ -356,7 +356,7 @@ export class OmniWallet extends BaseWallet {
 
         let symbol: string = "bitcoin";
         
-        if(coinInfo.test != undefined && coinInfo.test == true) {
+        if(coinInfo.test != undefined && coinInfo.test) {
             if(WAValidator.validate(address, symbol, 'testnet')) {
                 return true;
             }
@@ -374,7 +374,7 @@ export class OmniWallet extends BaseWallet {
      * @param txData Signed transaction to be sent to the network
      */
     public async SendTransaction(txData: string){
-        return this._blockchain.BroadcastTransaction(txData);
+        return this._blockchain.BroadCastTransaction(txData);
     }
 
     /**
@@ -443,7 +443,7 @@ export class OmniWallet extends BaseWallet {
                 inputs: [],
             }
 
-            if(coinInfo.timestamp == true){
+            if(coinInfo.timestamp){
                 ref.timestamp = prev.timeStamp;
             }
 
@@ -475,7 +475,7 @@ export class OmniWallet extends BaseWallet {
      * @returns Array of BitcoinTxInfo
      */
     private async GetBtcTransactions(hash: string): Promise<Array<BitcoinTxInfo>>{
-        const btcBlockchain = new BitcoinBlockchain('BTC');
+        const btcBlockchain = new BitcoinBlockChain('BTC');
         return btcBlockchain.GetTransactions(hash);
     }
 }

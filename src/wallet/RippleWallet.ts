@@ -23,27 +23,23 @@ import { RippleCoinInfoModel } from "../models/CoinInfoModel";
 import { BaseWallet } from "./BaseWallet";
 import * as PathUtil from '../utils/pathUtils';
 import { RippleAddress, RippleSignedTx, RippleTransaction } from "../models/Prokey";
-import { RippleBlockchain } from "../blockchain/RippleBlockchain";
+import {ProkeyRippleBlockchain} from "../blockchain/servers/prokey/src/ripple/ProkeyRippleBlockChain";
 var WAValidator = require('multicoin-address-validator');
 
 export class RippleWallet extends BaseWallet {
 
-    _block_chain : RippleBlockchain;
+    _block_chain : ProkeyRippleBlockchain;
     _accounts: Array<RippleAccountInfo>;
 
     constructor(device: Device, coinName: string)
     {
         super(device, coinName, CoinBaseType.Ripple);        
-        this._block_chain = new RippleBlockchain(this.GetCoinInfo().shortcut);
+        this._block_chain = new ProkeyRippleBlockchain(this.GetCoinInfo().shortcut);
         this._accounts = [];
     }
     
     public IsAddressValid(address: string): boolean {
-        if(WAValidator.validate(address, "xrp")) {
-            return true;
-        }
-
-        return false;
+        return WAValidator.validate(address, "xrp");
     }
 
     public async StartDiscovery(
