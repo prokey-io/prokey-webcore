@@ -30,6 +30,7 @@ export enum CoinBaseType {
     NEM,
     OMNI,
     Ripple,
+    Tron,
     OTHERS
 }
 

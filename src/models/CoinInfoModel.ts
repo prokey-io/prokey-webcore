@@ -125,3 +125,14 @@ export interface RippleCoinInfoModel {
     test?: boolean,
     tx_url: string,
 }
+
+export type TronCoinInfoModel {
+    name: string,
+    shortcut: string,
+    slip44: number,
+    decimals: number,
+    on_device: string,
+    support: ProkeySupport;
+    test?: boolean,
+    tx_url: string,
+}
