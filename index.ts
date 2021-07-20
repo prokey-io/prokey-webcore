@@ -21,6 +21,8 @@
 export { Device } from './src/device/Device';
 export { BitcoinCommands } from './src/device/BitcoinCommands';
 export { EthereumCommands } from './src/device/EthereumCommands';
+export { TronCommands } from './src/device/TronCommands';
+export { RippleCommands } from './src/device/RippleCommands';
 export { BitcoinWallet } from './src/wallet/BitcoinWallet';
 export { EthereumWallet } from './src/wallet/EthereumWallet';
 export { OmniWallet } from './src/wallet/OmniWallet';
