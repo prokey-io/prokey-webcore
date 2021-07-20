@@ -735,6 +735,11 @@ export type RippleSignedTx = {
     serialized_tx: string,
 }
 
+// TRON types
+export type TronAddress = {
+    address: string,
+}
+
 // EOS types
 export type EosPublicKey = {
     wif_public_key: string,

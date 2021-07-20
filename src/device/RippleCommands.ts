@@ -31,12 +31,14 @@ import { RippleTransaction } from '../models/Responses-V6';
 import { RippleAddress } from '../models/Prokey';
 import { MyConsole } from '../utils/console';
 import { validateParams } from '../utils/paramsValidator';
+import { BaseCommands } from './BaseCommands';
 
-export class RippleCommands implements ICoinCommands {
+export class RippleCommands extends BaseCommands implements ICoinCommands {
 
     private _coinInfo: RippleCoinInfoModel;
 
     constructor(coinName: string) {
+        super();
         this._coinInfo = CoinInfo.Get<RippleCoinInfoModel>(coinName, CoinBaseType.Ripple);
         if (this._coinInfo == null) {
             throw new Error(`Cannot load CoinInfo for ${coinName}`);
@@ -51,38 +53,13 @@ export class RippleCommands implements ICoinCommands {
     }
 
     /**
-    * Get Bitcoin/Litecoin and etc address
+    * Get Ripple address
     * @param device Prokey device instance
     * @param path BIP path 
     * @param showOnProkey true means show the address on device display
     */
     public async GetAddress(device: Device, path: Array<number>, showOnProkey?: boolean): Promise<ProkeyResponses.RippleAddress> {
-        if (device == null || path == null) {
-            return Promise.reject({ success: false, errorCode: GeneralErrors.INVALID_PARAM });
-        }
-
-        let showDisplay = (showOnProkey == null) ? true : showOnProkey;
-
-        // convert path to array of num
-        let address_n: Array<number>;
-        if (typeof path == "string") {
-            try {
-                address_n = PathUtil.getHDPath(path);
-            }
-            catch (e) {
-                return Promise.reject({ success: false, errorCode: GeneralErrors.PATH_NOT_VALID });
-            }
-
-        } else {
-            address_n = path;
-        }
-
-        let param = {
-            address_n: address_n,
-            show_display: showDisplay,
-        }
-
-        return await device.SendMessage<ProkeyResponses.RippleAddress>('RippleGetAddress', param, 'RippleAddress');
+        return await this.GetAddressBase('RippleGetAddress', 'RippleAddress', device, path, showOnProkey);
     }
 
     /**
@@ -91,43 +68,7 @@ export class RippleCommands implements ICoinCommands {
      * @param paths list of paths to retrive the addresses
      */
     public async GetAddresses(device: Device, paths: Array<Array<number>>): Promise<Array<ProkeyResponses.RippleAddress>> {
-        if (device == null || paths == null) {
-            return Promise.reject({
-                success: false,
-                errorCode: GeneralErrors.INVALID_PARAM
-            });
-        }
-
-        let lstAddress = new Array<ProkeyResponses.RippleAddress>();
-
-        paths.forEach(async (path) => {
-            let pn: Array<number>;
-            if (typeof path == "string") {
-                try {
-                    pn = PathUtil.getHDPath(path);
-                }
-                catch (e) {
-                    return Promise.reject({ success: false, errorCode: GeneralErrors.PATH_NOT_VALID });
-                }
-            }
-            else {
-                pn = path;
-            }
-
-            let param = {
-                address_n: pn,
-                show_display: false,
-            }
-
-            try {
-                let address = await device.SendMessage<ProkeyResponses.RippleAddress>('RippleGetAddress', param, 'RippleAddress');
-                lstAddress.push(address);
-            } catch (e) {
-                Promise.reject(e);
-            }
-        });
-
-        return lstAddress;
+        return await this.GetAddressesBase('RippleGetAddress', 'RippleAddress', device, paths);
     }
 
     /**
@@ -140,32 +81,7 @@ export class RippleCommands implements ICoinCommands {
         path: Array<number> | string,
         showOnProkey?: boolean): Promise<ProkeyResponses.PublicKey> {
 
-        if (device == null || path == null) {
-            return Promise.reject({ success: false, errorCode: GeneralErrors.INVALID_PARAM });
-        }
-
-        let showDisplay = (showOnProkey == null) ? true : showOnProkey;
-
-        // convert path to array of num
-        let address_n: Array<number>;
-        if (typeof path == "string") {
-            try {
-                address_n = PathUtil.getHDPath(path);
-            }
-            catch (e) {
-                return Promise.reject({ success: false, errorCode: GeneralErrors.PATH_NOT_VALID });
-            }
-
-        } else {
-            address_n = path;
-        }
-
-        let param = {
-            address_n: address_n,
-            show_display: showDisplay,
-        }
-
-        return await device.SendMessage<ProkeyResponses.PublicKey>('GetPublicKey', param, 'PublicKey');
+            return await this.GetPublicKeyBase(device, path, showOnProkey);
     }
 
     /**
@@ -250,20 +166,7 @@ export class RippleCommands implements ICoinCommands {
         message: Uint8Array,
         coin?: string): Promise<ProkeyResponses.MessageSignature> {
 
-        let scriptType = PathUtil.GetScriptType(address_n);
-
-        let res = await device.SendMessage<ProkeyResponses.MessageSignature>('SignMessage', {
-            address_n: address_n,
-            message: message,
-            coin_name: coin || 'Ripple',
-            script_type: scriptType,
-        }, 'MessageSignature');
-
-        if (res.signature) {
-            res.signature = Utility.ByteArrayToHexString(res.signature);
-        }
-
-        return res;
+        return await this.SignMessageBase(device, address_n, message, coin || 'Ripple');
     }
 
     /**
@@ -281,12 +184,7 @@ export class RippleCommands implements ICoinCommands {
         signature: Uint8Array,
         coinName: string): Promise<ProkeyResponses.Success> {
 
-        return await device.SendMessage<ProkeyResponses.Success>('VerifyMessage', {
-            address: address,
-            signature: signature,
-            message: message,
-            coin_name: coinName || 'Ripple',
-        }, 'Success');
+        return await this.VerifyMessageBase(device, address, message, signature, coinName || 'Ripple');
     }
 
 }
