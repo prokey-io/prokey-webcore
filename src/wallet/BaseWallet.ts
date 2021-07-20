@@ -63,7 +63,7 @@ import * as Util from '../utils/utils';
 import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
 import { RippleCommands } from "../device/RippleCommands";
-import { RippleSignedTx, RippleTransaction } from "../models/Responses-V6";
+import { RippleSignedTx, RippleTransaction } from "../models/Prokey";
 
 /**
  * This is the base class for all implemented wallets

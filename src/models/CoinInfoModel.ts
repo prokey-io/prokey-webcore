@@ -126,7 +126,7 @@ export interface RippleCoinInfoModel {
     tx_url: string,
 }
 
-export type TronCoinInfoModel {
+export type TronCoinInfoModel = {
     name: string,
     shortcut: string,
     slip44: number,

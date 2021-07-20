@@ -27,7 +27,7 @@ import {
     EthereumBaseCoinInfoModel, 
     OmniCoinInfoModel, 
     RippleCoinInfoModel } from '../models/CoinInfoModel';
-import { RippleTransaction } from '../models/Responses-V6';
+import { RippleTransaction } from '../models/Prokey';
 
 export interface ICoinCommands {
     GetCoinInfo() : BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel | null;

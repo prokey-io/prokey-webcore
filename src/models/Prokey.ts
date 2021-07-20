@@ -1039,3 +1039,8 @@ export type LoadDeviceFlags = {
     skip_checksum?: boolean,
     u2f_counter?: number,
 }
+
+// Tron types
+export type TronTransaction = {
+    
+}

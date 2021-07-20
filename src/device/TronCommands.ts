@@ -20,11 +20,8 @@
 */
 
 import { CoinBaseType, CoinInfo } from "../coins/CoinInfo";
-import { BitcoinTx } from "../models/BitcoinTx";
-import { BitcoinBaseCoinInfoModel, EthereumBaseCoinInfoModel, OmniCoinInfoModel, RippleCoinInfoModel, TronCoinInfoModel } from "../models/CoinInfoModel";
-import { EthereumTx } from "../models/EthereumTx";
-import { AddressModel, EthereumAddress, LiskAddress, NEMAddress, RippleAddress, CardanoAddress, StellarAddress, PublicKey, EosPublicKey, LiskPublicKey, TezosPublicKey, BinancePublicKey, CardanoPublicKey, SignedTx, EthereumSignedTx, EosSignedTx, LiskSignedTx, TezosSignedTx, BinanceSignTx, CardanoSignedTx, RippleSignedTx, MessageSignature, LiskMessageSignature, Success, TronAddress } from "../models/Prokey";
-import { RippleTransaction } from "../models/Responses-V6";
+import { TronCoinInfoModel } from "../models/CoinInfoModel";
+import { TronTransaction, PublicKey, RippleSignedTx, MessageSignature, Success, TronAddress } from "../models/Prokey";
 import { BaseCommands } from "./BaseCommands";
 import { Device } from "./Device";
 import { ICoinCommands } from "./ICoinCommand";
@@ -54,15 +51,15 @@ export class TronCommands extends BaseCommands implements ICoinCommands {
         return await this.GetAddressesBase('TronGetAddress', 'TronAddress', device, paths);
     }
 
-    public async GetPublicKey(device: Device, path: string | number[], showOnProkey?: boolean): Promise<PublicKey | EosPublicKey | LiskPublicKey | TezosPublicKey | BinancePublicKey | CardanoPublicKey> {
+    public async GetPublicKey(device: Device, path: string | number[], showOnProkey?: boolean): Promise<PublicKey> {
         return this.GetPublicKeyBase(device, path, showOnProkey);
     }
 
-    public async SignTransaction(device: Device, transaction: BitcoinTx | EthereumTx | RippleTransaction): Promise<SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx | RippleSignedTx> {
+    public async SignTransaction(device: Device, transaction: TronTransaction): Promise<RippleSignedTx> {
         throw new Error("Method not implemented.");
     }
 
-    public async SignMessage(device: Device, path: number[], message: Uint8Array, coinName?: string): Promise<MessageSignature | LiskMessageSignature> {
+    public async SignMessage(device: Device, path: number[], message: Uint8Array, coinName?: string): Promise<MessageSignature> {
         return await this.SignMessageBase(device, path, message, coinName || 'TRON');
     }
 
