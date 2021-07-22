@@ -73,6 +73,9 @@ export class CoinInfo {
             case CoinBaseType.Ripple:
                 c = ProkeyCoinInfoModel.ripple;
                 break;
+            case CoinBaseType.Tron:
+                c = ProkeyCoinInfoModel.tron;
+                break;
         }
 
         let ci: any;
