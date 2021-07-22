@@ -161,8 +161,22 @@ export class CoinInfo {
                     Priority: element.priority,
                     ContractAddress: '',
                     Decimals: element.decimals,
-                })
+                });
             }
+        });
+
+        // Add Tron to the list
+        ProkeyCoinInfoModel.tron.forEach(element => {
+            if (compareVersions(firmwareVersion, element.support.optimum) >= 0) {
+                list.push({
+                    Name: element.name,
+                    Shortcut: element.shortcut,
+                    Type: CoinBaseType.Tron,
+                    Priority: element.priority,
+                    ContractAddress: '',
+                    Decimals: element.decimals,
+                });
+            }     
         });
 
         //! Sort the list by Priority
@@ -242,6 +256,18 @@ export class CoinInfo {
                     Name: element.name,
                     Shortcut: element.shortcut,
                     Type: CoinBaseType.Ripple,
+                    Priority: element.priority,
+                    ContractAddress: '',
+                    Decimals: element.decimals,
+                });
+            });
+        }
+        else if(ct == CoinBaseType.Tron) {
+            ProkeyCoinInfoModel.tron.foreach(element => {
+                list.push({
+                    Name: element.name,
+                    Shortcut: element.shortcut,
+                    Type: CoinBaseType.Tron,
                     Priority: element.priority,
                     ContractAddress: '',
                     Decimals: element.decimals,
