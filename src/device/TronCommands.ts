@@ -21,7 +21,7 @@
 
 import { CoinBaseType, CoinInfo } from "../coins/CoinInfo";
 import { TronCoinInfoModel } from "../models/CoinInfoModel";
-import { TronTransaction, PublicKey, RippleSignedTx, MessageSignature, Success, TronAddress } from "../models/Prokey";
+import { TronTransaction, PublicKey, RippleSignedTx, MessageSignature, Success, TronAddress, TronSignedTx } from "../models/Prokey";
 import { BaseCommands } from "./BaseCommands";
 import { Device } from "./Device";
 import { ICoinCommands } from "./ICoinCommand";
@@ -55,7 +55,7 @@ export class TronCommands extends BaseCommands implements ICoinCommands {
         return this.GetPublicKeyBase(device, path, showOnProkey);
     }
 
-    public async SignTransaction(device: Device, transaction: TronTransaction): Promise<RippleSignedTx> {
+    public async SignTransaction(device: Device, transaction: TronTransaction): Promise<TronSignedTx> {
         throw new Error("Method not implemented.");
     }
 

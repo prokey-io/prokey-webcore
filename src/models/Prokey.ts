@@ -740,6 +740,10 @@ export type TronAddress = {
     address: string,
 }
 
+export type TronSignedTx = {
+    serialized_tx: string,
+}
+
 // EOS types
 export type EosPublicKey = {
     wif_public_key: string,

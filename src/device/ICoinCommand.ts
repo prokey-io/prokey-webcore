@@ -79,7 +79,8 @@ export interface ICoinCommands {
         ProkeyResponses.TezosSignedTx |
         ProkeyResponses.BinanceSignTx |
         ProkeyResponses.CardanoSignedTx |
-        ProkeyResponses.RippleSignedTx>;
+        ProkeyResponses.RippleSignedTx |
+        ProkeyResponses.TronSignedTx>;
     
     SignMessage(
         device: Device,
