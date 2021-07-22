@@ -19,7 +19,6 @@
 */
 
 import { MyConsole } from '../../../../../utils/console';
-import * as Utils from '../../../../../utils/utils';
 import { ProkeyBaseBlockChain } from '../ProkeyBaseBlockChain';
 import { TronAccountInfo, TronBlock, TronTransactionDataInfo, TronTrc20TransactionDataInfo } from './TronModel';
 
