@@ -18,30 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "../blockchain/servers/prokey/src/ripple/RippleModel";
 import { CoinBaseType } from "../coins/CoinInfo";
 import { Device } from "../device/Device";
-import { RippleCoinInfoModel } from "../models/CoinInfoModel";
+import { TronCoinInfoModel } from "../models/CoinInfoModel";
 import { BaseWallet } from "./BaseWallet";
 import * as PathUtil from '../utils/pathUtils';
-import { RippleAddress, RippleSignedTx, RippleTransaction } from "../models/Prokey";
-import { RippleBlockchain } from "../blockchain/RippleBlockchain";
+import { TronAddress, TronSignedTx, TronTransaction } from "../models/Prokey";
+import { TronBlockchain } from "../blockchain/servers/prokey/src/tron/TronBlockchain";
+import { TronAccountInfo, TronBlock, TronTransactionDataInfo } from "../blockchain/servers/prokey/src/tron/TronModel";
 var WAValidator = require('multicoin-address-validator');
 
-export class RippleWallet extends BaseWallet {
+export class TronWallet extends BaseWallet {
 
-    _block_chain : RippleBlockchain;
-    _accounts: Array<RippleAccountInfo>;
+    _block_chain : TronBlockchain;
+    _accounts: Array<TronAccountInfo>;
 
     constructor(device: Device, coinName: string)
     {
-        super(device, coinName, CoinBaseType.Ripple);        
-        this._block_chain = new RippleBlockchain(this.GetCoinInfo().shortcut);
+        super(device, coinName, CoinBaseType.Tron);        
+        this._block_chain = new TronBlockchain(this.GetCoinInfo().shortcut);
         this._accounts = [];
     }
     
     public IsAddressValid(address: string): boolean {
-        if(WAValidator.validate(address, "xrp")) {
+        if(WAValidator.validate(address, "trx")) {
             return true;
         }
 
@@ -49,12 +49,12 @@ export class RippleWallet extends BaseWallet {
     }
 
     public async StartDiscovery(
-        accountFindCallBack?: (accountInfo: RippleAccountInfo) => void
-    ): Promise<Array<RippleAccountInfo>>
+        accountFindCallBack?: (accountInfo: TronAccountInfo) => void
+    ): Promise<Array<TronAccountInfo>>
     {
-        return new Promise<Array<RippleAccountInfo>>(async (resolve, reject) => {
+        return new Promise<Array<TronAccountInfo>>(async (resolve, reject) => {
             let an = 0;
-            this._accounts = new Array<RippleAccountInfo>();
+            this._accounts = new Array<TronAccountInfo>();
             do
             {
                 let account = await this.GetAccountInfo(an);
@@ -72,32 +72,32 @@ export class RippleWallet extends BaseWallet {
         });
     }
 
-    // Get ripple account info from blockchain
-    private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo | null> {
-        let slip44 = (super.GetCoinInfo() as RippleCoinInfoModel).slip44;
+    // Get Tron account info from blockchain
+    private async GetAccountInfo(accountNumber: number): Promise<TronAccountInfo | null> {
+        let slip44 = (super.GetCoinInfo() as TronCoinInfoModel).slip44;
         let path = PathUtil.GetListOfBipPath(
         slip44,                 
-            accountNumber,          // Ripple, each address is considered as an account
+            accountNumber,          // Tron, each address is considered as an account
             1,                      // We only need an address
             false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in ripple
+            false,                  // No change address defined in Tron
             0);
         
-        let address = await this.GetAddress<RippleAddress>(path[0].path, false);
+        let address = await this.GetAddress<TronAddress>(path[0].path, false);
 
         return await this._block_chain.GetAccountInfo(address.address);
     }
 
-    public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
+    public async GetAccountTransactions(account: string): Promise<Array<TronTransactionDataInfo>> {
         return await this._block_chain.GetAccountTransactions(account);
     }
 
-    public async GetCurrentFee(): Promise<RippleFee>
+    public async GetNowBlock(): Promise<TronBlock>
     {
-        return await this._block_chain.GetCurrentFee();
+        return await this._block_chain.GetNowBlock();
     }
 
-    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string, destinationTag?: number): RippleTransaction
+    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number): TronTransaction
     {
         // Validate accountNumber
         if(accountNumber >= this._accounts.length){
@@ -107,44 +107,32 @@ export class RippleWallet extends BaseWallet {
         // Check balance
         let bal = 0;
         var acc = this._accounts[accountNumber];
-        if (acc != null && acc.Balance != null) {
-            bal = +acc.Balance;
+        if (acc != null && acc.balance != null) {
+            bal = acc.balance;
         }
 
         bal = bal 
-            - 20000000 // 20 XRP for reserve
             - amount
-            - (+selectedFee);
         if (bal < 0)
-            throw new Error("Insufficient balance you need to hold 20 XRP in your account.");
+            throw new Error("Insufficient balance in your account.");
 
-        let ci = super.GetCoinInfo() as RippleCoinInfoModel
+        let ci = super.GetCoinInfo() as TronCoinInfoModel
         let slip44 = ci.slip44;
         let path = PathUtil.GetListOfBipPath(
         slip44,                 
-            accountNumber,          // Ripple, each address is considered as an account
+            accountNumber,          // Tron, each address is considered as an account
             1,                      // We only need an address
             false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in ripple
+            false,                  // No change address defined in Tron
             0);
             
-        let tx: RippleTransaction = {
+        let tx: TronTransaction = {
             address_n: path[0].path,
-            fee: +selectedFee,
-            sequence: this._accounts[accountNumber].Sequence,
-            payment: {
-                amount: amount,
-                destination: toAccount,                
-            }
         };
-        if (destinationTag)
-        {
-            tx.payment.destination_tag = destinationTag;
-        }
         return tx;
     }
 
-    public async SendTransaction(tx: RippleSignedTx): Promise<any> {
+    public async SendTransaction(tx: TronSignedTx): Promise<any> {
         return await this._block_chain.BroadCastTransaction(tx.serialized_tx);
     }
 }
