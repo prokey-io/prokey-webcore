@@ -55,7 +55,7 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
                 reject("The max number of req is 20");
                 return;
             }
-            if (reqAddresses.length == 0){
+            if (reqAddresses.length == 0) {
                 reject("The requested addresses is empty");
                 return;
             }

@@ -86,23 +86,21 @@ export class OmniBlockChain extends ProkeyBaseBlockChain {
      * @param hash transaction hash or id seperate each hash or id by comma
      * @returns Omni transaction info 
      */
-    public async GetTransaction(hash: string): Promise<Array<WalletModel.OmniTxInfo>> {
+    public async GetTransactions(hash: string): Promise<Array<WalletModel.OmniTxInfo>> {
         return await this.GetFromServer<Array<WalletModel.OmniTxInfo>>(`transaction/${this._network}/${this._propertyId}/${hash}`);
     }
 
     /**
      * Load/Get Transactions list
-     * @param address List of addresses to get info
+     * @param trs List of transaction ids
      * @param count Number of transaction
      * @param offset Offset of first transaction
      */
-    public async GetLatestTransactions(address: WalletModel.OmniAddressInfo, count = 100, offset = 0) : Promise<Array<WalletModel.OmniTxInfo>> {
+    public async GetLatestTransactions(trs: Array<number>, count = 100, offset = 0) : Promise<Array<WalletModel.OmniTxInfo>> {
         return new Promise<Array<WalletModel.OmniTxInfo>>(async (resolve,reject)=>{
-            if(address.trKeys == undefined){
+            if(trs == undefined){
                 return reject("Transaction Keys' list is empty");
             }
-            
-            let trs: Array<number> = address.trKeys;
             
             if (count > 1000)
                 count = 1000;
@@ -127,7 +125,7 @@ export class OmniBlockChain extends ProkeyBaseBlockChain {
                 }
                 ids = ids.substring(1);
                 try {
-                    let res = await this.GetTransaction(ids);
+                    let res = await this.GetTransactions(ids);
                     resolve(res);
                     return;
                 } catch (error) {

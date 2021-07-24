@@ -315,7 +315,7 @@ export class OmniWallet extends BaseWallet {
         }
 
         // Retrive transaction list from server
-        let listOfTransactions = await this._blockchain.GetLatestTransactions(account, numberOfTransactions, startIndex);
+        let listOfTransactions = await this._blockchain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex);
 
         if(account.addressModel == undefined)
         {

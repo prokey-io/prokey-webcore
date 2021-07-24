@@ -1,7 +1,12 @@
 import { httpclient } from "typescript-http-client";
 import Request = httpclient.Request
+import {RequestAddressInfo} from "../../../../models/GenericWalletModel";
 
 export abstract class ProkeyBaseBlockChain {
+    public abstract GetAddressInfo(reqAddresses: Array<RequestAddressInfo> | RequestAddressInfo);
+    public abstract GetTransactions(hash: string);
+    public abstract GetLatestTransactions(trs: Array<number>, count : number, offset: number);
+    public abstract BroadCastTransaction(data: string);
     /**
      * This is a private helper function to GET data from server
      * @param toServer URL + data

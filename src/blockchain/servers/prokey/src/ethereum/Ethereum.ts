@@ -43,14 +43,14 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
      */
     public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<Array<WalletModel.EthereumAddressInfo>> {
         // Geting Address info from prokey server
-        let response : WalletModel.EthereumAddressInfo;
+        let response : Array<WalletModel.EthereumAddressInfo>;
         if(this._isErc20){
             response = await this.GetFromServer<Array<WalletModel.EthereumAddressInfo>>(`address/${this._network}/erc20/${this._contractAddress}/${reqAddress.address}`);
         } else {
             response = await this.GetFromServer<Array<WalletModel.EthereumAddressInfo>>(`address/${this._network}/${reqAddress.address}`);
         }
 
-        let addInfo : Array<WalletModel.EthereumAddressInfo> = [{
+        return [{
             balance: response[0].balance,
             nonce: response[0].nonce,
             trKeys: response[0].trKeys,
@@ -70,7 +70,7 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
      * Getting transaction information
      * @param id Transaction Key (TrKey) or Transaction HASH
      */
-    public async GetTransaction(id: string): Promise<Array<WalletModel.EthereumTransaction>> {
+    public async GetTransactions(id: string): Promise<Array<WalletModel.EthereumTransaction>> {
         if(this._isErc20) {
             return await this.GetFromServer<Array<WalletModel.EthereumTransaction>>(`Transaction/${this._network}/erc20/${this._contractAddress}/${id}`);
         } else {
@@ -96,7 +96,7 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
      * Broadcasting a transaction 
      * @param data Transaction data
      */
-    public async SendTransaction(data: string): Promise<ProkeySendTransactionResponse> {
+    public async BroadCastTransaction(data: string): Promise<ProkeySendTransactionResponse> {
         return await this.GetFromServer<string>(`transaction/Send/${this._network}/${data}`);
     }
 
@@ -125,7 +125,7 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
                 }
                 ids = ids.substring(1);
                 try {
-                    let res = await this.GetTransaction(ids);
+                    let res = await this.GetTransactions(ids);
                     resolve(res);
                     return;
                 } catch (error) {
