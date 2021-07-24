@@ -27,9 +27,40 @@ export type TronAccountInfo = {
     latest_consume_free_time: number;
 }
 
+export type TronContractRet = {
+    contractRet: string;
+    fee: number;
+}
+
+export type TronContractTransfer = {
+    amount: number;
+    owner_address: string;
+    to_address: string;
+}
+
+export type TronContractParameter = {
+    value: TronContractTransfer | any;
+    type: string;
+}
+
+export type TronContract = {
+    parameter: TronContractParameter;
+    type: string;
+}
+
+export type TronTransactionRawData = {
+    contract:  Array<TronContract>;
+    ref_block_bytes: string;
+    ref_block_hash: string;
+    expiration: number;
+    timestamp: number;
+}
+
 export type TronTransactionDataInfo = {
+    ret: Array<TronContractRet>;
     signature: Array<string>;
     txID: string;
+    raw_data_hex: string;
     net_usage: number;
     net_fee: number;
     energy_usage: number;
@@ -37,6 +68,7 @@ export type TronTransactionDataInfo = {
     block_timestamp: number;
     energy_fee: number;
     energy_usage_total: number;
+    raw_data: TronTransactionRawData;
 }
 
 export type TronTokenInfo = {

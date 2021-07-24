@@ -50,7 +50,8 @@ import {
     TezosSignedTx,
     BinanceSignTx,
     CardanoSignedTx,
-    Success
+    Success,
+    TronTransaction
 } from "../models/Prokey";
 
 import {
@@ -159,7 +160,7 @@ export abstract class BaseWallet {
      * @param tx transaction to be signed by device
      */
     public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx | RippleSignedTx>
-        (tx: BitcoinTx | EthereumTx | RippleTransaction): Promise<T> 
+        (tx: BitcoinTx | EthereumTx | RippleTransaction | TronTransaction): Promise<T> 
     {
         return await this._commands.SignTransaction(this._device, tx) as T;
     }

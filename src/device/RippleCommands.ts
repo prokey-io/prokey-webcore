@@ -58,7 +58,7 @@ export class RippleCommands extends BaseCommands implements ICoinCommands {
     * @param showOnProkey true means show the address on device display
     */
     public async GetAddress(device: Device, path: Array<number>, showOnProkey?: boolean): Promise<ProkeyResponses.RippleAddress> {
-        return await this.GetAddressBase('RippleGetAddress', 'RippleAddress', device, path, showOnProkey);
+        return await this.GetAddressBase<ProkeyResponses.RippleAddress>('RippleGetAddress', 'RippleAddress', device, path, showOnProkey);
     }
 
     /**
@@ -67,7 +67,7 @@ export class RippleCommands extends BaseCommands implements ICoinCommands {
      * @param paths list of paths to retrive the addresses
      */
     public async GetAddresses(device: Device, paths: Array<Array<number>>): Promise<Array<ProkeyResponses.RippleAddress>> {
-        return await this.GetAddressesBase('RippleGetAddress', 'RippleAddress', device, paths);
+        return await this.GetAddressesBase<ProkeyResponses.RippleAddress>('RippleGetAddress', 'RippleAddress', device, paths);
     }
 
     /**

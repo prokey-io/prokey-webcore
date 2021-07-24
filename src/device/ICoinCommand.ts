@@ -71,7 +71,8 @@ export interface ICoinCommands {
         device: Device,
         transaction:BitcoinTx | 
                     EthereumTx |
-                    RippleTransaction,
+                    RippleTransaction |
+                    ProkeyResponses.TronTransaction,
     ): Promise<ProkeyResponses.SignedTx |
         ProkeyResponses.EthereumSignedTx |
         ProkeyResponses.EosSignedTx |
