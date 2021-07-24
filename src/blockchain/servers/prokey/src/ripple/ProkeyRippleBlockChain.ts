@@ -19,6 +19,7 @@
 import { MyConsole } from "../../../../../utils/console";
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
 import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "./RippleModel";
+import {RequestAddressInfo} from "../../../../../models/GenericWalletModel";
 
 export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
 
@@ -30,10 +31,10 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         this._coinName = coinNameOrShortcut;
     }
 
-    public async GetAccountInfo(account: string): Promise<RippleAccountInfo | null>
+    public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<RippleAccountInfo | null>
     {        
         try {
-            return await this.GetFromServer<RippleAccountInfo>(`address/${this._coinName}/${account}`);            
+            return await this.GetFromServer<RippleAccountInfo>(`address/${this._coinName}/${reqAddress.address}`);
         } catch (error) {
             return null;
         }
@@ -56,5 +57,11 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
     public async BroadCastTransaction(data: string): Promise<any> {
         MyConsole.Info("RippleTxHex", data);
         return await this.GetFromServer<any>(`Transaction/send/${this._coinName}/${data}`);
+    }
+
+    GetLatestTransactions(trs: Array<number>, count: number, offset: number) {
+    }
+
+    GetTransactions(hash: string) {
     }
 }

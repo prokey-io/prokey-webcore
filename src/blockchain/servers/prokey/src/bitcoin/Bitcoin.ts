@@ -55,7 +55,7 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
                 reject("The max number of req is 20");
                 return;
             }
-            if (reqAddresses.length == 0){
+            if (reqAddresses.length == 0) {
                 reject("The requested addresses is empty");
                 return;
             }
@@ -132,18 +132,12 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
 
     /**
      * Load/Get Transactions list
-     * @param addresses List of addresses to get info
+     * @param trs List of transaction ids
      * @param count Number of transaction
      * @param offset Offset of first transaction
      */
-    public async GetLatestTransactions(addresses: Array<WalletModel.BitcoinAddressInfo>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
+    public async GetLatestTransactions(trs: Array<number>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
         return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
-            let trs: Array<number> = [];
-            addresses.forEach(add => {
-                add.txInfo.transactionIds.forEach(tr => {
-                    trs.push(tr);
-                });
-            });
 
             if (count > 1000)
                 count = 1000;
