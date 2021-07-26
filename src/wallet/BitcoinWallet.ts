@@ -291,7 +291,8 @@ export class BitcoinWallet extends BaseWallet {
 
         // We need to get list of transaction for both wallet addresses and change addresses.
         // Because the wallet may send a TX from change address
-        let trs: Array<number> = account.addresses.concat(account.changeAddresses).flatMap(address => address.txInfo.transactionIds);
+        let trs: Array<number> = [];
+        account.addresses.concat(account.changeAddresses).forEach(address => address.txInfo.transactionIds.forEach(transactionId => trs.push(transactionId)));
 
         // Retrive transaction list from server
         let listOfTransactions = await this._blockchain.GetLatestTransactions(trs, numberOfTransactions, startIndex);
