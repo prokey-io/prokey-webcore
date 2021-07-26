@@ -386,13 +386,6 @@ export class WebUsb implements ITransport {
                 await this._port.selectConfiguration(1);
             }
 
-            if (typeof navigator !== `undefined`) {
-                const chromeOS = /\bCrOS\b/.test(navigator.userAgent);
-                if (!chromeOS) {
-                    await this._port.reset();
-                }
-            }
-
             // Select first interface. (The second one is for 2FA)
             await this._port.claimInterface(0);
 
