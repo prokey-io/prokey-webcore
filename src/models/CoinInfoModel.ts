@@ -114,3 +114,14 @@ export interface OmniCoinInfoModel {
     tx_url: string,
     timestamp: boolean,
 }
+
+export interface RippleCoinInfoModel {
+    name: string;
+    shortcut: string;
+    slip44: number;
+    decimals: number;
+    on_device: string,
+    support: ProkeySupport;
+    test?: boolean,
+    tx_url: string,
+}

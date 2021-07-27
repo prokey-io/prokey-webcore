@@ -106,8 +106,6 @@ export class OmniBlockchain {
         }
 
         return fee;
-
-        return fee;
     }
 
     /**

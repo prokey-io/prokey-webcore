@@ -605,6 +605,7 @@ export interface RippleTransaction {
     payment: {
         amount: number;
         destination: string;
+        destination_tag?: number;
     };
 }
 

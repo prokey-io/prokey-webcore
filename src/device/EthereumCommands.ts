@@ -172,7 +172,7 @@ export class EthereumCommands implements ICoinCommands {
             show_display: showDisplay,
         }
 
-        return await device.SendMessage<ProkeyResponses.PublicKey>('GetPublicKey', param, 'PublicKey');
+        return await device.SendMessage<ProkeyResponses.PublicKey>('EthereumGetPublicKey', param, 'EthereumPublicKey');
     }
 
     /**
