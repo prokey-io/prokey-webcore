@@ -369,7 +369,7 @@ export class BitcoinWallet extends BaseWallet {
                 txViewList.push({
                     hash: tx.hash,
                     blockNumber: tx.blockNumber,
-                    date: new Date(tx.timeStamp * 1000).toLocaleString(),
+                    date: new Date(tx.timeStamp * 1000).toDateString(),
                     received: received,
                     isOmni: isOmni,
                 });
@@ -456,7 +456,7 @@ export class BitcoinWallet extends BaseWallet {
                     hash: tx.hash,
                     blockNumber: tx.blockNumber,
                     sent: sent,
-                    date: new Date(tx.timeStamp * 1000).toLocaleString(),
+                    date: new Date(tx.timeStamp * 1000).toDateString(),
                     fee: totalSent - totalReceived,
                     isOmni: isOmni,
                 })
