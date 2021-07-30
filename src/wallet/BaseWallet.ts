@@ -51,7 +51,8 @@ import {
     BinanceSignTx,
     CardanoSignedTx,
     Success,
-    TronTransaction
+    TronTransaction,
+    TronSignedTx
 } from "../models/Prokey";
 
 import {
@@ -65,6 +66,7 @@ import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
 import { RippleCommands } from "../device/RippleCommands";
 import { RippleSignedTx, RippleTransaction } from "../models/Prokey";
+import { TronCommands } from "../device/TronCommands";
 
 /**
  * This is the base class for all implemented wallets
@@ -100,6 +102,10 @@ export abstract class BaseWallet {
 
             case CoinBaseType.Ripple:
                 this._commands = new RippleCommands(_coinName);
+                break;
+
+            case CoinBaseType.Tron:
+                this._commands = new TronCommands(_coinName);
                 break;
 
             default:
@@ -159,7 +165,9 @@ export abstract class BaseWallet {
      * Sign Transaction
      * @param tx transaction to be signed by device
      */
-    public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx | RippleSignedTx>
+    public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | 
+        LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx | RippleSignedTx | 
+        TronSignedTx>
         (tx: BitcoinTx | EthereumTx | RippleTransaction | TronTransaction): Promise<T> 
     {
         return await this._commands.SignTransaction(this._device, tx) as T;

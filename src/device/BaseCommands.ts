@@ -88,7 +88,7 @@ export abstract class BaseCommands {
         lstAddress.length = paths.length;
 
         paths.forEach(async (path) => {
-            lstAddress.push(await this.GetAddressBase(
+            lstAddress.push(await this.GetAddressBase<AddressType>(
                 deviceCommand,
                 returnType,
                 device,

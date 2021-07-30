@@ -44,11 +44,11 @@ export class TronCommands extends BaseCommands implements ICoinCommands {
     }
 
     public async GetAddress(device: Device, path: Array<number>, showOnProkey?: boolean): Promise<TronAddress> {
-        return await this.GetAddressBase('TronGetAddress', 'TronAddress', device, path, showOnProkey);
+        return await this.GetAddressBase<TronAddress>('TronGetAddress', 'TronAddress', device, path, showOnProkey);
     }
 
     public async GetAddresses(device: Device, paths: Array<Array<number>>): Promise<TronAddress[]> {
-        return await this.GetAddressesBase('TronGetAddress', 'TronAddress', device, paths);
+        return await this.GetAddressesBase<TronAddress>('TronGetAddress', 'TronAddress', device, paths);
     }
 
     public async GetPublicKey(device: Device, path: string | number[], showOnProkey?: boolean): Promise<PublicKey> {
