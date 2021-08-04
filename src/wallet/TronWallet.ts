@@ -97,7 +97,7 @@ export class TronWallet extends BaseWallet {
         return await this._block_chain.GetNowBlock();
     }
 
-    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number): TronTransaction
+    public async GenerateTransaction(toAccount: string, amount: number, accountNumber: number): Promise<TronTransaction>
     {
         // Validate accountNumber
         if(accountNumber >= this._accounts.length){
@@ -111,23 +111,40 @@ export class TronWallet extends BaseWallet {
             bal = acc.balance;
         }
 
-        bal = bal 
-            - amount
+        bal = bal - amount;
         if (bal < 0)
             throw new Error("Insufficient balance in your account.");
 
         let ci = super.GetCoinInfo() as TronCoinInfoModel
         let slip44 = ci.slip44;
         let path = PathUtil.GetListOfBipPath(
-        slip44,                 
+            slip44,                 
             accountNumber,          // Tron, each address is considered as an account
             1,                      // We only need an address
             false,                  // Segwit not defined so we should use 44'
             false,                  // No change address defined in Tron
             0);
+
+        // get the now block
+        let now_block = await this._block_chain.GetNowBlock();
             
         let tx: TronTransaction = {
             address_n: path[0].path,
+            timestamp: Date.now(),
+            block_header: {
+                number: now_block.block_header.raw_data.number,
+                parent_hash: now_block.block_header.raw_data.parentHash,
+                timestamp: now_block.block_header.raw_data.timestamp,
+                tx_trie_root: now_block.block_header.raw_data.txTrieRoot,
+                version: now_block.block_header.raw_data.version,
+                witness_address: now_block.block_header.witness_signature
+            },
+            contract: {
+                transfer_contract: {
+                    to_address: toAccount,
+                    amount: amount
+                }
+            }
         };
         return tx;
     }

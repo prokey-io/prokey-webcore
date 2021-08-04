@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+ 
+const Long = require('../protobuf/long');
 
 export type CipheredKeyValue = {
     value: string,
@@ -1046,5 +1048,21 @@ export type LoadDeviceFlags = {
 
 // Tron types
 export type TronTransaction = {
-    
+    address_n: Array<number>;
+    timestamp: number;
+    expiration?: number;
+    block_header: {
+        timestamp: number;
+        tx_trie_root: string;
+        parent_hash: string;
+        number: number;
+        witness_address: string;
+        version: number;
+    };
+    contract: {
+        transfer_contract?: {
+            to_address: string;
+            amount: number;
+        }
+    }
 }

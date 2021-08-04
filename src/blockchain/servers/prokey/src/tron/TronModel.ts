@@ -93,6 +93,7 @@ export type TronBlockHeaderRawData = {
     txTrieRoot: string;
     witness_address: string;
     parentHash: string;
+    version: number;
     timestamp: number;
 }
 

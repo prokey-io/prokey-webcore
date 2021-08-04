@@ -52,6 +52,7 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
             MyConsole.Error("Tron get account transactions error: ", r);
             return [];
         }
+        MyConsole.Info("tron transactions: ", r.data);
         return r.data;
     }
 
@@ -66,7 +67,7 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
     }
 
     public async GetNowBlock(): Promise<TronBlock> {
-        return await this.GetFromServer<TronBlock>(`getblockcount/${this._coinName}`);
+        return await this.GetFromServer<TronBlock>(`block/getblockcount/${this._coinName}`);
     }
 
     public async BroadCastTransaction(data: string): Promise<any> {
