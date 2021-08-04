@@ -20,6 +20,7 @@ import { MyConsole } from "../../../../../utils/console";
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
 import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "./RippleModel";
 import {RequestAddressInfo} from "../../../../../models/GenericWalletModel";
+import * as Utils from '../../../../../utils/utils';
 
 export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
 
@@ -31,6 +32,11 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         this._coinName = coinNameOrShortcut;
     }
 
+    /**
+     * 
+     * @param reqAddress Getting Ripple account Info from blockchain
+     * @returns Ripple account info
+     */
     public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<RippleAccountInfo | null>
     {        
         try {
@@ -40,6 +46,12 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         }
     }
 
+    /**
+     * Getting list of transaction info
+     * @param account Account address
+     * @param limit Number of transactions
+     * @returns List of ripple transaction data
+     */
     public async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>>
     {
         let trs = await this.GetFromServer<any>(`address/transactions/${this._coinName}/${account}/${limit}`);
@@ -50,18 +62,37 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
         return [];
     }
 
+    /**
+     * Getting current fee
+     * @returns Ripple Fee
+     */
     public async GetCurrentFee(): Promise<RippleFee> {
         return await this.GetFromServer<RippleFee>(`transaction/fee/${this._coinName}`);
     }
 
+    /**
+     * Broadcasting the transaction
+     * @param data Signed data to be broadcasted to network
+     * @returns 
+     */
     public async BroadCastTransaction(data: string): Promise<any> {
-        MyConsole.Info("RippleTxHex", data);
-        return await this.GetFromServer<any>(`Transaction/send/${this._coinName}/${data}`);
+        let data_any = data as any;
+        if (data_any instanceof Uint8Array)
+        {
+            return await this.SendTransaction(Utils.ByteArrayToHexString(data_any).toUpperCase());
+        }
+
+        return await this.SendTransaction(data);
+        
     }
 
     GetLatestTransactions(trs: Array<number>, count: number, offset: number) {
     }
 
     GetTransactions(hash: string) {
+    }
+
+    private async SendTransaction(data: string): Promise<any> {
+        return await this.GetFromServer<any>(`Transaction/send/${this._coinName}/${data}`);
     }
 }
