@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { MyConsole } from "../../../../../utils/console";
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
 import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "./RippleModel";
 import {RequestAddressInfo} from "../../../../../models/GenericWalletModel";
@@ -33,8 +32,8 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
     }
 
     /**
-     * 
-     * @param reqAddress Getting Ripple account Info from blockchain
+     * Getting Ripple account Info from blockchain
+     * @param reqAddress Address
      * @returns Ripple account info
      */
     public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<RippleAccountInfo | null>
@@ -77,13 +76,11 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
      */
     public async BroadCastTransaction(data: string): Promise<any> {
         let data_any = data as any;
-        if (data_any instanceof Uint8Array)
-        {
+        if (data_any instanceof Uint8Array) {
             return await this.SendTransaction(Utils.ByteArrayToHexString(data_any).toUpperCase());
         }
 
         return await this.SendTransaction(data);
-        
     }
 
     GetLatestTransactions(trs: Array<number>, count: number, offset: number) {

@@ -101,6 +101,14 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
     }
 
     public async GetLatestTransactions(trKeys: Array<number>, count = 100, offset = 0) : Promise<Array<WalletModel.EthereumTransaction>> {
+    /**
+     * Get List of transaction, this list is good for view(showing transaction history)
+     * @param trKeys List of transaction IDs, You can get these IDs from GetAddressInfo
+     * @param count Number of transaction
+     * @param offset Start index
+     * @returns
+     */
+    public async GetLatestTransactions(trKeys: Array<number>, count = 100, offset = 0) : Promise<Array<any>> {
         return new Promise<Array<WalletModel.EthereumTransaction>>(async (resolve,reject) => {
             if (count > 1000)
                 count = 1000;
