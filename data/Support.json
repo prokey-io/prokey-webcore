@@ -2,71 +2,75 @@
     "bitcoin": [
         {
             "name": "Bitcoin",
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
+        },
+        {
+            "name": "Testnet",
+            "optimum": "1.8.0"
         },
         {
             "name": "Bitcoin Cash",
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         },
         {
             "name": "Dash",
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         },
         {
             "name": "DigiByte",
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
+        },
+        {
+            "name": "Bitcoin Cash",
+            "optimum": "1.8.0"
+        },
+        {
+            "name": "Dash",
+            "optimum": "1.8.0"
+        },
+        {
+            "name": "DigiByte",
+            "optimum": "1.8.0"
         }
     ],
     "erc20": [
         {
             "chain_id": 1,
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         },
         {
             "chain_id": 56,
-            "optimum": "1.10.2",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.10.2"
         }
     ],
     "eth": [
         {
             "chain_id": 1,
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         },
         {
             "chain_id": 61, 
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         }
     ],
     "omni":[
         {
             "proparty_id": 31,
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         },
         {
             "proparty_id": 3,
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         }
     ],
     "ripple": [
         {
             "name": "Ripple",
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         },
         {
             "name": "Ripple Testnet",
-            "optimum": "1.8.0",
-            "optimum_plus": "2.0.0"
+            "optimum": "1.8.0"
         }
     ]
 }

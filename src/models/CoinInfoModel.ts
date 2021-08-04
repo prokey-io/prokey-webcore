@@ -16,10 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-interface ProkeySupport {
-    optimum: string,
-}
-
 export interface BitcoinBaseCoinInfoModel {
     blocktime: number,
     //cashAddrPrefix?: string,
@@ -36,7 +32,6 @@ export interface BitcoinBaseCoinInfoModel {
     segwit: boolean,
     // signed_message_header: in Network
     slip44: number,
-    support: ProkeySupport,
     //xPubMagic: number,
     //xPubMagicSegwitNative?: number,
     //xPubMagicSegwit?: number,
@@ -62,7 +57,6 @@ export interface EthereumBaseCoinInfoModel {
     rskip60: boolean,
     shortcut: string,
     slip44: number,
-    support: ProkeySupport,
     url: string,
     on_device?: string,
     test?: boolean,
@@ -93,7 +87,6 @@ export interface MiscCoinInfoModel {
     name: string;
     shortcut: string;
     slip44: number;
-    support: ProkeySupport;
     decimals: number;
     on_device: string,
     test?: boolean,
@@ -121,7 +114,6 @@ export interface RippleCoinInfoModel {
     slip44: number;
     decimals: number;
     on_device: string,
-    support: ProkeySupport;
     test?: boolean,
     tx_url: string,
 }
