@@ -3,10 +3,13 @@ import Request = httpclient.Request
 import {RequestAddressInfo} from "../../../../models/GenericWalletModel";
 
 export abstract class ProkeyBaseBlockChain {
+
+    // These functions must be implemented in child classes
     public abstract GetAddressInfo(reqAddresses: Array<RequestAddressInfo> | RequestAddressInfo);
     public abstract GetTransactions(hash: string);
     public abstract GetLatestTransactions(trs: Array<number>, count : number, offset: number);
     public abstract BroadCastTransaction(data: string);
+
     /**
      * This is a private helper function to GET data from server
      * @param toServer URL + data
@@ -27,6 +30,12 @@ export abstract class ProkeyBaseBlockChain {
         return JSON.parse(json) as T;
     }
 
+    /**
+     * This is a private helper function to POST data to server
+     * @param toServer URL
+     * @param body Request Body
+     * @returns Response data from server
+     */
     protected async PostToServer<T>(toServer: string, body: any): Promise<T> {
         const client = httpclient.newHttpClient();
 
