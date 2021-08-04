@@ -234,7 +234,9 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
         }
 
 
+        //! Get fee from prokey servers
         var fees = await this.GetTxFeeFromServer();
+
         // BTC -> Satoshi/Byte
         fee.economy = fees.ecoFees[5].feerate * 100000;
         fee.normal = fees.fees[3].feerate * 100000;
@@ -245,6 +247,8 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
         if (fee.high < 0)
             fee.high = fees.fees[2].feerate * 100000;
 
+        if (fee.high < 0)
+        {
             // We need to use the fee from coin info
             // satoshi/kB -> satoshi/Byte
             fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( this._coinName, CoinBaseType.BitcoinBase).minfee_kb / 1000;

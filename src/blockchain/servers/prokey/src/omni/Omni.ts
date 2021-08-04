@@ -148,7 +148,6 @@ export class OmniBlockChain extends ProkeyBaseBlockChain {
     }
 
     public async GetTxFee(): Promise<BitcoinFee> {
-        var fees = await this.GetTxFeeFromServer();
         var fee = <BitcoinFee>{};
 
         try {
@@ -173,6 +172,9 @@ export class OmniBlockChain extends ProkeyBaseBlockChain {
         }
         catch (error) {
         }
+
+        //! Get fee from prokey servers
+        var fees = await this.GetTxFeeFromServer();
 
         fee.economy = fees.ecoFees[5].feerate * 100000;
         fee.normal = fees.fees[3].feerate * 100000;
