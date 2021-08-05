@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { CoinBaseType } from "../coins/CoinInfo";
+
 export interface BitcoinBaseCoinInfoModel {
     blocktime: number,
     //cashAddrPrefix?: string,
@@ -47,6 +49,9 @@ export interface BitcoinBaseCoinInfoModel {
     test?: boolean,
     tx_url: string,
     timestamp: boolean,
+    priority: number,
+
+    coinBaseType?: CoinBaseType,
 };
 
 export interface EthereumBaseCoinInfoModel {
@@ -61,6 +66,9 @@ export interface EthereumBaseCoinInfoModel {
     on_device?: string,
     test?: boolean,
     tx_url: string,
+    priority: number,
+
+    coinBaseType?: CoinBaseType,
 }
 
 export interface Erc20BaseCoinInfoModel {
@@ -75,6 +83,9 @@ export interface Erc20BaseCoinInfoModel {
     on_device?: string,
     test?: boolean,
     tx_url: string,
+    priority: number,
+
+    coinBaseType?: CoinBaseType,
 }
 
 export interface MiscCoinInfoModel {
@@ -91,6 +102,9 @@ export interface MiscCoinInfoModel {
     on_device: string,
     test?: boolean,
     tx_url: string,
+    priority: number,
+
+    coinBaseType?: CoinBaseType,
 }
 
 export interface OmniCoinInfoModel {
@@ -106,6 +120,10 @@ export interface OmniCoinInfoModel {
     dust_limit: number,
     tx_url: string,
     timestamp: boolean,
+    decimals?: number,
+    priority: number,
+
+    coinBaseType?: CoinBaseType,
 }
 
 export interface RippleCoinInfoModel {
@@ -116,4 +134,7 @@ export interface RippleCoinInfoModel {
     on_device: string,
     test?: boolean,
     tx_url: string,
+    priority: number,
+
+    coinBaseType?: CoinBaseType,
 }

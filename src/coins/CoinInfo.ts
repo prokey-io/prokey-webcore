@@ -18,6 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { BitcoinBaseCoinInfoModel, 
+    EthereumBaseCoinInfoModel,
+    Erc20BaseCoinInfoModel,
+    MiscCoinInfoModel,
+    OmniCoinInfoModel,
+    RippleCoinInfoModel,
+ } from "../models/CoinInfoModel";
+
 const compareVersions = require('compare-versions');
 
 const modelName = require.resolve("../../data/ProkeyCoinsInfo.json");
@@ -223,6 +231,113 @@ export class CoinInfo {
             if (a.Priority > b.Priority)
                 return 1;
             else if (a.Priority < b.Priority)
+                return -1;
+            else
+                return 0;
+        });
+
+        return list;
+    }
+
+    /**
+     * Returning the sorted list of all coins
+     * @param firmwareVersion Specific Version of Prokey which support this coin
+     */
+     public static GetAllCoinsInfoByVersion(firmwareVersion: string): Array< BitcoinBaseCoinInfoModel | 
+                                                                        EthereumBaseCoinInfoModel | 
+                                                                        Erc20BaseCoinInfoModel | 
+                                                                        MiscCoinInfoModel | 
+                                                                        OmniCoinInfoModel | 
+                                                                        RippleCoinInfoModel> {
+
+        let list = new Array<BitcoinBaseCoinInfoModel | 
+                                EthereumBaseCoinInfoModel | 
+                                Erc20BaseCoinInfoModel | 
+                                MiscCoinInfoModel | 
+                                OmniCoinInfoModel | 
+                                RippleCoinInfoModel>();
+
+        //! For all bitcoin base coins in support file
+        ProkeySupport.bitcoin.forEach(support => {
+            //! Check the version
+            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
+                //! Find the coin in ProkeyCoinInfo.json
+                let coin = ProkeyCoinInfoModel.bitcoin.find(c => c.name == support.name);
+                if(coin != null) {
+                    list.push({
+                        ...coin,
+                        coinBaseType: CoinBaseType.BitcoinBase,
+                    })
+                }
+            }
+        });
+
+        //! For all ethereum base coins in support file
+        ProkeySupport.eth.forEach(support => {
+            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
+                //! Find the coin in ProkeyCoinInfo.json using chain_id
+                let coin = ProkeyCoinInfoModel.eth.find(c => c.chain_id == support.chain_id);
+                //! Add coin to list
+                if(coin != null) {
+                    list.push({
+                        ...coin,
+                        coinBaseType: CoinBaseType.EthereumBase,
+                    });
+                }
+            }
+        });
+
+        //! For all ERC20 tokens in support file
+        ProkeySupport.erc20.forEach(support => {
+            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
+                //! Add all ERC20 tokens in ProkeyCoinInfo.json which have same chain_id 
+                ProkeyCoinInfoModel.erc20.forEach(token => {
+                    if(token.chain_id == support.chain_id) {
+                        list.push({
+                            ...token,
+                            coinBaseType: CoinBaseType.ERC20,
+                        });
+                    }
+                });
+            }
+        });
+
+        //! For all OMNI tokens in support file
+        ProkeySupport.omni.forEach(support => {
+            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
+                //! Add all OMNI tokens in ProkeyCoinInfo.json which have same proparty_id 
+                ProkeyCoinInfoModel.omni.forEach(token => {
+                    if(token.proparty_id == support.proparty_id) {
+                        list.push({
+                            ...token,
+                            coinBaseType: CoinBaseType.OMNI,
+                            decimals: (token.divisible) ? 8 : 0,
+                        });
+                    }
+                });
+            }
+        });
+
+        //! For all Ripple base coins in support file
+        ProkeySupport.ripple.forEach(support => {
+            //! Check the version
+            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
+                //! Find the coin in ProkeyCoinInfo.json
+                let coin = ProkeyCoinInfoModel.ripple.find(c => c.name == support.name);
+                if(coin != null) {
+                    list.push({
+                        ...coin,
+                        coinBaseType: CoinBaseType.Ripple
+                    })
+                }
+            }
+        });
+
+        //! Sort the list by Priority
+        list.sort((a, b) => {
+            if (a.priority > b.priority)
+                return 1;
+            else if (a.priority < b.priority)
                 return -1;
             else
                 return 0;
