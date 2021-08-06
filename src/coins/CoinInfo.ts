@@ -119,7 +119,10 @@ export class CoinInfo {
         }
 
         if (ci)
+        {
+            ci.coinBaseType = coinType;
             return ci;
+        }
         else
             throw new Error(`cannot find ${coinName}`);
     }
