@@ -63,14 +63,14 @@ export class CoinInfo {
      * This function will return the CoinInfo by coinName and type
      * @param coinName The coin name or shortcut
      * @param coinType Which coin type are you looking for? BitcoinBase, ERC20 or Ethereum.
-     * @param chainOrPropertyId For ERC20, Ethereum or OMNI, this property can be used instead of name if set.
+     * @param chainOrPropertyId For Ethereum or OMNI, this property can be used instead of name if set.
      */
     public static Get<T>(coinName: string, coinType: CoinBaseType, chainOrPropertyId = 0): T {
         if (coinType == undefined)
             throw new Error();
 
-        if(coinType == CoinBaseType.ERC20 && chainOrPropertyId == 0) {
-            throw new Error("You have to provide Chain ID for ERC20 tokens");
+        if(coinType == CoinBaseType.ERC20 && coinName.length <= 0 ) {
+            throw new Error("You have to provide Contract Address for ERC20 tokens");
         } else if( (coinType == CoinBaseType.EthereumBase || coinType == CoinBaseType.OMNI) && coinName.length == 0 && chainOrPropertyId == 0) {
             throw new Error("No Chain ID or coin name provided");
         }
@@ -97,25 +97,28 @@ export class CoinInfo {
         let f = coinName.toLowerCase();
 
         let ci: any;
-        if (coinType == CoinBaseType.ERC20 || coinType == CoinBaseType.EthereumBase) {
-            if(chainOrPropertyId != 0) {
-                ci = c.find( token => token.chain_id == chainOrPropertyId);
-            } else {
-                if(coinType == CoinBaseType.ERC20) {
-                    ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+        switch(coinType){
+            case CoinBaseType.EthereumBase:
+                if(chainOrPropertyId != 0) {
+                    ci = c.find( token => token.chain_id == chainOrPropertyId);
                 } else {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
-            }
-        } else if(coinType == CoinBaseType.OMNI) {
-            if(chainOrPropertyId != 0) {
-                ci = c.find( token => token.proparty_id == chainOrPropertyId);
-            } else {
+                break;
+            case CoinBaseType.ERC20:
+                ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                break;
+            case CoinBaseType.OMNI:
+                if(chainOrPropertyId != 0) {
+                    ci = c.find( token => token.proparty_id == chainOrPropertyId);
+                } else {
+                    ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                }
+                break;
+            default:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
-            }
-        } 
-        else {
-            ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                break;
         }
 
         if (ci)
