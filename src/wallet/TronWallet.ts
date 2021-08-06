@@ -26,6 +26,7 @@ import * as PathUtil from '../utils/pathUtils';
 import { TronAddress, TronSignedTx, TronTransaction } from "../models/Prokey";
 import { TronBlockchain } from "../blockchain/servers/prokey/src/tron/TronBlockchain";
 import { TronAccountInfo, TronBlock, TronTransactionDataInfo } from "../blockchain/servers/prokey/src/tron/TronModel";
+import * as Utils from '../utils/utils';
 var WAValidator = require('multicoin-address-validator');
 
 export class TronWallet extends BaseWallet {
@@ -126,7 +127,8 @@ export class TronWallet extends BaseWallet {
             0);
 
         // get the now block
-        let now_block = await this._block_chain.GetNowBlock();
+        let last_block = await this._block_chain.GetLatestBlock(1);
+        let now_block = last_block.block[0] as TronBlock;
             
         let tx: TronTransaction = {
             address_n: path[0].path,
@@ -137,7 +139,7 @@ export class TronWallet extends BaseWallet {
                 timestamp: now_block.block_header.raw_data.timestamp,
                 tx_trie_root: now_block.block_header.raw_data.txTrieRoot,
                 version: now_block.block_header.raw_data.version,
-                witness_address: now_block.block_header.witness_signature
+                witness_address: now_block.block_header.raw_data.witness_address
             },
             contract: {
                 transfer_contract: {
@@ -150,6 +152,13 @@ export class TronWallet extends BaseWallet {
     }
 
     public async SendTransaction(tx: TronSignedTx): Promise<any> {
+        let data_any = tx.serialized_tx as any;
+        if (data_any instanceof Uint8Array)
+        {            
+            return await this._block_chain.BroadCastTransaction(
+                Utils.ByteArrayToHexString(data_any).toUpperCase());            
+        }
+
         return await this._block_chain.BroadCastTransaction(tx.serialized_tx);
     }
 }

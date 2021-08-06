@@ -14625,7 +14625,7 @@
       "support": {
         "optimum": "1.10.0"
       },
-      "tx_url": "https://tronscan.org/#/transaction/{hash}",
+      "tx_url": "https://shasta.tronscan.org/#/transaction/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
       ]
@@ -14641,7 +14641,7 @@
       "support": {
         "optimum": "1.10.0"
       },
-      "tx_url": "https://tronscan.org/#/transaction/{hash}",
+      "tx_url": "https://nile.tronscan.org/#/transaction/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
       ]

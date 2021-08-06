@@ -70,6 +70,10 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
         return await this.GetFromServer<TronBlock>(`block/getblockcount/${this._coinName}`);
     }
 
+    public async GetLatestBlock(count: number): Promise<any> {
+        return await this.GetFromServer<TronBlock>(`block/GetLatest/${this._coinName}/${count}`);
+    }
+
     public async BroadCastTransaction(data: string): Promise<any> {
         return await this.GetFromServer<any>(`Transaction/send/${this._coinName}/${data}`);
     }

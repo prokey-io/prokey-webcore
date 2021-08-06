@@ -393,9 +393,13 @@ export class Device {
 
         if (res.type === 'Failure') 
         {
+            res.success = false;
             console.log("Failure", res);
             if(this._eventEmitters.emit('OnFailure', res.payload) == false){
                 MyConsole.Warning('DeviceCommands::OnReceiveDataFromBridge->OnFailure has no listener');
+            }
+            if(this._sendMessageReject) {
+                this._sendMessageReject(res);
             }
         } 
         else if (res.type === 'ButtonRequest') 

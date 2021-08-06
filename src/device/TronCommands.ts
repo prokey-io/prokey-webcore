@@ -56,7 +56,7 @@ export class TronCommands extends BaseCommands implements ICoinCommands {
     }
 
     public async SignTransaction(device: Device, transaction: TronTransaction): Promise<TronSignedTx> {
-        throw new Error("Method not implemented.");
+        return await device.SendMessage<TronSignedTx>("TronSignTx", transaction, "TronSignedTx");
     }
 
     public async SignMessage(device: Device, path: number[], message: Uint8Array, coinName?: string): Promise<MessageSignature> {
