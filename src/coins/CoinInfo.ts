@@ -65,13 +65,13 @@ export class CoinInfo {
      * @param coinType Which coin type are you looking for? BitcoinBase, ERC20 or Ethereum.
      * @param chainOrPropertyId For Ethereum or OMNI, this property can be used instead of name if set.
      */
-    public static Get<T>(coinName: string, coinType: CoinBaseType, chainOrPropertyId = 0): T {
+    public static Get<T>(coinName: string, coinType: CoinBaseType, chainOrPropertyId?: number): T {
         if (coinType == undefined)
             throw new Error();
 
         if(coinType == CoinBaseType.ERC20 && coinName.length <= 0 ) {
             throw new Error("You have to provide Contract Address for ERC20 tokens");
-        } else if( (coinType == CoinBaseType.EthereumBase || coinType == CoinBaseType.OMNI) && coinName.length == 0 && chainOrPropertyId == 0) {
+        } else if( (coinType == CoinBaseType.EthereumBase || coinType == CoinBaseType.OMNI) && coinName.length == 0 && chainOrPropertyId == null) {
             throw new Error("No Chain ID or coin name provided");
         }
 
@@ -100,7 +100,7 @@ export class CoinInfo {
 
         switch(coinType){
             case CoinBaseType.EthereumBase:
-                if(chainOrPropertyId != 0) {
+                if(chainOrPropertyId != null) {
                     ci = c.find( token => token.chain_id == chainOrPropertyId);
                 } else {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
@@ -110,7 +110,7 @@ export class CoinInfo {
                 ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 break;
             case CoinBaseType.OMNI:
-                if(chainOrPropertyId != 0) {
+                if(chainOrPropertyId != null) {
                     ci = c.find( token => token.proparty_id == chainOrPropertyId);
                 } else {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
