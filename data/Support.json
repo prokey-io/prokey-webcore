@@ -45,6 +45,10 @@
         {
             "chain_id": 56,
             "optimum": "1.10.2"
+        },
+        {
+            "chain_id": 61,
+            "optimum": "1.8.0"
         }
     ],
     "eth": [
