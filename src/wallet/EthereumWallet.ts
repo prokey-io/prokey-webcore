@@ -453,6 +453,8 @@ export class EthereumWallet extends BaseWallet {
                 return 'ubq';       // Ubiq Network Mainnet
             case 42:
                 return 'kovan';     // Ethereum Testnet Kovan
+            case 56:
+                return 'bnb';     // Binance Chain Native
             case 61:
                 return 'etc';       // Ethereum Classic Mainnet
             case 64:
