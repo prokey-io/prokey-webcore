@@ -46,9 +46,19 @@ export class BitcoinWallet extends BaseWallet {
     private _bitcoinWallet!: WalletModel.BitcoinWalletModel 
     private _blockchain: BitcoinBlockchain;
 
-    _TX_DEFAULT_INPUT_SIZE = 148;
-    _TX_DEFAULT_OUTPUT_SIZE = 180;
-    _TX_DEFAULT_OVERHEAD_SIZE = 192;
+
+    // -----------------  Segwit TX -----------------------
+    // Input
+    // HASH(32) + Index(4) + ScriptLen(1) + Script (~17) + Seq.(4) + Witness(~72)  
+    _TX_DEFAULT_INPUT_SIZE = 129;
+
+    // Output
+    // Value(8) + ScriptLen(1) + Script(~40)
+    _TX_DEFAULT_OUTPUT_SIZE = 49;
+
+    // TX Details
+    // Version(4) + Marker(1) + Flag(1) + InputCout(usually 1B) + OutputCount(usually 1B) + LockTime(4)        
+    _TX_DEFAULT_OVERHEAD_SIZE = 12;
 
     /**
      * class constructor
@@ -613,16 +623,20 @@ export class BitcoinWallet extends BaseWallet {
             changeIndex = i + 1;
         }
 
-        let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
-        
         //! Add change - fee
-        let change = utxoBal - totalSend - txFee;
+        let change = utxoBal - totalSend - txFee;        
 
-        tx.outputs.push({
-            address_n: changePaths[0].path,
-            amount: change.toFixed(0),
-            script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
-        });
+        //! No change if the change is less than dust
+        if(change > coinInfo.dust_limit)
+        {
+            let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
+
+            tx.outputs.push({
+                address_n: changePaths[0].path,
+                amount: change.toFixed(0),
+                script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+            });
+        }
 
         MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
 
