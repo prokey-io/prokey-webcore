@@ -49,8 +49,8 @@ export class BitcoinWallet extends BaseWallet {
 
     // -----------------  Segwit TX -----------------------
     // Input
-    // HASH(32) + Index(4) + ScriptLen(1) + Script (~17) + Seq.(4) + Witness(~72)  
-    _TX_DEFAULT_INPUT_SIZE = 129;
+    // HASH(32) + Index(4) + ScriptLen(1) + Script (~23) + Seq.(4) + Witness(~72)  
+    _TX_DEFAULT_INPUT_SIZE = 135;
 
     // Output
     // Value(8) + ScriptLen(1) + Script(~40)
