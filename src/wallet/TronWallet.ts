@@ -129,18 +129,10 @@ export class TronWallet extends BaseWallet {
         // get the now block
         let last_block = await this._block_chain.GetLatestBlock(1);
         let now_block = last_block.block[0] as TronBlock;
-            
         let tx: TronTransaction = {
             address_n: path[0].path,
             timestamp: Date.now(),
-            block_header: {
-                number: now_block.block_header.raw_data.number,
-                parent_hash: now_block.block_header.raw_data.parentHash,
-                timestamp: now_block.block_header.raw_data.timestamp,
-                tx_trie_root: now_block.block_header.raw_data.txTrieRoot,
-                version: now_block.block_header.raw_data.version,
-                witness_address: now_block.block_header.raw_data.witness_address
-            },
+            block_id: now_block.blockID,
             contract: {
                 transfer_contract: {
                     to_address: toAccount,

@@ -3070,18 +3070,9 @@ message TronSignTx {
     // Common part of transaction
     optional uint64 timestamp = 2;                              // UTC timestamp
     optional uint64 expiration = 3;                             // Transaction expiration
-    optional TronBlockHeader block_header = 4;                      // Now block data
+    optional string block_id = 4;                               // Now block id
     optional TronContract contract = 6;                         // Contract messages
     optional uint64 fee_limit = 8;                              // fee limit
-
-    message TronBlockHeader {
-        optional int64 timestamp = 1;
-        optional string tx_trie_root = 2;
-        optional string parent_hash = 3;
-        optional int64 number = 7;
-        optional string witness_address = 9;
-        optional int32 version = 10;
-    }
 
     /***
      * Tron Contracts Messages

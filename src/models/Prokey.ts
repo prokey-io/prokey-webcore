@@ -1051,14 +1051,7 @@ export type TronTransaction = {
     address_n: Array<number>;
     timestamp: number;
     expiration?: number;
-    block_header: {
-        timestamp: number;
-        tx_trie_root: string;
-        parent_hash: string;
-        number: number;
-        witness_address: string;
-        version: number;
-    };
+    block_id: string;
     contract: {
         transfer_contract?: {
             to_address: string;
