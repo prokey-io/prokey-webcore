@@ -624,7 +624,7 @@ export class BitcoinWallet extends BaseWallet {
             script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
         });
 
-        MyConsole.Info("Generated transaction to be signed", tx);
+        MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
 
         return tx;
     }
@@ -680,7 +680,6 @@ export class BitcoinWallet extends BaseWallet {
         // Calculate transaction length
         let txLen = this.CalculateTxLen(receivers, acc, txFees);
 
-        
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
@@ -688,6 +687,8 @@ export class BitcoinWallet extends BaseWallet {
             unit: coinInfo.shortcut,
             decimal: coinInfo.decimals,
         }
+
+        MyConsole.Info("BitcoinWallet::CalculateTransactionFee->Tx fees", fees);
 
         return fees;
     }

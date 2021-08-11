@@ -31,6 +31,7 @@ import { CoinBaseType, CoinInfo } from '../coins/CoinInfo';
 import { BitcoinBaseCoinInfoModel } from '../models/CoinInfoModel'
 import { httpclient } from 'typescript-http-client'
 import Request = httpclient.Request
+import { MyConsole } from '../utils/console';
 
 export class BitcoinBlockchain {
 
@@ -93,6 +94,7 @@ export class BitcoinBlockchain {
                     }
                 });
 
+                MyConsole.Info("Current bitcoinfees fee rates", fee);
                 return fee;
             }
             catch (error) {
@@ -118,6 +120,8 @@ export class BitcoinBlockchain {
             // satoshi/kB -> satoshi/Byte
             fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( this._prokeyBtcBlockchain._coinName, CoinBaseType.BitcoinBase).minfee_kb / 1000;
         }
+
+        MyConsole.Info("Current server fee rates", fee);
 
         return fee;
     }
