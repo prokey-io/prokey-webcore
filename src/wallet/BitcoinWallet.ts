@@ -46,9 +46,19 @@ export class BitcoinWallet extends BaseWallet {
     private _bitcoinWallet!: WalletModel.BitcoinWalletModel 
     private _blockchain: BitcoinBlockchain;
 
-    _TX_DEFAULT_INPUT_SIZE = 148;
-    _TX_DEFAULT_OUTPUT_SIZE = 180;
-    _TX_DEFAULT_OVERHEAD_SIZE = 192;
+
+    // -----------------  Segwit TX -----------------------
+    // Input
+    // HASH(32) + Index(4) + ScriptLen(1) + Script (~23) + Seq.(4) + Witness(~74) + PK(1+33)
+    _TX_DEFAULT_INPUT_SIZE = 172;
+
+    // Output
+    // Value(8) + ScriptLen(1) + Script(~23)
+    _TX_DEFAULT_OUTPUT_SIZE = 32;
+
+    // TX Details
+    // Version(4) + Marker(1) + Flag(1) + InputCout(usually 1B) + OutputCount(usually 1B) + LockTime(4)        
+    _TX_DEFAULT_OVERHEAD_SIZE = 12;
 
     /**
      * class constructor
@@ -613,18 +623,31 @@ export class BitcoinWallet extends BaseWallet {
             changeIndex = i + 1;
         }
 
-        let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
-        
         //! Add change - fee
-        let change = utxoBal - totalSend - txFee;
+        let change = utxoBal - totalSend - txFee;        
 
-        tx.outputs.push({
-            address_n: changePaths[0].path,
-            amount: change.toFixed(0),
-            script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
-        });
+        let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
 
-        MyConsole.Info("Generated transaction to be signed", tx);
+        //! No change if the change is less than dust
+        if(coinInfo.dust_limit != null)
+        {
+            if(change >= coinInfo.dust_limit) { 
+                tx.outputs.push({
+                    address_n: changePaths[0].path,
+                    amount: change.toFixed(0),
+                    script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+                });
+            }
+        }
+        else if (change > 0) {
+            tx.outputs.push({
+                address_n: changePaths[0].path,
+                amount: change.toFixed(0),
+                script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+            });
+        }
+
+        MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
 
         return tx;
     }
@@ -680,7 +703,6 @@ export class BitcoinWallet extends BaseWallet {
         // Calculate transaction length
         let txLen = this.CalculateTxLen(receivers, acc, txFees);
 
-        
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
@@ -688,6 +710,8 @@ export class BitcoinWallet extends BaseWallet {
             unit: coinInfo.shortcut,
             decimal: coinInfo.decimals,
         }
+
+        MyConsole.Info("BitcoinWallet::CalculateTransactionFee->Tx fees", fees);
 
         return fees;
     }
@@ -717,10 +741,10 @@ export class BitcoinWallet extends BaseWallet {
         //! We should calculate the size of this transaction to calculate the actual fee
         let txLen = this._TX_DEFAULT_OVERHEAD_SIZE;
         receivers.forEach(receivers => {
-           // OMNI transaction
-           if(receivers.data != undefined){
-               //TODO: need to double check
-               txLen += receivers.data.length + 40;
+           // OPRETURN transaction
+           if(receivers.data != undefined) {
+               // OPRETURN + Data Lenght
+               txLen += 1 + receivers.data.length;
            }
            else {
                txLen += this._TX_DEFAULT_OUTPUT_SIZE;
