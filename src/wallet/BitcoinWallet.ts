@@ -631,7 +631,7 @@ export class BitcoinWallet extends BaseWallet {
         //! No change if the change is less than dust
         if(coinInfo.dust_limit != null)
         {
-            if(change > coinInfo.dust_limit) { 
+            if(change >= coinInfo.dust_limit) { 
                 tx.outputs.push({
                     address_n: changePaths[0].path,
                     amount: change.toFixed(0),
@@ -639,7 +639,7 @@ export class BitcoinWallet extends BaseWallet {
                 });
             }
         }
-        else {
+        else if (change > 0) {
             tx.outputs.push({
                 address_n: changePaths[0].path,
                 amount: change.toFixed(0),
