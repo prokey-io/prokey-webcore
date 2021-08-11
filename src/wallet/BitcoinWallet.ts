@@ -626,11 +626,20 @@ export class BitcoinWallet extends BaseWallet {
         //! Add change - fee
         let change = utxoBal - totalSend - txFee;        
 
-        //! No change if the change is less than dust
-        if(change > coinInfo.dust_limit)
-        {
-            let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
+        let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
 
+        //! No change if the change is less than dust
+        if(coinInfo.dust_limit != null)
+        {
+            if(change > coinInfo.dust_limit) { 
+                tx.outputs.push({
+                    address_n: changePaths[0].path,
+                    amount: change.toFixed(0),
+                    script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+                });
+            }
+        }
+        else {
             tx.outputs.push({
                 address_n: changePaths[0].path,
                 amount: change.toFixed(0),
