@@ -732,10 +732,10 @@ export class BitcoinWallet extends BaseWallet {
         //! We should calculate the size of this transaction to calculate the actual fee
         let txLen = this._TX_DEFAULT_OVERHEAD_SIZE;
         receivers.forEach(receivers => {
-           // OMNI transaction
-           if(receivers.data != undefined){
-               //TODO: need to double check
-               txLen += receivers.data.length + 40;
+           // OPRETURN transaction
+           if(receivers.data != undefined) {
+               // OPRETURN + Data Lenght
+               txLen += 1 + receivers.data.length;
            }
            else {
                txLen += this._TX_DEFAULT_OUTPUT_SIZE;
