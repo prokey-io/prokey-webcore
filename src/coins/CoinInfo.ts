@@ -32,11 +32,6 @@ const modelName = require.resolve("../../data/ProkeyCoinsInfo.json");
 delete require.cache[modelName];
 const ProkeyCoinInfoModel = require("../../data/ProkeyCoinsInfo.json");
 
-const supportFile = require.resolve("../../data/Support.json");
-delete require.cache[supportFile];
-const ProkeySupport = require("../../data/Support.json");
-
-
 export enum CoinBaseType {
     BitcoinBase,
     EthereumBase,
@@ -137,98 +132,78 @@ export class CoinInfo {
     public static GetAllCoinsName(firmwareVersion: string): Array<CoinNameModel> {
         let list = new Array<CoinNameModel>();
 
-        //! For all bitcoin base coins in support file
-        ProkeySupport.bitcoin.forEach(support => {
+        //! For all bitcoin base coins
+        ProkeyCoinInfoModel.bitcoin.forEach(btcBaseCoin => {
             //! Check the version
-            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
-                //! Find the coin in ProkeyCoinInfo.json
-                let coin = ProkeyCoinInfoModel.bitcoin.find(c => c.name == support.name);
-                if(coin != null) {
-                    list.push({
-                        Name: coin.name,
-                        Shortcut: coin.shortcut,
-                        Type: CoinBaseType.BitcoinBase,
-                        Priority: coin.priority,
-                        ContractAddress: '',
-                        Decimals: coin.decimals,
-                    })
-                }
+            if(compareVersions(firmwareVersion, btcBaseCoin.support.optimum) >= 0) {
+                list.push({
+                    Name: btcBaseCoin.name,
+                    Shortcut: btcBaseCoin.shortcut,
+                    Type: CoinBaseType.BitcoinBase,
+                    Priority: btcBaseCoin.priority,
+                    ContractAddress: '',
+                    Decimals: btcBaseCoin.decimals,
+                })
             }
         });
 
-        //! For all ethereum base coins in support file
-        ProkeySupport.eth.forEach(support => {
-            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
-                //! Find the coin in ProkeyCoinInfo.json using chain_id
-                let coin = ProkeyCoinInfoModel.eth.find(c => c.chain_id == support.chain_id);
-                //! Add coin to list
-                if(coin != null) {
-                    list.push({
-                        Name: coin.name,
-                        Shortcut: coin.shortcut,
-                        Type: CoinBaseType.EthereumBase,
-                        Priority: coin.priority,
-                        ContractAddress: '',
-                        Decimals: coin.decimals,
-                    });
-                }
+        //! For all ethereum base coins
+        ProkeyCoinInfoModel.eth.forEach(ethBaseCoin => {
+            if(compareVersions(firmwareVersion, ethBaseCoin.support.optimum) >= 0) {
+                list.push({
+                    Name: ethBaseCoin.name,
+                    Shortcut: ethBaseCoin.shortcut,
+                    Type: CoinBaseType.EthereumBase,
+                    Priority: ethBaseCoin.priority,
+                    ContractAddress: '',
+                    Decimals: ethBaseCoin.decimals,
+                    ChainOrPropertyId: ethBaseCoin.chain_id,
+                });
             }
         });
 
-        //! For all ERC20 tokens in support file
-        ProkeySupport.erc20.forEach(support => {
-            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
-                //! Add all ERC20 tokens in ProkeyCoinInfo.json which have same chain_id 
-                ProkeyCoinInfoModel.erc20.forEach(token => {
-                    if(token.chain_id == support.chain_id) {
-                        list.push({
-                            Name: token.name,
-                            Shortcut: token.shortcut,
-                            Type: CoinBaseType.ERC20,
-                            Priority: token.priority,
-                            ContractAddress: token.address,
-                            Decimals: token.decimals,
-                        });
-                    }
+        //! For all ERC20 tokens
+        ProkeyCoinInfoModel.erc20.forEach(erc20 => {
+            if(compareVersions(firmwareVersion, erc20.support.optimum) >= 0) {
+                list.push({
+                    Name: erc20.name,
+                    Shortcut: erc20.shortcut,
+                    Type: CoinBaseType.ERC20,
+                    Priority: erc20.priority,
+                    ContractAddress: erc20.address,
+                    Decimals: erc20.decimals,
+                    ChainOrPropertyId: erc20.chain_id,
                 });
             }
         });
 
         //! For all OMNI tokens in support file
-        ProkeySupport.omni.forEach(support => {
-            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
-                //! Add all OMNI tokens in ProkeyCoinInfo.json which have same proparty_id 
-                ProkeyCoinInfoModel.omni.forEach(token => {
-                    if(token.proparty_id == support.proparty_id) {
-                        list.push({
-                            Name: token.name,
-                            Shortcut: token.shortcut,
-                            Type: CoinBaseType.OMNI,
-                            Priority: token.priority,
-                            ContractAddress: '',
-                            Decimals: token.divisible ? 8 : 0,
-                        });
-                    }
+        ProkeyCoinInfoModel.omni.forEach(omni => {
+            if(compareVersions(firmwareVersion, omni.support.optimum) >= 0) {
+                list.push({
+                    Name: omni.name,
+                    Shortcut: omni.shortcut,
+                    Type: CoinBaseType.OMNI,
+                    Priority: omni.priority,
+                    ContractAddress: '',
+                    Decimals: omni.divisible ? 8 : 0,
+                    ChainOrPropertyId: omni.proparty_id,
                 });
             }
         });
 
-        //! For all Ripple base coins in support file
-        ProkeySupport.ripple.forEach(support => {
+        //! For all Ripple base coins
+        ProkeyCoinInfoModel.ripple.forEach(ripple => {
             //! Check the version
-            if(compareVersions(firmwareVersion, support.optimum) >= 0) {
-                //! Find the coin in ProkeyCoinInfo.json
-                let coin = ProkeyCoinInfoModel.ripple.find(c => c.name == support.name);
-                if(coin != null) {
-                    list.push({
-                        Name: coin.name,
-                        Shortcut: coin.shortcut,
-                        Type: CoinBaseType.Ripple,
-                        Priority: coin.priority,
-                        ContractAddress: '',
-                        Decimals: coin.decimals,
-                    })
-                }
+            if(compareVersions(firmwareVersion, ripple.support.optimum) >= 0) {
+                list.push({
+                    Name: ripple.name,
+                    Shortcut: ripple.shortcut,
+                    Type: CoinBaseType.Ripple,
+                    Priority: ripple.priority,
+                    ContractAddress: '',
+                    Decimals: ripple.decimals,
+                })
             }
         });
 
