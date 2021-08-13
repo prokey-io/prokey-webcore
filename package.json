@@ -4,7 +4,10 @@
     "license": "GPL-3.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "files": ["dist/**/*", "protob/**/*"],
+    "files": [
+        "dist/**/*",
+        "protob/**/*"
+    ],
     "description": "This module can be used to communicate with Prokey device",
     "author": "Prokey Techologies Sdn. Bhd. <info@prokey.io>",
     "dependencies": {
