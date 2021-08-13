@@ -20,7 +20,7 @@
 
 import { MyConsole } from '../../../../../utils/console';
 import { ProkeyBaseBlockChain } from '../ProkeyBaseBlockChain';
-import { TronAccountInfo, TronBlock, TronTransactionDataInfo, TronTrc20TransactionDataInfo } from './TronModel';
+import { TronAccountInfo, TronAccountResources, TronBlock, TronTransactionDataInfo, TronTrc20TransactionDataInfo } from './TronModel';
 
 export class TronBlockchain extends ProkeyBaseBlockChain {
 
@@ -41,6 +41,16 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
             }
             return r.data[0];
         } catch (error) {
+            return null;
+        }
+    }
+
+    // Get account resources the address must be in HEX format
+    public async GetAccountResources(account: string): Promise<TronAccountResources | null> {
+        try {
+            return await this.GetFromServer<any>(`address/resources/${this._coinName}/${account}`);            
+        } catch (error) {
+            MyConsole.Error("Tron get account resources error: ", error);
             return null;
         }
     }

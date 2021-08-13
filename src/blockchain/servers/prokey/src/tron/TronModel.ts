@@ -27,6 +27,18 @@ export type TronAccountInfo = {
     latest_consume_free_time: number;
 }
 
+export type TronAccountResources = {
+    freeNetUsed: number;        // Free bandwidth used
+    freeNetLimit: number;       // Total free bandwidth
+    NetLimit: number;           // Total bandwidth obtained by freezing
+    TotalNetLimit: number;      // Total bandwidth can be obtained by freezing
+    TotalNetWeight: number;     // Total TRX frozen for bandwidth
+    tronPowerLimit: number;     // TRON Power(vote)
+    EnergyLimit: number;        // Total energy obtained by freezing
+    TotalEnergyLimit: number;   // Total energy can be obtained by freezing
+    TotalEnergyWeight: number;  // Total TRX frozen for energy}
+}
+
 export type TronContractRet = {
     contractRet: string;
     fee: number;
@@ -49,7 +61,7 @@ export type TronContract = {
 }
 
 export type TronTransactionRawData = {
-    contract:  Array<TronContract>;
+    contract: Array<TronContract>;
     ref_block_bytes: string;
     ref_block_hash: string;
     expiration: number;

@@ -21,7 +21,6 @@
 import { GeneralErrors, GeneralResponse } from "../models/GeneralResponse";
 import { IMessagePayload, ITransport } from "./ITransport";
 import { IMessageEvent, w3cwebsocket } from "websocket";
-import { MyConsole } from "../utils/console";
 
 export class WebSocketTransport implements ITransport {
     onReceiveCallback!: (msgPayload: IMessagePayload) => void;
