@@ -26,6 +26,8 @@ import { BitcoinBaseCoinInfoModel,
     RippleCoinInfoModel,
  } from "../models/CoinInfoModel";
 
+ import * as EthereumNetworks from "../utils/ethereum-networks";
+
 const compareVersions = require('compare-versions');
 
 const modelName = require.resolve("../../data/ProkeyCoinsInfo.json");
@@ -94,15 +96,24 @@ export class CoinInfo {
         let ci: any;
 
         switch(coinType){
+            case CoinBaseType.BitcoinBase:
+                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+                ci.id = `btc:${ci.shortcut}`;
+                break;
             case CoinBaseType.EthereumBase:
                 if(chainOrPropertyId != null) {
                     ci = c.find( token => token.chain_id == chainOrPropertyId);
                 } else {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
+
+                ci.id = `eth:${ci.shortcut}`;
                 break;
             case CoinBaseType.ERC20:
                 ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+                ci.id = `erc20:${EthereumNetworks.GetNetworkByChainId(ci.chain_id)}:${ci.shortcut}`;
                 break;
             case CoinBaseType.OMNI:
                 if(chainOrPropertyId != null) {
@@ -110,9 +121,18 @@ export class CoinInfo {
                 } else {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
+
+                ci.id = `omni:${ci.shortcut}`;
+                break;
+            case CoinBaseType.Ripple:
+                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+                ci.id = `ripple:${ci.shortcut}`;
                 break;
             default:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+                ci.id = `unknown:${ci.shortcut}`;
                 break;
         }
 
@@ -245,6 +265,7 @@ export class CoinInfo {
                 list.push({
                     ...coin,
                     coinBaseType: CoinBaseType.BitcoinBase,
+                    id: `btc:${coin.shortcut}`,
                 })
             }
         });
@@ -255,6 +276,7 @@ export class CoinInfo {
                 list.push({
                     ...coin,
                     coinBaseType: CoinBaseType.EthereumBase,
+                    id: `eth:${coin.shortcut}`,
                 });
             }
         });
@@ -265,6 +287,7 @@ export class CoinInfo {
                 list.push({
                     ...token,
                     coinBaseType: CoinBaseType.ERC20,
+                    id: `erc20:${EthereumNetworks.GetNetworkByChainId(token.chain_id)}:${token.shortcut}`,
                 });
             }
         });
@@ -275,6 +298,7 @@ export class CoinInfo {
                 list.push({
                     ...omni,
                     coinBaseType: CoinBaseType.OMNI,
+                    id: `omni:${omni.shortcut}`,
                 });
             }
         });
@@ -286,6 +310,7 @@ export class CoinInfo {
                 list.push({
                     ...ripple,
                     coinBaseType: CoinBaseType.Ripple,
+                    id: `ripple:${ripple.shortcut}`,
                 })
             }
         });

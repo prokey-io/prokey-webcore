@@ -18,12 +18,28 @@
 
 import { CoinBaseType } from "../coins/CoinInfo";
 
-export interface BitcoinBaseCoinInfoModel {
+interface ProkeySupport {
+    optimum: string,
+}
+
+export interface BaseCoinInfoModel {
+    name: string,
+    shortcut: string,
+    support: ProkeySupport,
+    test?: boolean,
+    decimals: number,
+
+    //! Dynamic properties, Not in json file
+    coinBaseType: CoinBaseType,
+    id: string,
+}
+
+export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     blocktime: number,
     //cashAddrPrefix?: string,
     label: string, // this is human readable format, could be different from "name"
-    name: string,
-    shortcut: string,
+    
+    
     dust_limit: number,
     force_bip143: boolean,
     fork_id?: number,
@@ -34,6 +50,7 @@ export interface BitcoinBaseCoinInfoModel {
     segwit: boolean,
     // signed_message_header: in Network
     slip44: number,
+    
     //xPubMagic: number,
     //xPubMagicSegwitNative?: number,
     //xPubMagicSegwit?: number,
@@ -46,95 +63,67 @@ export interface BitcoinBaseCoinInfoModel {
     blocks?: number,
     decimals: number,
     on_device: string,
-    test?: boolean,
+    
     tx_url: string,
     timestamp: boolean,
     priority: number,
 
-    coinBaseType?: CoinBaseType,
 };
 
-export interface EthereumBaseCoinInfoModel {
+export interface EthereumBaseCoinInfoModel extends BaseCoinInfoModel {
     chain: string,
     chain_id: number,
-    decimals: number,
-    name: string
     rskip60: boolean,
     shortcut: string,
     slip44: number,
     url: string,
     on_device?: string,
-    test?: boolean,
     tx_url: string,
     priority: number,
-
-    coinBaseType?: CoinBaseType,
 }
 
-export interface Erc20BaseCoinInfoModel {
+export interface Erc20BaseCoinInfoModel extends BaseCoinInfoModel{
     chain_id: number,
-    shortcut: string,
-    name: string,
     type: string
     address: string,
     ens_address: string,
-    decimals: number,
     website: string,
     on_device?: string,
-    test?: boolean,
     tx_url: string,
     priority: number,
-
-    coinBaseType?: CoinBaseType,
 }
 
-export interface MiscCoinInfoModel {
+export interface MiscCoinInfoModel extends BaseCoinInfoModel {
     type: 'misc' | 'nem';
     blocktime: number;
     curve: string;
     min_fee: number;
     max_fee: number;
     label: string; 
-    name: string;
-    shortcut: string;
     slip44: number;
     decimals: number;
     on_device: string,
-    test?: boolean,
     tx_url: string,
     priority: number,
-
-    coinBaseType?: CoinBaseType,
 }
 
-export interface OmniCoinInfoModel {
-    shortcut: string,
-    name: string,
+export interface OmniCoinInfoModel extends BaseCoinInfoModel {
     blockchain: string,
     segwit: boolean,
     slip44: number,
     divisible: boolean,
     proparty_id: number,
     on_device: string,
-    test?: boolean,
     dust_limit: number,
     tx_url: string,
     timestamp: boolean,
-    decimals?: number,
     priority: number,
-
-    coinBaseType?: CoinBaseType,
 }
 
-export interface RippleCoinInfoModel {
-    name: string;
-    shortcut: string;
+export interface RippleCoinInfoModel extends BaseCoinInfoModel {
     slip44: number;
-    decimals: number;
     on_device: string,
     test?: boolean,
     tx_url: string,
     priority: number,
-
-    coinBaseType?: CoinBaseType,
 }
