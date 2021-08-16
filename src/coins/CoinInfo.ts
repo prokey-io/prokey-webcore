@@ -297,6 +297,7 @@ export class CoinInfo {
             if(compareVersions(firmwareVersion, omni.support.optimum) >= 0) {
                 list.push({
                     ...omni,
+                    decimals: (omni.divisible) ? 8 : 0,
                     coinBaseType: CoinBaseType.OMNI,
                     id: `omni:${omni.shortcut}`,
                 });
