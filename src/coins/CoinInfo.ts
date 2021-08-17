@@ -99,7 +99,7 @@ export class CoinInfo {
             case CoinBaseType.BitcoinBase:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
-                ci.id = `btc:${ci.shortcut}`;
+                ci.id = `btc_${ci.shortcut}`;
                 break;
             case CoinBaseType.EthereumBase:
                 if(chainOrPropertyId != null) {
@@ -108,12 +108,12 @@ export class CoinInfo {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
 
-                ci.id = `eth:${ci.shortcut}`;
+                ci.id = `eth_${ci.shortcut}`;
                 break;
             case CoinBaseType.ERC20:
                 ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
-                ci.id = `erc20:${EthereumNetworks.GetNetworkByChainId(ci.chain_id)}:${ci.shortcut}`;
+                ci.id = `erc20_${EthereumNetworks.GetNetworkByChainId(ci.chain_id)}_${ci.shortcut}`;
                 break;
             case CoinBaseType.OMNI:
                 if(chainOrPropertyId != null) {
@@ -122,17 +122,17 @@ export class CoinInfo {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
 
-                ci.id = `omni:${ci.shortcut}`;
+                ci.id = `omni_${ci.shortcut}`;
                 break;
             case CoinBaseType.Ripple:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
-                ci.id = `ripple:${ci.shortcut}`;
+                ci.id = `ripple_${ci.shortcut}`;
                 break;
             default:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
-                ci.id = `unknown:${ci.shortcut}`;
+                ci.id = `unknown_${ci.shortcut}`;
                 break;
         }
 
@@ -265,7 +265,7 @@ export class CoinInfo {
                 list.push({
                     ...coin,
                     coinBaseType: CoinBaseType.BitcoinBase,
-                    id: `btc:${coin.shortcut}`,
+                    id: `btc_${coin.shortcut}`,
                 })
             }
         });
@@ -276,7 +276,7 @@ export class CoinInfo {
                 list.push({
                     ...coin,
                     coinBaseType: CoinBaseType.EthereumBase,
-                    id: `eth:${coin.shortcut}`,
+                    id: `eth_${coin.shortcut}`,
                 });
             }
         });
@@ -287,7 +287,7 @@ export class CoinInfo {
                 list.push({
                     ...token,
                     coinBaseType: CoinBaseType.ERC20,
-                    id: `erc20:${EthereumNetworks.GetNetworkByChainId(token.chain_id)}:${token.shortcut}`,
+                    id: `erc20_${EthereumNetworks.GetNetworkByChainId(token.chain_id)}_${token.shortcut}`,
                 });
             }
         });
@@ -299,7 +299,7 @@ export class CoinInfo {
                     ...omni,
                     decimals: (omni.divisible) ? 8 : 0,
                     coinBaseType: CoinBaseType.OMNI,
-                    id: `omni:${omni.shortcut}`,
+                    id: `omni_${omni.shortcut}`,
                 });
             }
         });
@@ -311,7 +311,7 @@ export class CoinInfo {
                 list.push({
                     ...ripple,
                     coinBaseType: CoinBaseType.Ripple,
-                    id: `ripple:${ripple.shortcut}`,
+                    id: `ripple_${ripple.shortcut}`,
                 })
             }
         });
