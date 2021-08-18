@@ -16,6 +16,10 @@ export function GetNetworkByChainId(chainId: number): string {
            return 'goerli';    // Ethereum Testnet Görli
        case 8:
            return 'ubq';       // Ubiq Network Mainnet
+       case 30:
+           return 'rsk';       // RSK
+       case 31:
+           return 'trsk';      // RSK Testnet
        case 42:
            return 'kovan';     // Ethereum Testnet Kovan
        case 56:
