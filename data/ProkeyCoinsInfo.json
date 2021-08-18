@@ -83,7 +83,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 13,
+      "priority": 12,
       "on_device": "Bcash",
       "test": false,
       "tx_url": "https://blockchair.com/bitcoin-cash/transaction/{hash}",
@@ -115,7 +115,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 66,
+      "priority": 65,
       "on_device": "Dash",
       "test": false,
       "tx_url": "https://blockchair.com/dash/transaction/{hash}",
@@ -147,7 +147,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 97,
+      "priority": 98,
       "on_device": "DigiByte",
       "test": false,
       "tx_url": "https://digiexplorer.info/tx/{hash}",
@@ -211,7 +211,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 14,
+      "priority": 15,
       "on_device": "Litecoin",
       "test": false,
       "tx_url": "https://ltc.bitaps.com/{hash}",
@@ -275,7 +275,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 727,
+      "priority": 718,
       "on_device": "Namecoin",
       "test": false,
       "tx_url": "https://namecha.in/tx/{hash}",
@@ -307,7 +307,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 565,
+      "priority": 567,
       "on_device": "Vertcoin",
       "test": false,
       "tx_url": "https://vtcblocks.com/tx/{hash}",
@@ -339,7 +339,7 @@
       },
       "decimals": 8,
       "extra_data": null,
-      "priority": 72,
+      "priority": 75,
       "on_device": "Zcash",
       "test": false,
       "tx_url": "https://blockchair.com/zcash/transaction/{hash}",
@@ -393,7 +393,7 @@
       "shortcut": "1INCH",
       "decimals": 18,
       "name": "1inch",
-      "priority": 133,
+      "priority": 132,
       "support": {
         "optimum": "1.10.2"
       }
@@ -558,7 +558,7 @@
       "shortcut": "ABT",
       "decimals": 18,
       "name": "ArcBlock Token",
-      "priority": 780,
+      "priority": 755,
       "support": {
         "optimum": "1.8.1"
       }
@@ -668,7 +668,7 @@
       "shortcut": "ADST",
       "decimals": 0,
       "name": "AdShares",
-      "priority": 806,
+      "priority": 733,
       "support": {
         "optimum": "1.8.1"
       }
@@ -690,7 +690,7 @@
       "shortcut": "ADX",
       "decimals": 18,
       "name": "AdEx Network",
-      "priority": 452,
+      "priority": 438,
       "support": {
         "optimum": "1.8.1"
       }
@@ -734,7 +734,7 @@
       "shortcut": "aETH",
       "decimals": 18,
       "name": "Aave Interest bearing ETH",
-      "priority": 284,
+      "priority": 282,
       "support": {
         "optimum": "1.10.2"
       }
@@ -767,7 +767,7 @@
       "shortcut": "AGI",
       "decimals": 8,
       "name": "SingularityNET",
-      "priority": 238,
+      "priority": 241,
       "support": {
         "optimum": "1.8.1"
       }
@@ -778,7 +778,7 @@
       "shortcut": "AGIX",
       "decimals": 8,
       "name": "SingularityNET",
-      "priority": 238,
+      "priority": 241,
       "support": {
         "optimum": "1.10.2"
       }
@@ -822,7 +822,7 @@
       "shortcut": "AION",
       "decimals": 8,
       "name": "Aion",
-      "priority": 391,
+      "priority": 394,
       "support": {
         "optimum": "1.8.1"
       }
@@ -833,7 +833,7 @@
       "shortcut": "AIR",
       "decimals": 8,
       "name": "AirToken",
-      "priority": 912,
+      "priority": 882,
       "support": {
         "optimum": "1.8.1"
       }
@@ -888,7 +888,7 @@
       "shortcut": "ALCX",
       "decimals": 18,
       "name": "Alchemix",
-      "priority": 220,
+      "priority": 225,
       "support": {
         "optimum": "1.10.2"
       }
@@ -910,7 +910,7 @@
       "shortcut": "ALEPH",
       "decimals": 18,
       "name": "Aleph.im",
-      "priority": 758,
+      "priority": 728,
       "support": {
         "optimum": "1.10.2"
       }
@@ -954,7 +954,7 @@
       "shortcut": "ALPHA",
       "decimals": 18,
       "name": "Alpha Finance",
-      "priority": 152,
+      "priority": 160,
       "support": {
         "optimum": "1.10.2"
       }
@@ -976,7 +976,7 @@
       "shortcut": "ALUSD",
       "decimals": 18,
       "name": "Alchemix USD",
-      "priority": 207,
+      "priority": 203,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1042,7 +1042,7 @@
       "shortcut": "AMLT",
       "decimals": 18,
       "name": "AMLT",
-      "priority": 946,
+      "priority": 960,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1086,7 +1086,7 @@
       "shortcut": "AMP",
       "decimals": 18,
       "name": "Amp",
-      "priority": 47,
+      "priority": 51,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1097,7 +1097,7 @@
       "shortcut": "AMPL",
       "decimals": 9,
       "name": "Ampleforth",
-      "priority": 251,
+      "priority": 269,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1119,7 +1119,7 @@
       "shortcut": "ANC",
       "decimals": 18,
       "name": "Anchor Protocol",
-      "priority": 212,
+      "priority": 184,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1141,7 +1141,7 @@
       "shortcut": "ANJ",
       "decimals": 18,
       "name": "Aragon Network Juror",
-      "priority": 944,
+      "priority": 898,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1152,7 +1152,7 @@
       "shortcut": "ANKR",
       "decimals": 18,
       "name": "Ankr",
-      "priority": 113,
+      "priority": 111,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1163,7 +1163,7 @@
       "shortcut": "ANT",
       "decimals": 18,
       "name": "Aragon",
-      "priority": 257,
+      "priority": 250,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1174,7 +1174,7 @@
       "shortcut": "ANT (old)",
       "decimals": 18,
       "name": "Aragon",
-      "priority": 257,
+      "priority": 250,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1196,7 +1196,7 @@
       "shortcut": "API3",
       "decimals": 18,
       "name": "API3",
-      "priority": 262,
+      "priority": 305,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1240,7 +1240,7 @@
       "shortcut": "AQT",
       "decimals": 18,
       "name": "AlphaQuarkToken",
-      "priority": 484,
+      "priority": 485,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1383,7 +1383,7 @@
       "shortcut": "ASD",
       "decimals": 18,
       "name": "AscendEx Token",
-      "priority": 175,
+      "priority": 177,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1394,7 +1394,7 @@
       "shortcut": "AST",
       "decimals": 4,
       "name": "Airswap",
-      "priority": 566,
+      "priority": 593,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1449,7 +1449,7 @@
       "shortcut": "ATM",
       "decimals": 8,
       "name": "ATMChain",
-      "priority": 568,
+      "priority": 605,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1526,7 +1526,7 @@
       "shortcut": "AUDIO",
       "decimals": 18,
       "name": "Audius",
-      "priority": 123,
+      "priority": 88,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1581,7 +1581,7 @@
       "shortcut": "AUTO",
       "decimals": 18,
       "name": "Cube",
-      "priority": 554,
+      "priority": 586,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1592,7 +1592,7 @@
       "shortcut": "AVA",
       "decimals": 4,
       "name": "AVA",
-      "priority": 308,
+      "priority": 281,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1746,7 +1746,7 @@
       "shortcut": "BAND",
       "decimals": 18,
       "name": "Band Protocol",
-      "priority": 182,
+      "priority": 192,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1768,7 +1768,7 @@
       "shortcut": "BAR",
       "decimals": 18,
       "name": "Billionaire Ambition",
-      "priority": 428,
+      "priority": 446,
       "support": {
         "optimum": "1.10.2"
       }
@@ -1779,7 +1779,7 @@
       "shortcut": "BAS",
       "decimals": 8,
       "name": "BitAsean",
-      "priority": 979,
+      "priority": 849,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1790,7 +1790,7 @@
       "shortcut": "BAT",
       "decimals": 18,
       "name": "Basic Attention Token",
-      "priority": 86,
+      "priority": 84,
       "support": {
         "optimum": "1.8.1"
       }
@@ -1801,7 +1801,7 @@
       "shortcut": "BAX",
       "decimals": 18,
       "name": "BABB",
-      "priority": 799,
+      "priority": 695,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2285,7 +2285,7 @@
       "shortcut": "BLZ",
       "decimals": 18,
       "name": "Bluzelle",
-      "priority": 440,
+      "priority": 449,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2307,7 +2307,7 @@
       "shortcut": "BMX",
       "decimals": 18,
       "name": "BitMart Token",
-      "priority": 625,
+      "priority": 654,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2362,7 +2362,7 @@
       "shortcut": "BNT",
       "decimals": 18,
       "name": "Bancor Network Token",
-      "priority": 95,
+      "priority": 97,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2483,7 +2483,7 @@
       "shortcut": "BPT",
       "decimals": 18,
       "name": "Blockport Token",
-      "priority": 857,
+      "priority": 874,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2516,7 +2516,7 @@
       "shortcut": "BRD",
       "decimals": 18,
       "name": "Bread",
-      "priority": 848,
+      "priority": 756,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2703,7 +2703,7 @@
       "shortcut": "BTM",
       "decimals": 8,
       "name": "Bytom",
-      "priority": 302,
+      "priority": 298,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2769,7 +2769,7 @@
       "shortcut": "BTU",
       "decimals": 18,
       "name": "BTU Protocol",
-      "priority": 513,
+      "priority": 518,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2813,7 +2813,7 @@
       "shortcut": "BUSD",
       "decimals": 18,
       "name": "Binance USD (BUSD)",
-      "priority": 12,
+      "priority": 13,
       "support": {
         "optimum": "1.10.2"
       }
@@ -2846,7 +2846,7 @@
       "shortcut": "BZ",
       "decimals": 18,
       "name": "Bit-Z Token",
-      "priority": 685,
+      "priority": 684,
       "support": {
         "optimum": "1.8.1"
       }
@@ -2879,7 +2879,7 @@
       "shortcut": "C20",
       "decimals": 18,
       "name": "Crypto20's Token",
-      "priority": 329,
+      "priority": 313,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3000,7 +3000,7 @@
       "shortcut": "cBAT",
       "decimals": 8,
       "name": "Compound Basic Attention Token",
-      "priority": 366,
+      "priority": 373,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3011,7 +3011,7 @@
       "shortcut": "CBC",
       "decimals": 8,
       "name": "CashBet Coin",
-      "priority": 914,
+      "priority": 953,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3165,7 +3165,7 @@
       "shortcut": "CDT",
       "decimals": 18,
       "name": "CoinDash",
-      "priority": 887,
+      "priority": 864,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3187,7 +3187,7 @@
       "shortcut": "CEL",
       "decimals": 4,
       "name": "Celsius Network",
-      "priority": 52,
+      "priority": 53,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3198,7 +3198,7 @@
       "shortcut": "CELR",
       "decimals": 18,
       "name": "CelerToken",
-      "priority": 208,
+      "priority": 214,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3242,7 +3242,7 @@
       "shortcut": "cETH",
       "decimals": 8,
       "name": "Compound Ether",
-      "priority": 31,
+      "priority": 32,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3264,7 +3264,7 @@
       "shortcut": "CFI",
       "decimals": 18,
       "name": "Cofound.it",
-      "priority": 878,
+      "priority": 936,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3297,7 +3297,7 @@
       "shortcut": "CHAI",
       "decimals": 18,
       "name": "Chai",
-      "priority": 100,
+      "priority": 784,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3319,7 +3319,7 @@
       "shortcut": "CHR",
       "decimals": 6,
       "name": "Chromia",
-      "priority": 245,
+      "priority": 233,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3330,7 +3330,7 @@
       "shortcut": "CHSB",
       "decimals": 8,
       "name": "SwissBorg",
-      "priority": 117,
+      "priority": 120,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3352,7 +3352,7 @@
       "shortcut": "CHZ",
       "decimals": 18,
       "name": "Chiliz",
-      "priority": 65,
+      "priority": 69,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3473,7 +3473,7 @@
       "shortcut": "CLV",
       "decimals": 18,
       "name": "Clover Finance",
-      "priority": 235,
+      "priority": 228,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3517,7 +3517,7 @@
       "shortcut": "CMT",
       "decimals": 18,
       "name": "CyberMiles Token",
-      "priority": 935,
+      "priority": 973,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3539,7 +3539,7 @@
       "shortcut": "CND",
       "decimals": 18,
       "name": "Cindicator",
-      "priority": 634,
+      "priority": 636,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3605,7 +3605,7 @@
       "shortcut": "COFI",
       "decimals": 18,
       "name": "CoinFi Token",
-      "priority": 1000,
+      "priority": 100,
       "support": {
         "optimum": "1.8.1"
       }
@@ -3627,7 +3627,7 @@
       "shortcut": "COL",
       "decimals": 18,
       "name": "Unit Protocol",
-      "priority": 340,
+      "priority": 346,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3638,7 +3638,7 @@
       "shortcut": "COMP",
       "decimals": 18,
       "name": "Compound",
-      "priority": 54,
+      "priority": 57,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3671,7 +3671,7 @@
       "shortcut": "COTI",
       "decimals": 18,
       "name": "COTI",
-      "priority": 310,
+      "priority": 287,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3803,7 +3803,7 @@
       "shortcut": "CREAM",
       "decimals": 18,
       "name": "Cream",
-      "priority": 280,
+      "priority": 304,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3869,7 +3869,7 @@
       "shortcut": "CRO",
       "decimals": 8,
       "name": "Crypto.com Coin",
-      "priority": 41,
+      "priority": 43,
       "support": {
         "optimum": "1.10.2"
       }
@@ -3891,7 +3891,7 @@
       "shortcut": "CRV",
       "decimals": 18,
       "name": "Curve DAO Token",
-      "priority": 110,
+      "priority": 114,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4012,7 +4012,7 @@
       "shortcut": "CTSI",
       "decimals": 18,
       "name": "Cartesi Token",
-      "priority": 184,
+      "priority": 190,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4023,7 +4023,7 @@
       "shortcut": "CTX",
       "decimals": 18,
       "name": "CarTaxi",
-      "priority": 970,
+      "priority": 983,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4034,7 +4034,7 @@
       "shortcut": "CTXC",
       "decimals": 18,
       "name": "Cortex",
-      "priority": 543,
+      "priority": 613,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4045,7 +4045,7 @@
       "shortcut": "CUNI",
       "decimals": 8,
       "name": "cUNI",
-      "priority": 156,
+      "priority": 210,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4056,7 +4056,7 @@
       "shortcut": "CUR8",
       "decimals": 8,
       "name": "Curate",
-      "priority": 886,
+      "priority": 863,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4067,7 +4067,7 @@
       "shortcut": "CURE",
       "decimals": 8,
       "name": "Curate",
-      "priority": 886,
+      "priority": 863,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4078,7 +4078,7 @@
       "shortcut": "cUSDC",
       "decimals": 8,
       "name": "Compound USDCoin",
-      "priority": 30,
+      "priority": 28,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4089,7 +4089,7 @@
       "shortcut": "CUSDT",
       "decimals": 8,
       "name": "cUSDT",
-      "priority": 115,
+      "priority": 112,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4111,7 +4111,7 @@
       "shortcut": "CVC",
       "decimals": 8,
       "name": "Civic",
-      "priority": 222,
+      "priority": 231,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4177,7 +4177,7 @@
       "shortcut": "CXO",
       "decimals": 18,
       "name": "CargoX",
-      "priority": 532,
+      "priority": 500,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4276,7 +4276,7 @@
       "shortcut": "DAI",
       "decimals": 18,
       "name": "Dai Stablecoin v2.0",
-      "priority": 27,
+      "priority": 26,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4320,7 +4320,7 @@
       "shortcut": "DATA",
       "decimals": 18,
       "name": "Streamr DATAcoin",
-      "priority": 382,
+      "priority": 356,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4452,7 +4452,7 @@
       "shortcut": "DCN",
       "decimals": 0,
       "name": "Dentacoin",
-      "priority": 755,
+      "priority": 759,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4529,7 +4529,7 @@
       "shortcut": "DENT",
       "decimals": 8,
       "name": "DENT",
-      "priority": 140,
+      "priority": 129,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4573,7 +4573,7 @@
       "shortcut": "DF",
       "decimals": 18,
       "name": "dForce Platform Token",
-      "priority": 447,
+      "priority": 492,
       "support": {
         "optimum": "1.10.2"
       }
@@ -4584,7 +4584,7 @@
       "shortcut": "DGD",
       "decimals": 9,
       "name": "Digix DAO",
-      "priority": 505,
+      "priority": 515,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4650,7 +4650,7 @@
       "shortcut": "DIP",
       "decimals": 18,
       "name": "Decentralized Insurance Protocol",
-      "priority": 606,
+      "priority": 640,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4936,7 +4936,7 @@
       "shortcut": "DNT",
       "decimals": 18,
       "name": "District0x Network Token",
-      "priority": 303,
+      "priority": 316,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4958,7 +4958,7 @@
       "shortcut": "DOCK",
       "decimals": 18,
       "name": "Dock",
-      "priority": 473,
+      "priority": 479,
       "support": {
         "optimum": "1.8.1"
       }
@@ -4969,7 +4969,7 @@
       "shortcut": "DODO",
       "decimals": 18,
       "name": "DODO",
-      "priority": 217,
+      "priority": 201,
       "support": {
         "optimum": "1.10.2"
       }
@@ -5046,7 +5046,7 @@
       "shortcut": "DRGN",
       "decimals": 18,
       "name": "Dragon",
-      "priority": 555,
+      "priority": 554,
       "support": {
         "optimum": "1.8.1"
       }
@@ -5585,7 +5585,7 @@
       "shortcut": "EDG",
       "decimals": 0,
       "name": "Edgeless",
-      "priority": 451,
+      "priority": 456,
       "support": {
         "optimum": "1.8.1"
       }
@@ -5662,7 +5662,7 @@
       "shortcut": "EGG",
       "decimals": 18,
       "name": "Egg Token",
-      "priority": 507,
+      "priority": 512,
       "support": {
         "optimum": "1.10.2"
       }
@@ -5673,7 +5673,7 @@
       "shortcut": "EGT",
       "decimals": 18,
       "name": "Egretia Token",
-      "priority": 916,
+      "priority": 934,
       "support": {
         "optimum": "1.8.1"
       }
@@ -5739,7 +5739,7 @@
       "shortcut": "ELF",
       "decimals": 18,
       "name": "ELF Token",
-      "priority": 320,
+      "priority": 324,
       "support": {
         "optimum": "1.8.1"
       }
@@ -5750,7 +5750,7 @@
       "shortcut": "ELG",
       "decimals": 18,
       "name": "Escoin Token",
-      "priority": 300,
+      "priority": 308,
       "support": {
         "optimum": "1.10.2"
       }
@@ -5882,7 +5882,7 @@
       "shortcut": "ENJ",
       "decimals": 18,
       "name": "ENJIN",
-      "priority": 76,
+      "priority": 77,
       "support": {
         "optimum": "1.8.1"
       }
@@ -5893,7 +5893,7 @@
       "shortcut": "ENQ",
       "decimals": 10,
       "name": "Enecuum",
-      "priority": 844,
+      "priority": 837,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6124,7 +6124,7 @@
       "shortcut": "EURS",
       "decimals": 2,
       "name": "STASIS EURS",
-      "priority": 359,
+      "priority": 360,
       "support": {
         "optimum": "1.8.1"
       }
@@ -6135,7 +6135,7 @@
       "shortcut": "EURT",
       "decimals": 6,
       "name": "EUR Tether (erc20)",
-      "priority": 523,
+      "priority": 529,
       "support": {
         "optimum": "1.8.1"
       }
@@ -6223,7 +6223,7 @@
       "shortcut": "EVX",
       "decimals": 4,
       "name": "Everex",
-      "priority": 969,
+      "priority": 985,
       "support": {
         "optimum": "1.8.1"
       }
@@ -6278,7 +6278,7 @@
       "shortcut": "EXRD",
       "decimals": 18,
       "name": "e-Radix",
-      "priority": 272,
+      "priority": 266,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6410,7 +6410,7 @@
       "shortcut": "FARM",
       "decimals": 18,
       "name": "Farm Partner",
-      "priority": 250,
+      "priority": 267,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6432,7 +6432,7 @@
       "shortcut": "FEG",
       "decimals": 9,
       "name": "FEG Token",
-      "priority": 287,
+      "priority": 284,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6443,7 +6443,7 @@
       "shortcut": "FEI",
       "decimals": 18,
       "name": "Fei Protocol",
-      "priority": 147,
+      "priority": 148,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6465,7 +6465,7 @@
       "shortcut": "FET",
       "decimals": 18,
       "name": "Fetch.ai",
-      "priority": 162,
+      "priority": 170,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6641,7 +6641,7 @@
       "shortcut": "FOAM",
       "decimals": 18,
       "name": "FOAM Token",
-      "priority": 804,
+      "priority": 871,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6674,7 +6674,7 @@
       "shortcut": "FORTH",
       "decimals": 18,
       "name": "Ampleforth Governance Token",
-      "priority": 290,
+      "priority": 283,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6707,7 +6707,7 @@
       "shortcut": "FRAX",
       "decimals": 18,
       "name": "Frax",
-      "priority": 201,
+      "priority": 188,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6773,7 +6773,7 @@
       "shortcut": "FSN",
       "decimals": 18,
       "name": "Fusion",
-      "priority": 617,
+      "priority": 615,
       "support": {
         "optimum": "1.8.1"
       }
@@ -6828,7 +6828,7 @@
       "shortcut": "FTM",
       "decimals": 18,
       "name": "Fantom Token",
-      "priority": 104,
+      "priority": 94,
       "support": {
         "optimum": "1.10.2"
       }
@@ -6883,7 +6883,7 @@
       "shortcut": "FUN",
       "decimals": 8,
       "name": "Funfair",
-      "priority": 224,
+      "priority": 207,
       "support": {
         "optimum": "1.8.1"
       }
@@ -6982,7 +6982,7 @@
       "shortcut": "GAME",
       "decimals": 18,
       "name": "GAME Credits",
-      "priority": 927,
+      "priority": 970,
       "support": {
         "optimum": "1.10.2"
       }
@@ -7180,7 +7180,7 @@
       "shortcut": "GET",
       "decimals": 18,
       "name": "GET Protocol",
-      "priority": 446,
+      "priority": 466,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7213,7 +7213,7 @@
       "shortcut": "GHX",
       "decimals": 18,
       "name": "GamerCoin",
-      "priority": 811,
+      "priority": 666,
       "support": {
         "optimum": "1.10.2"
       }
@@ -7279,7 +7279,7 @@
       "shortcut": "GLM",
       "decimals": 18,
       "name": "Golem",
-      "priority": 149,
+      "priority": 152,
       "support": {
         "optimum": "1.10.2"
       }
@@ -7301,7 +7301,7 @@
       "shortcut": "GNO",
       "decimals": 18,
       "name": "Gnosis",
-      "priority": 163,
+      "priority": 174,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7312,7 +7312,7 @@
       "shortcut": "GNT",
       "decimals": 18,
       "name": "Golem",
-      "priority": 149,
+      "priority": 152,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7334,7 +7334,7 @@
       "shortcut": "GNY",
       "decimals": 18,
       "name": "GNY",
-      "priority": 413,
+      "priority": 440,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7367,7 +7367,7 @@
       "shortcut": "GOVI",
       "decimals": 18,
       "name": "GOVI",
-      "priority": 665,
+      "priority": 686,
       "support": {
         "optimum": "1.10.2"
       }
@@ -7400,7 +7400,7 @@
       "shortcut": "GRID",
       "decimals": 12,
       "name": "Grid+",
-      "priority": 957,
+      "priority": 100,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7444,7 +7444,7 @@
       "shortcut": "GRT",
       "decimals": 18,
       "name": "Graph Token",
-      "priority": 35,
+      "priority": 38,
       "support": {
         "optimum": "1.10.2"
       }
@@ -7488,7 +7488,7 @@
       "shortcut": "GT",
       "decimals": 18,
       "name": "GateToken",
-      "priority": 111,
+      "priority": 118,
       "support": {
         "optimum": "1.10.2"
       }
@@ -7499,7 +7499,7 @@
       "shortcut": "GTC",
       "decimals": 18,
       "name": "GTC Token",
-      "priority": 326,
+      "priority": 345,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7521,7 +7521,7 @@
       "shortcut": "GTO",
       "decimals": 5,
       "name": "Gifto",
-      "priority": 667,
+      "priority": 643,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7565,7 +7565,7 @@
       "shortcut": "GUSD",
       "decimals": 2,
       "name": "Gemini dollar",
-      "priority": 193,
+      "priority": 227,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7576,7 +7576,7 @@
       "shortcut": "GVT",
       "decimals": 18,
       "name": "Genesis Vision",
-      "priority": 802,
+      "priority": 775,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7587,7 +7587,7 @@
       "shortcut": "GXC",
       "decimals": 10,
       "name": "GXC",
-      "priority": 517,
+      "priority": 540,
       "support": {
         "optimum": "1.8.1"
       }
@@ -7741,7 +7741,7 @@
       "shortcut": "HBTC",
       "decimals": 18,
       "name": "Huobi BTC",
-      "priority": 69,
+      "priority": 70,
       "support": {
         "optimum": "1.10.2"
       }
@@ -8082,7 +8082,7 @@
       "shortcut": "HUSD",
       "decimals": 8,
       "name": "HUSD",
-      "priority": 138,
+      "priority": 140,
       "support": {
         "optimum": "1.10.2"
       }
@@ -8126,7 +8126,7 @@
       "shortcut": "HXRO",
       "decimals": 18,
       "name": "Hxro",
-      "priority": 331,
+      "priority": 329,
       "support": {
         "optimum": "1.10.2"
       }
@@ -8203,7 +8203,7 @@
       "shortcut": "ICE",
       "decimals": 18,
       "name": "ICE",
-      "priority": 858,
+      "priority": 897,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8258,7 +8258,7 @@
       "shortcut": "ICX",
       "decimals": 18,
       "name": "ICON",
-      "priority": 112,
+      "priority": 113,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8269,7 +8269,7 @@
       "shortcut": "ID",
       "decimals": 18,
       "name": "Everest (ID)",
-      "priority": 477,
+      "priority": 472,
       "support": {
         "optimum": "1.10.2"
       }
@@ -8511,7 +8511,7 @@
       "shortcut": "INJ",
       "decimals": 18,
       "name": "Injective Protocol",
-      "priority": 170,
+      "priority": 180,
       "support": {
         "optimum": "1.10.2"
       }
@@ -8555,7 +8555,7 @@
       "shortcut": "INT",
       "decimals": 6,
       "name": "Internet Node Token",
-      "priority": 100,
+      "priority": 969,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8599,7 +8599,7 @@
       "shortcut": "IOST",
       "decimals": 18,
       "name": "IOSToken",
-      "priority": 118,
+      "priority": 119,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8621,7 +8621,7 @@
       "shortcut": "IOTX",
       "decimals": 18,
       "name": "IoTeX Network",
-      "priority": 90,
+      "priority": 116,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8654,7 +8654,7 @@
       "shortcut": "IQN",
       "decimals": 18,
       "name": "IQeon",
-      "priority": 992,
+      "priority": 1000,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8940,7 +8940,7 @@
       "shortcut": "KAI",
       "decimals": 18,
       "name": "KardiaChain",
-      "priority": 277,
+      "priority": 274,
       "support": {
         "optimum": "1.10.2"
       }
@@ -8951,7 +8951,7 @@
       "shortcut": "KAN",
       "decimals": 18,
       "name": "BitKan",
-      "priority": 669,
+      "priority": 698,
       "support": {
         "optimum": "1.8.1"
       }
@@ -8995,7 +8995,7 @@
       "shortcut": "KIN",
       "decimals": 18,
       "name": "Kin Foundation",
-      "priority": 242,
+      "priority": 204,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9017,7 +9017,7 @@
       "shortcut": "KIRO",
       "decimals": 18,
       "name": "Kirobo",
-      "priority": 322,
+      "priority": 352,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9215,7 +9215,7 @@
       "shortcut": "LAMB",
       "decimals": 18,
       "name": "Lambda",
-      "priority": 590,
+      "priority": 576,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9281,7 +9281,7 @@
       "shortcut": "LED",
       "decimals": 4,
       "name": "Ledgis",
-      "priority": 270,
+      "priority": 296,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9303,7 +9303,7 @@
       "shortcut": "LEND",
       "decimals": 18,
       "name": "ETHLend",
-      "priority": 230,
+      "priority": 237,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9347,7 +9347,7 @@
       "shortcut": "LGO",
       "decimals": 8,
       "name": "LGO Token",
-      "priority": 383,
+      "priority": 415,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9402,7 +9402,7 @@
       "shortcut": "LIKE",
       "decimals": 18,
       "name": "LikeCoin",
-      "priority": 795,
+      "priority": 719,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9479,7 +9479,7 @@
       "shortcut": "LOC",
       "decimals": 18,
       "name": "LockChain",
-      "priority": 360,
+      "priority": 364,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9545,7 +9545,7 @@
       "shortcut": "LOOMOLD",
       "decimals": 18,
       "name": "LOOM",
-      "priority": 418,
+      "priority": 413,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9567,7 +9567,7 @@
       "shortcut": "LPT",
       "decimals": 18,
       "name": "Livepeer Token",
-      "priority": 142,
+      "priority": 146,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9589,7 +9589,7 @@
       "shortcut": "LRC",
       "decimals": 18,
       "name": "Loopring",
-      "priority": 160,
+      "priority": 155,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9655,7 +9655,7 @@
       "shortcut": "LUSD",
       "decimals": 18,
       "name": "Liquity USD",
-      "priority": 129,
+      "priority": 128,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9754,7 +9754,7 @@
       "shortcut": "MATH",
       "decimals": 18,
       "name": "MATH",
-      "priority": 259,
+      "priority": 249,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9765,7 +9765,7 @@
       "shortcut": "MATIC",
       "decimals": 18,
       "name": "Matic Token",
-      "priority": 16,
+      "priority": 17,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9831,7 +9831,7 @@
       "shortcut": "MDA",
       "decimals": 18,
       "name": "Moeda Loyalty Points",
-      "priority": 856,
+      "priority": 866,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9842,7 +9842,7 @@
       "shortcut": "MDT",
       "decimals": 18,
       "name": "Measurable Data Token",
-      "priority": 759,
+      "priority": 704,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9875,7 +9875,7 @@
       "shortcut": "MEME",
       "decimals": 8,
       "name": "Meme",
-      "priority": 968,
+      "priority": 840,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9908,7 +9908,7 @@
       "shortcut": "MET",
       "decimals": 18,
       "name": "Metronome",
-      "priority": 509,
+      "priority": 519,
       "support": {
         "optimum": "1.8.1"
       }
@@ -9919,7 +9919,7 @@
       "shortcut": "META",
       "decimals": 18,
       "name": "Metadium",
-      "priority": 233,
+      "priority": 235,
       "support": {
         "optimum": "1.10.2"
       }
@@ -9952,7 +9952,7 @@
       "shortcut": "MFT",
       "decimals": 18,
       "name": "Mainframe Token",
-      "priority": 342,
+      "priority": 357,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10029,7 +10029,7 @@
       "shortcut": "MINDS",
       "decimals": 18,
       "name": "Minds Token",
-      "priority": 784,
+      "priority": 829,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10040,7 +10040,7 @@
       "shortcut": "MIR",
       "decimals": 18,
       "name": "Mirror Protocol",
-      "priority": 191,
+      "priority": 173,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10051,7 +10051,7 @@
       "shortcut": "MITH",
       "decimals": 18,
       "name": "Mithril",
-      "priority": 587,
+      "priority": 614,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10062,7 +10062,7 @@
       "shortcut": "MITX",
       "decimals": 18,
       "name": "Morpheus Infrastructure Token",
-      "priority": 723,
+      "priority": 737,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10150,7 +10150,7 @@
       "shortcut": "MOC",
       "decimals": 18,
       "name": "Moss Coin",
-      "priority": 596,
+      "priority": 623,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10161,7 +10161,7 @@
       "shortcut": "MOD",
       "decimals": 0,
       "name": "Modum",
-      "priority": 865,
+      "priority": 862,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10271,7 +10271,7 @@
       "shortcut": "MTA",
       "decimals": 18,
       "name": "mStable Meta",
-      "priority": 638,
+      "priority": 661,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10293,7 +10293,7 @@
       "shortcut": "MTL",
       "decimals": 8,
       "name": "Metal",
-      "priority": 243,
+      "priority": 252,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10337,7 +10337,7 @@
       "shortcut": "MTX",
       "decimals": 18,
       "name": "Matryx",
-      "priority": 870,
+      "priority": 979,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10348,7 +10348,7 @@
       "shortcut": "MUSD",
       "decimals": 18,
       "name": "MASTER USD",
-      "priority": 583,
+      "priority": 611,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10359,7 +10359,7 @@
       "shortcut": "mUSD",
       "decimals": 18,
       "name": "mStable USD",
-      "priority": 583,
+      "priority": 611,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10425,7 +10425,7 @@
       "shortcut": "MWAT",
       "decimals": 18,
       "name": "RED MWAT",
-      "priority": 820,
+      "priority": 857,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10447,7 +10447,7 @@
       "shortcut": "MYST",
       "decimals": 18,
       "name": "Mysterium",
-      "priority": 931,
+      "priority": 927,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10502,7 +10502,7 @@
       "shortcut": "NAOS",
       "decimals": 18,
       "name": "NAOS Finance",
-      "priority": 655,
+      "priority": 559,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10513,7 +10513,7 @@
       "shortcut": "NAS",
       "decimals": 18,
       "name": "Nebula",
-      "priority": 715,
+      "priority": 727,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10601,7 +10601,7 @@
       "shortcut": "NDX",
       "decimals": 18,
       "name": "nDEX",
-      "priority": 971,
+      "priority": 946,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10612,7 +10612,7 @@
       "shortcut": "NEC",
       "decimals": 18,
       "name": "Ethfinex Nectar Token",
-      "priority": 945,
+      "priority": 961,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10667,7 +10667,7 @@
       "shortcut": "NEXO",
       "decimals": 18,
       "name": "Nexo",
-      "priority": 88,
+      "priority": 95,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10700,7 +10700,7 @@
       "shortcut": "NKN",
       "decimals": 18,
       "name": "NKN",
-      "priority": 195,
+      "priority": 215,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10722,7 +10722,7 @@
       "shortcut": "NMR",
       "decimals": 18,
       "name": "Numerai",
-      "priority": 145,
+      "priority": 149,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10810,7 +10810,7 @@
       "shortcut": "NPXS",
       "decimals": 18,
       "name": "Pundi X Token",
-      "priority": 157,
+      "priority": 150,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10854,7 +10854,7 @@
       "shortcut": "NU",
       "decimals": 18,
       "name": "NuCypher Network",
-      "priority": 276,
+      "priority": 268,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10887,7 +10887,7 @@
       "shortcut": "NULS",
       "decimals": 18,
       "name": "NULS",
-      "priority": 455,
+      "priority": 499,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10931,7 +10931,7 @@
       "shortcut": "NXM",
       "decimals": 18,
       "name": "Nexus Mutual",
-      "priority": 105,
+      "priority": 106,
       "support": {
         "optimum": "1.10.2"
       }
@@ -10964,7 +10964,7 @@
       "shortcut": "OAX",
       "decimals": 18,
       "name": "OAX",
-      "priority": 100,
+      "priority": 989,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10986,7 +10986,7 @@
       "shortcut": "OCC",
       "decimals": 18,
       "name": "Original Crypto Coin",
-      "priority": 410,
+      "priority": 408,
       "support": {
         "optimum": "1.8.1"
       }
@@ -10997,7 +10997,7 @@
       "shortcut": "OCEAN",
       "decimals": 18,
       "name": "Ocean Token",
-      "priority": 179,
+      "priority": 175,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11008,7 +11008,7 @@
       "shortcut": "OCN",
       "decimals": 18,
       "name": "Odyssey",
-      "priority": 943,
+      "priority": 100,
       "support": {
         "optimum": "1.8.1"
       }
@@ -11063,7 +11063,7 @@
       "shortcut": "OHM",
       "decimals": 9,
       "name": "Olympus",
-      "priority": 154,
+      "priority": 199,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11096,7 +11096,7 @@
       "shortcut": "OKB",
       "decimals": 18,
       "name": "OKB",
-      "priority": 25,
+      "priority": 27,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11151,7 +11151,7 @@
       "shortcut": "OMG",
       "decimals": 18,
       "name": "OmiseGO",
-      "priority": 114,
+      "priority": 115,
       "support": {
         "optimum": "1.8.1"
       }
@@ -11184,7 +11184,7 @@
       "shortcut": "ONE",
       "decimals": 18,
       "name": "Menlo One",
-      "priority": 94,
+      "priority": 93,
       "support": {
         "optimum": "1.8.1"
       }
@@ -11239,7 +11239,7 @@
       "shortcut": "OPQ",
       "decimals": 18,
       "name": "Opacity",
-      "priority": 851,
+      "priority": 904,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11283,7 +11283,7 @@
       "shortcut": "ORBS",
       "decimals": 18,
       "name": "Orbs",
-      "priority": 219,
+      "priority": 222,
       "support": {
         "optimum": "1.8.1"
       }
@@ -11294,7 +11294,7 @@
       "shortcut": "ORCA",
       "decimals": 18,
       "name": "ORCA Token",
-      "priority": 881,
+      "priority": 780,
       "support": {
         "optimum": "1.8.1"
       }
@@ -11382,7 +11382,7 @@
       "shortcut": "OUSD",
       "decimals": 18,
       "name": "Origin Dollar",
-      "priority": 776,
+      "priority": 777,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11426,7 +11426,7 @@
       "shortcut": "OXT",
       "decimals": 18,
       "name": "Orchid",
-      "priority": 218,
+      "priority": 226,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11437,7 +11437,7 @@
       "shortcut": "OXY",
       "decimals": 6,
       "name": "Oxygen",
-      "priority": 171,
+      "priority": 163,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11558,7 +11558,7 @@
       "shortcut": "PAXG",
       "decimals": 18,
       "name": "Paxos Gold",
-      "priority": 173,
+      "priority": 169,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11602,7 +11602,7 @@
       "shortcut": "pBTC",
       "decimals": 18,
       "name": "pTokens BTC",
-      "priority": 378,
+      "priority": 386,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11668,7 +11668,7 @@
       "shortcut": "PERP",
       "decimals": 18,
       "name": "Perpetual Protocol",
-      "priority": 116,
+      "priority": 122,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11756,7 +11756,7 @@
       "shortcut": "PHA",
       "decimals": 18,
       "name": "Phala Network",
-      "priority": 274,
+      "priority": 300,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11855,7 +11855,7 @@
       "shortcut": "PLA",
       "decimals": 18,
       "name": "PlayChip",
-      "priority": 246,
+      "priority": 256,
       "support": {
         "optimum": "1.10.2"
       }
@@ -11943,7 +11943,7 @@
       "shortcut": "PNK",
       "decimals": 18,
       "name": "Pinakion",
-      "priority": 381,
+      "priority": 407,
       "support": {
         "optimum": "1.8.1"
       }
@@ -11998,7 +11998,7 @@
       "shortcut": "POLY",
       "decimals": 18,
       "name": "Polymath Network",
-      "priority": 206,
+      "priority": 205,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12009,7 +12009,7 @@
       "shortcut": "POOL",
       "decimals": 8,
       "name": "Stake Pool",
-      "priority": 584,
+      "priority": 562,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12042,7 +12042,7 @@
       "shortcut": "POWR",
       "decimals": 6,
       "name": "PowerLedger",
-      "priority": 314,
+      "priority": 331,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12064,7 +12064,7 @@
       "shortcut": "PPT",
       "decimals": 8,
       "name": "Populous",
-      "priority": 369,
+      "priority": 389,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12075,7 +12075,7 @@
       "shortcut": "PRE",
       "decimals": 18,
       "name": "Presearch",
-      "priority": 966,
+      "priority": 853,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12119,7 +12119,7 @@
       "shortcut": "PROM",
       "decimals": 18,
       "name": "Prometeus",
-      "priority": 172,
+      "priority": 189,
       "support": {
         "optimum": "1.10.2"
       }
@@ -12141,7 +12141,7 @@
       "shortcut": "PROPS",
       "decimals": 18,
       "name": "Props",
-      "priority": 928,
+      "priority": 100,
       "support": {
         "optimum": "1.10.2"
       }
@@ -12273,7 +12273,7 @@
       "shortcut": "PUNDIX",
       "decimals": 18,
       "name": "Pundi X",
-      "priority": 141,
+      "priority": 145,
       "support": {
         "optimum": "1.10.2"
       }
@@ -12361,7 +12361,7 @@
       "shortcut": "QASH",
       "decimals": 6,
       "name": "QASH",
-      "priority": 660,
+      "priority": 693,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12427,7 +12427,7 @@
       "shortcut": "QKC",
       "decimals": 18,
       "name": "QuarkChain",
-      "priority": 309,
+      "priority": 323,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12438,7 +12438,7 @@
       "shortcut": "QNT",
       "decimals": 18,
       "name": "Quant",
-      "priority": 63,
+      "priority": 59,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12460,7 +12460,7 @@
       "shortcut": "QRL",
       "decimals": 8,
       "name": "QRL",
-      "priority": 840,
+      "priority": 847,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12471,7 +12471,7 @@
       "shortcut": "QSP",
       "decimals": 18,
       "name": "Quantstamp Token",
-      "priority": 612,
+      "priority": 635,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12493,7 +12493,7 @@
       "shortcut": "QTUM",
       "decimals": 18,
       "name": "Qtum",
-      "priority": 85,
+      "priority": 79,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12548,7 +12548,7 @@
       "shortcut": "RAI",
       "decimals": 18,
       "name": "Rai Reflex Index",
-      "priority": 492,
+      "priority": 487,
       "support": {
         "optimum": "1.10.2"
       }
@@ -12603,7 +12603,7 @@
       "shortcut": "RCN",
       "decimals": 18,
       "name": "Ripio Credit Network",
-      "priority": 100,
+      "priority": 892,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12614,7 +12614,7 @@
       "shortcut": "RDN",
       "decimals": 18,
       "name": "Raiden Network",
-      "priority": 706,
+      "priority": 740,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12691,7 +12691,7 @@
       "shortcut": "REEF",
       "decimals": 18,
       "name": "Reef Finance",
-      "priority": 190,
+      "priority": 209,
       "support": {
         "optimum": "1.10.2"
       }
@@ -12735,7 +12735,7 @@
       "shortcut": "REN",
       "decimals": 18,
       "name": "Republic Token",
-      "priority": 146,
+      "priority": 138,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12746,7 +12746,7 @@
       "shortcut": "RENBTC",
       "decimals": 8,
       "name": "renBTC",
-      "priority": 124,
+      "priority": 125,
       "support": {
         "optimum": "1.10.2"
       }
@@ -12757,7 +12757,7 @@
       "shortcut": "REP",
       "decimals": 18,
       "name": "Augur",
-      "priority": 249,
+      "priority": 257,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12768,7 +12768,7 @@
       "shortcut": "[deprecated] REP",
       "decimals": 18,
       "name": "Augur",
-      "priority": 249,
+      "priority": 257,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12790,7 +12790,7 @@
       "shortcut": "REQ",
       "decimals": 18,
       "name": "Request Network",
-      "priority": 186,
+      "priority": 263,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12834,7 +12834,7 @@
       "shortcut": "RFR",
       "decimals": 4,
       "name": "Refereum",
-      "priority": 463,
+      "priority": 460,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12911,7 +12911,7 @@
       "shortcut": "RLC",
       "decimals": 9,
       "name": "IEx.ec",
-      "priority": 185,
+      "priority": 181,
       "support": {
         "optimum": "1.8.1"
       }
@@ -12977,7 +12977,7 @@
       "shortcut": "RNDR",
       "decimals": 18,
       "name": "Render Token",
-      "priority": 305,
+      "priority": 254,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13098,7 +13098,7 @@
       "shortcut": "RPL",
       "decimals": 18,
       "name": "Rocket Pool",
-      "priority": 178,
+      "priority": 182,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13109,7 +13109,7 @@
       "shortcut": "RSR",
       "decimals": 18,
       "name": "Reserve Rights Token",
-      "priority": 134,
+      "priority": 135,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13175,7 +13175,7 @@
       "shortcut": "RUNE",
       "decimals": 18,
       "name": "Rune",
-      "priority": 67,
+      "priority": 62,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13252,7 +13252,7 @@
       "shortcut": "SAI",
       "decimals": 18,
       "name": "Dai Stablecoin v1.0",
-      "priority": 479,
+      "priority": 478,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13263,7 +13263,7 @@
       "shortcut": "SALT",
       "decimals": 8,
       "name": "Salt Lending Token",
-      "priority": 743,
+      "priority": 752,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13274,7 +13274,7 @@
       "shortcut": "SAN",
       "decimals": 18,
       "name": "Santiment",
-      "priority": 829,
+      "priority": 819,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13285,7 +13285,7 @@
       "shortcut": "SAND",
       "decimals": 18,
       "name": "The Sandbox",
-      "priority": 130,
+      "priority": 136,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13318,7 +13318,7 @@
       "shortcut": "sBTC",
       "decimals": 18,
       "name": "Synth sBTC",
-      "priority": 254,
+      "priority": 276,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13450,7 +13450,7 @@
       "shortcut": "SENT",
       "decimals": 8,
       "name": "SENTinel",
-      "priority": 438,
+      "priority": 402,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13483,7 +13483,7 @@
       "shortcut": "sEUR",
       "decimals": 18,
       "name": "Synth sEUR",
-      "priority": 327,
+      "priority": 338,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13494,7 +13494,7 @@
       "shortcut": "SEUR",
       "decimals": 18,
       "name": "sEUR",
-      "priority": 327,
+      "priority": 338,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13582,7 +13582,7 @@
       "shortcut": "SHIB",
       "decimals": 18,
       "name": "Shiba Inu",
-      "priority": 38,
+      "priority": 39,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13747,7 +13747,7 @@
       "shortcut": "SKL",
       "decimals": 18,
       "name": "SKALE",
-      "priority": 159,
+      "priority": 156,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13791,7 +13791,7 @@
       "shortcut": "sLINK",
       "decimals": 18,
       "name": "Synth sLINK",
-      "priority": 448,
+      "priority": 465,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13802,7 +13802,7 @@
       "shortcut": "SLP",
       "decimals": 0,
       "name": "Smooth Love Potion",
-      "priority": 237,
+      "priority": 234,
       "support": {
         "optimum": "1.10.2"
       }
@@ -13813,7 +13813,7 @@
       "shortcut": "SLT",
       "decimals": 3,
       "name": "Smartlands",
-      "priority": 681,
+      "priority": 612,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13912,7 +13912,7 @@
       "shortcut": "SNGLS",
       "decimals": 0,
       "name": "SingularDTV",
-      "priority": 932,
+      "priority": 995,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13934,7 +13934,7 @@
       "shortcut": "SNM",
       "decimals": 18,
       "name": "SONM",
-      "priority": 385,
+      "priority": 382,
       "support": {
         "optimum": "1.8.1"
       }
@@ -13989,7 +13989,7 @@
       "shortcut": "SOC",
       "decimals": 18,
       "name": "All Sports",
-      "priority": 745,
+      "priority": 762,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14000,7 +14000,7 @@
       "shortcut": "SOCKS",
       "decimals": 18,
       "name": "Unisocks Edition 0",
-      "priority": 536,
+      "priority": 594,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14011,7 +14011,7 @@
       "shortcut": "SOL",
       "decimals": 6,
       "name": "Sola Token",
-      "priority": 11,
+      "priority": 10,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14033,7 +14033,7 @@
       "shortcut": "SOUL",
       "decimals": 18,
       "name": "CryptoSoul",
-      "priority": 695,
+      "priority": 702,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14077,7 +14077,7 @@
       "shortcut": "SPARTA",
       "decimals": 4,
       "name": "SPARTA",
-      "priority": 576,
+      "priority": 579,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14099,7 +14099,7 @@
       "shortcut": "SPC",
       "decimals": 18,
       "name": "SpaceChain",
-      "priority": 917,
+      "priority": 965,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14209,7 +14209,7 @@
       "shortcut": "SRM",
       "decimals": 6,
       "name": "Serum",
-      "priority": 213,
+      "priority": 166,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14363,7 +14363,7 @@
       "shortcut": "STMX",
       "decimals": 18,
       "name": "StormX",
-      "priority": 198,
+      "priority": 202,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14374,7 +14374,7 @@
       "shortcut": "STN",
       "decimals": 4,
       "name": "Saturn Network",
-      "priority": 738,
+      "priority": 772,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14385,7 +14385,7 @@
       "shortcut": "STORJ",
       "decimals": 8,
       "name": "STORJ",
-      "priority": 260,
+      "priority": 251,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14473,7 +14473,7 @@
       "shortcut": "STX",
       "decimals": 18,
       "name": "StoxToken",
-      "priority": 77,
+      "priority": 76,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14506,7 +14506,7 @@
       "shortcut": "SUSHI",
       "decimals": 18,
       "name": "SushiToken",
-      "priority": 57,
+      "priority": 56,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14539,7 +14539,7 @@
       "shortcut": "SWAP",
       "decimals": 18,
       "name": "SWAPS.NETWORK",
-      "priority": 461,
+      "priority": 447,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14550,7 +14550,7 @@
       "shortcut": "SWFTC",
       "decimals": 8,
       "name": "SwftCoin",
-      "priority": 822,
+      "priority": 901,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14616,7 +14616,7 @@
       "shortcut": "SXP",
       "decimals": 18,
       "name": "Swipe",
-      "priority": 122,
+      "priority": 131,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14726,7 +14726,7 @@
       "shortcut": "TAU",
       "decimals": 18,
       "name": "Lamden Tau",
-      "priority": 854,
+      "priority": 100,
       "support": {
         "optimum": "1.8.1"
       }
@@ -14792,7 +14792,7 @@
       "shortcut": "TBTC",
       "decimals": 18,
       "name": "TBTC",
-      "priority": 557,
+      "priority": 566,
       "support": {
         "optimum": "1.10.2"
       }
@@ -14924,7 +14924,7 @@
       "shortcut": "TFD",
       "decimals": 18,
       "name": "TE-FOOD",
-      "priority": 778,
+      "priority": 809,
       "support": {
         "optimum": "1.8.1"
       }
@@ -15056,7 +15056,7 @@
       "shortcut": "TIME",
       "decimals": 8,
       "name": "Chronobank",
-      "priority": 901,
+      "priority": 929,
       "support": {
         "optimum": "1.8.1"
       }
@@ -15155,7 +15155,7 @@
       "shortcut": "TLM",
       "decimals": 4,
       "name": "Alien Worlds",
-      "priority": 165,
+      "priority": 167,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15210,7 +15210,7 @@
       "shortcut": "TNB",
       "decimals": 18,
       "name": "Time Bank",
-      "priority": 958,
+      "priority": 928,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15265,7 +15265,7 @@
       "shortcut": "TOMO",
       "decimals": 18,
       "name": "Tomocoin",
-      "priority": 214,
+      "priority": 217,
       "support": {
         "optimum": "1.8.1"
       }
@@ -15276,7 +15276,7 @@
       "shortcut": "TON",
       "decimals": 18,
       "name": "Tokamak Network",
-      "priority": 169,
+      "priority": 176,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15298,7 +15298,7 @@
       "shortcut": "TRAC",
       "decimals": 18,
       "name": "OriginTrail",
-      "priority": 294,
+      "priority": 320,
       "support": {
         "optimum": "1.8.1"
       }
@@ -15353,7 +15353,7 @@
       "shortcut": "TRIBE",
       "decimals": 18,
       "name": "Tribe",
-      "priority": 174,
+      "priority": 183,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15375,7 +15375,7 @@
       "shortcut": "TRYB",
       "decimals": 6,
       "name": "Bilira",
-      "priority": 832,
+      "priority": 660,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15452,7 +15452,7 @@
       "shortcut": "TUSD",
       "decimals": 18,
       "name": "TrueUSD",
-      "priority": 81,
+      "priority": 80,
       "support": {
         "optimum": "1.8.1"
       }
@@ -15507,7 +15507,7 @@
       "shortcut": "UBT",
       "decimals": 8,
       "name": "Unibright",
-      "priority": 196,
+      "priority": 172,
       "support": {
         "optimum": "1.8.1"
       }
@@ -15771,7 +15771,7 @@
       "shortcut": "UMA",
       "decimals": 18,
       "name": "UMA",
-      "priority": 119,
+      "priority": 117,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15782,7 +15782,7 @@
       "shortcut": "UMB",
       "decimals": 18,
       "name": "Umbrella",
-      "priority": 810,
+      "priority": 846,
       "support": {
         "optimum": "1.10.2"
       }
@@ -15793,7 +15793,7 @@
       "shortcut": "UNI",
       "decimals": 18,
       "name": "Uniswap",
-      "priority": 10,
+      "priority": 11,
       "support": {
         "optimum": "1.10.2"
       }
@@ -18422,7 +18422,7 @@
       "shortcut": "UOS",
       "decimals": 4,
       "name": "Ultra",
-      "priority": 131,
+      "priority": 133,
       "support": {
         "optimum": "1.10.2"
       }
@@ -18444,7 +18444,7 @@
       "shortcut": "UPP",
       "decimals": 18,
       "name": "Sentinel Protocol",
-      "priority": 468,
+      "priority": 486,
       "support": {
         "optimum": "1.8.1"
       }
@@ -18598,7 +18598,7 @@
       "shortcut": "USDx",
       "decimals": 18,
       "name": "dForce Stablecoin",
-      "priority": 344,
+      "priority": 348,
       "support": {
         "optimum": "1.10.2"
       }
@@ -18741,7 +18741,7 @@
       "shortcut": "UST",
       "decimals": 18,
       "name": "TerraUSD",
-      "priority": 59,
+      "priority": 61,
       "support": {
         "optimum": "1.10.2"
       }
@@ -18840,7 +18840,7 @@
       "shortcut": "UTK",
       "decimals": 18,
       "name": "Utrust",
-      "priority": 231,
+      "priority": 236,
       "support": {
         "optimum": "1.8.1"
       }
@@ -18851,7 +18851,7 @@
       "shortcut": "UTNP",
       "decimals": 18,
       "name": "Universa",
-      "priority": 921,
+      "priority": 954,
       "support": {
         "optimum": "1.8.1"
       }
@@ -18884,7 +18884,7 @@
       "shortcut": "VALOR",
       "decimals": 18,
       "name": "ValorToken",
-      "priority": 988,
+      "priority": 100,
       "support": {
         "optimum": "1.10.2"
       }
@@ -18939,7 +18939,7 @@
       "shortcut": "VEE",
       "decimals": 18,
       "name": "BLOCKv",
-      "priority": 648,
+      "priority": 681,
       "support": {
         "optimum": "1.8.1"
       }
@@ -18972,7 +18972,7 @@
       "shortcut": "VENUS",
       "decimals": 3,
       "name": "VENUS",
-      "priority": 166,
+      "priority": 159,
       "support": {
         "optimum": "1.8.1"
       }
@@ -18983,7 +18983,7 @@
       "shortcut": "VERI",
       "decimals": 18,
       "name": "Veritaseum",
-      "priority": 642,
+      "priority": 564,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19038,7 +19038,7 @@
       "shortcut": "VID",
       "decimals": 18,
       "name": "VideoCoin",
-      "priority": 577,
+      "priority": 547,
       "support": {
         "optimum": "1.10.2"
       }
@@ -19049,7 +19049,7 @@
       "shortcut": "VIDT",
       "decimals": 18,
       "name": "V-ID Token",
-      "priority": 719,
+      "priority": 715,
       "support": {
         "optimum": "1.10.2"
       }
@@ -19104,7 +19104,7 @@
       "shortcut": "VITE",
       "decimals": 18,
       "name": "Vite",
-      "priority": 483,
+      "priority": 474,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19291,7 +19291,7 @@
       "shortcut": "WABI",
       "decimals": 18,
       "name": "Tael",
-      "priority": 904,
+      "priority": 916,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19324,7 +19324,7 @@
       "shortcut": "WAVES",
       "decimals": 18,
       "name": "Waves",
-      "priority": 62,
+      "priority": 60,
       "support": {
         "optimum": "1.10.2"
       }
@@ -19335,7 +19335,7 @@
       "shortcut": "WAX",
       "decimals": 8,
       "name": "WAX",
-      "priority": 180,
+      "priority": 191,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19478,7 +19478,7 @@
       "shortcut": "WILD",
       "decimals": 18,
       "name": "WILD Token",
-      "priority": 486,
+      "priority": 433,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19489,7 +19489,7 @@
       "shortcut": "WIN",
       "decimals": 8,
       "name": "WCOIN",
-      "priority": 132,
+      "priority": 141,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19566,7 +19566,7 @@
       "shortcut": "WOO",
       "decimals": 18,
       "name": "Wootrade Network",
-      "priority": 151,
+      "priority": 164,
       "support": {
         "optimum": "1.10.2"
       }
@@ -19632,7 +19632,7 @@
       "shortcut": "WTC",
       "decimals": 18,
       "name": "Waltonchain",
-      "priority": 668,
+      "priority": 720,
       "support": {
         "optimum": "1.8.1"
       }
@@ -19720,7 +19720,7 @@
       "shortcut": "XAUT",
       "decimals": 6,
       "name": "Tether Gold",
-      "priority": 282,
+      "priority": 277,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20006,7 +20006,7 @@
       "shortcut": "XMX",
       "decimals": 8,
       "name": "XMax",
-      "priority": 948,
+      "priority": 972,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20116,7 +20116,7 @@
       "shortcut": "XPR",
       "decimals": 4,
       "name": "Proton",
-      "priority": 717,
+      "priority": 699,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20149,7 +20149,7 @@
       "shortcut": "XRUNE",
       "decimals": 18,
       "name": "Thorstarter",
-      "priority": 319,
+      "priority": 289,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20171,7 +20171,7 @@
       "shortcut": "XSGD",
       "decimals": 6,
       "name": "Singapore-Dollar Backed Stablecoin",
-      "priority": 591,
+      "priority": 619,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20193,7 +20193,7 @@
       "shortcut": "XSUSHI",
       "decimals": 18,
       "name": "xSUSHI",
-      "priority": 91,
+      "priority": 89,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20204,7 +20204,7 @@
       "shortcut": "XYO",
       "decimals": 18,
       "name": "XYO",
-      "priority": 423,
+      "priority": 428,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20215,7 +20215,7 @@
       "shortcut": "YAM",
       "decimals": 18,
       "name": "YAM V1",
-      "priority": 978,
+      "priority": 100,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20248,7 +20248,7 @@
       "shortcut": "YFI",
       "decimals": 18,
       "name": "yearn.finance",
-      "priority": 79,
+      "priority": 78,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20259,7 +20259,7 @@
       "shortcut": "YFII",
       "decimals": 18,
       "name": "YFII.finance",
-      "priority": 265,
+      "priority": 279,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20325,7 +20325,7 @@
       "shortcut": "ZAP",
       "decimals": 18,
       "name": "ZAP",
-      "priority": 918,
+      "priority": 944,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20336,7 +20336,7 @@
       "shortcut": "ZCN",
       "decimals": 10,
       "name": "0chain",
-      "priority": 697,
+      "priority": 673,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20402,7 +20402,7 @@
       "shortcut": "ZIL",
       "decimals": 12,
       "name": "Zilliqa",
-      "priority": 82,
+      "priority": 83,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20457,7 +20457,7 @@
       "shortcut": "ZKS",
       "decimals": 18,
       "name": "ZKSwap",
-      "priority": 241,
+      "priority": 243,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20512,7 +20512,7 @@
       "shortcut": "ZRX",
       "decimals": 18,
       "name": "0x Project",
-      "priority": 106,
+      "priority": 105,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20611,7 +20611,7 @@
       "shortcut": "RLC",
       "decimals": 9,
       "name": "iExec RLC",
-      "priority": 185,
+      "priority": 181,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20622,7 +20622,7 @@
       "shortcut": "AETH",
       "decimals": 18,
       "name": "AKASHA Tokens",
-      "priority": 284,
+      "priority": 282,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20699,7 +20699,7 @@
       "shortcut": "RDN",
       "decimals": 18,
       "name": "Raiden",
-      "priority": 706,
+      "priority": 740,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20710,7 +20710,7 @@
       "shortcut": "RLC",
       "decimals": 9,
       "name": "iExec RLC",
-      "priority": 185,
+      "priority": 181,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20798,7 +20798,7 @@
       "shortcut": "RIF",
       "decimals": 18,
       "name": "RIF Token",
-      "priority": 256,
+      "priority": 246,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20820,7 +20820,7 @@
       "shortcut": "DAI",
       "decimals": 18,
       "name": "RadarRelay test Dai Stablecoin v1.0",
-      "priority": 27,
+      "priority": 26,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20831,7 +20831,7 @@
       "shortcut": "DGD",
       "decimals": 18,
       "name": "RadarRelay test Digix DAO Token",
-      "priority": 505,
+      "priority": 515,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20853,7 +20853,7 @@
       "shortcut": "GNT",
       "decimals": 18,
       "name": "RadarRelay test Golem Network Token",
-      "priority": 906,
+      "priority": 958,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20875,7 +20875,7 @@
       "shortcut": "MLN",
       "decimals": 18,
       "name": "RadarRelay test Melon Tokens",
-      "priority": 301,
+      "priority": 321,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20886,7 +20886,7 @@
       "shortcut": "REP",
       "decimals": 18,
       "name": "RadarRelay test Augur Reputation Token",
-      "priority": 249,
+      "priority": 257,
       "support": {
         "optimum": "1.8.1"
       }
@@ -20897,7 +20897,7 @@
       "shortcut": "RLC",
       "decimals": 9,
       "name": "iExec RLC",
-      "priority": 185,
+      "priority": 181,
       "support": {
         "optimum": "1.10.2"
       }
@@ -20919,7 +20919,7 @@
       "shortcut": "ZRX",
       "decimals": 18,
       "name": "RadarRelay test 0x Protocol Token",
-      "priority": 106,
+      "priority": 105,
       "support": {
         "optimum": "1.8.1"
       }
@@ -21095,7 +21095,7 @@
       "shortcut": "1INCH",
       "decimals": 18,
       "name": "1INCH Token",
-      "priority": 133,
+      "priority": 132,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21194,7 +21194,7 @@
       "shortcut": "ACS",
       "decimals": 18,
       "name": "ACryptoS",
-      "priority": 777,
+      "priority": 770,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21304,7 +21304,7 @@
       "shortcut": "AIOZ",
       "decimals": 18,
       "name": "AIOZ Network Coin",
-      "priority": 347,
+      "priority": 315,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21315,7 +21315,7 @@
       "shortcut": "AIR",
       "decimals": 18,
       "name": "AIR",
-      "priority": 912,
+      "priority": 882,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21381,7 +21381,7 @@
       "shortcut": "ALEPH",
       "decimals": 18,
       "name": "aleph.im BEP-20 v2",
-      "priority": 758,
+      "priority": 728,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21436,7 +21436,7 @@
       "shortcut": "ALPACA",
       "decimals": 18,
       "name": "ALPACA",
-      "priority": 258,
+      "priority": 239,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21447,7 +21447,7 @@
       "shortcut": "ALPHA",
       "decimals": 18,
       "name": "Alpha Finance",
-      "priority": 152,
+      "priority": 160,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21491,7 +21491,7 @@
       "shortcut": "ANKR",
       "decimals": 18,
       "name": "Ankr Token",
-      "priority": 113,
+      "priority": 111,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21535,7 +21535,7 @@
       "shortcut": "ANY",
       "decimals": 18,
       "name": "Anyswap-BEP20",
-      "priority": 516,
+      "priority": 523,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21678,7 +21678,7 @@
       "shortcut": "AST",
       "decimals": 9,
       "name": "Apollo Space Token",
-      "priority": 566,
+      "priority": 593,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21711,7 +21711,7 @@
       "shortcut": "ATA",
       "decimals": 18,
       "name": "Automata",
-      "priority": 386,
+      "priority": 381,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21722,7 +21722,7 @@
       "shortcut": "ATOM",
       "decimals": 18,
       "name": "Cosmos Token",
-      "priority": 37,
+      "priority": 36,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21777,7 +21777,7 @@
       "shortcut": "AUTO",
       "decimals": 18,
       "name": "AUTOv2",
-      "priority": 554,
+      "priority": 586,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21788,7 +21788,7 @@
       "shortcut": "AVA",
       "decimals": 18,
       "name": "Travala.com",
-      "priority": 308,
+      "priority": 281,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21964,7 +21964,7 @@
       "shortcut": "BAKE",
       "decimals": 18,
       "name": "Bakery Token",
-      "priority": 148,
+      "priority": 151,
       "support": {
         "optimum": "1.10.2"
       }
@@ -21975,7 +21975,7 @@
       "shortcut": "bALBT",
       "decimals": 18,
       "name": "AllianceBlock",
-      "priority": 296,
+      "priority": 297,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22008,7 +22008,7 @@
       "shortcut": "BANANA",
       "decimals": 18,
       "name": "Ape Swap Finance Banana",
-      "priority": 271,
+      "priority": 255,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22019,7 +22019,7 @@
       "shortcut": "BAND",
       "decimals": 18,
       "name": "Band Protocol Token",
-      "priority": 182,
+      "priority": 192,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22118,7 +22118,7 @@
       "shortcut": "BCH",
       "decimals": 18,
       "name": "Bitcoin Cash Token",
-      "priority": 13,
+      "priority": 12,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22195,7 +22195,7 @@
       "shortcut": "BDT",
       "decimals": 18,
       "name": "Tech Earnbd",
-      "priority": 884,
+      "priority": 879,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22239,7 +22239,7 @@
       "shortcut": "BEL",
       "decimals": 18,
       "name": "Bella Protocol",
-      "priority": 377,
+      "priority": 369,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22382,7 +22382,7 @@
       "shortcut": "BIFI",
       "decimals": 18,
       "name": "BIFI Token",
-      "priority": 403,
+      "priority": 400,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22844,7 +22844,7 @@
       "shortcut": "BSCPAD",
       "decimals": 18,
       "name": "BSCPAD",
-      "priority": 632,
+      "priority": 653,
       "support": {
         "optimum": "1.10.2"
       }
@@ -22976,7 +22976,7 @@
       "shortcut": "BTCST",
       "decimals": 18,
       "name": "Bitcoin Standard Hashrate Token",
-      "priority": 255,
+      "priority": 253,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23042,7 +23042,7 @@
       "shortcut": "BTS",
       "decimals": 18,
       "name": "Bolt Dollar Share",
-      "priority": 283,
+      "priority": 290,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23141,7 +23141,7 @@
       "shortcut": "BUSD",
       "decimals": 18,
       "name": "BUSD Token",
-      "priority": 12,
+      "priority": 13,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23163,7 +23163,7 @@
       "shortcut": "BUX",
       "decimals": 18,
       "name": "BUX Token",
-      "priority": 770,
+      "priority": 800,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23185,7 +23185,7 @@
       "shortcut": "bwJUP",
       "decimals": 18,
       "name": "Jupiter",
-      "priority": 100,
+      "priority": 967,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23218,7 +23218,7 @@
       "shortcut": "Cake",
       "decimals": 18,
       "name": "PancakeSwap Token",
-      "priority": 36,
+      "priority": 35,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23416,7 +23416,7 @@
       "shortcut": "CELR",
       "decimals": 18,
       "name": "CelerToken",
-      "priority": 208,
+      "priority": 214,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23482,7 +23482,7 @@
       "shortcut": "Chia",
       "decimals": 8,
       "name": "Chia",
-      "priority": 155,
+      "priority": 162,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23625,7 +23625,7 @@
       "shortcut": "CLOUT",
       "decimals": 9,
       "name": "CLOUT",
-      "priority": 89,
+      "priority": 85,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23647,7 +23647,7 @@
       "shortcut": "CLU",
       "decimals": 9,
       "name": "CluCoin",
-      "priority": 876,
+      "priority": 905,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23669,7 +23669,7 @@
       "shortcut": "COCOS",
       "decimals": 18,
       "name": "CocosTokenV2",
-      "priority": 605,
+      "priority": 628,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23713,7 +23713,7 @@
       "shortcut": "COMP",
       "decimals": 18,
       "name": "Compound",
-      "priority": 54,
+      "priority": 57,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23779,7 +23779,7 @@
       "shortcut": "COS",
       "decimals": 18,
       "name": "Contentos",
-      "priority": 467,
+      "priority": 483,
       "support": {
         "optimum": "1.10.2"
       }
@@ -23977,7 +23977,7 @@
       "shortcut": "CREAM",
       "decimals": 18,
       "name": "CREAM",
-      "priority": 280,
+      "priority": 304,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24186,7 +24186,7 @@
       "shortcut": "CTK",
       "decimals": 6,
       "name": "CertiK Token",
-      "priority": 400,
+      "priority": 370,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24219,7 +24219,7 @@
       "shortcut": "CTSI",
       "decimals": 18,
       "name": "Cartesi Token",
-      "priority": 184,
+      "priority": 190,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24241,7 +24241,7 @@
       "shortcut": "CUMMIES",
       "decimals": 18,
       "name": "CumRocket",
-      "priority": 478,
+      "priority": 510,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24340,7 +24340,7 @@
       "shortcut": "DAFI",
       "decimals": 18,
       "name": "DAFI Token",
-      "priority": 951,
+      "priority": 903,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24351,7 +24351,7 @@
       "shortcut": "DAI",
       "decimals": 18,
       "name": "Dai Token",
-      "priority": 27,
+      "priority": 26,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24450,7 +24450,7 @@
       "shortcut": "DDIM",
       "decimals": 18,
       "name": "DuckDaoDime",
-      "priority": 934,
+      "priority": 858,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24472,7 +24472,7 @@
       "shortcut": "DEGO",
       "decimals": 18,
       "name": "Dego Finance",
-      "priority": 489,
+      "priority": 508,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24494,7 +24494,7 @@
       "shortcut": "DEXT",
       "decimals": 18,
       "name": "DEXTools",
-      "priority": 588,
+      "priority": 404,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24516,7 +24516,7 @@
       "shortcut": "DFY",
       "decimals": 18,
       "name": "DeFi For You.",
-      "priority": 540,
+      "priority": 535,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24670,7 +24670,7 @@
       "shortcut": "DODO",
       "decimals": 18,
       "name": "DODO",
-      "priority": 217,
+      "priority": 201,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24857,7 +24857,7 @@
       "shortcut": "DORA",
       "decimals": 18,
       "name": "Doraemoon",
-      "priority": 800,
+      "priority": 850,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24945,7 +24945,7 @@
       "shortcut": "DUCK",
       "decimals": 18,
       "name": "DLP Duck Token",
-      "priority": 662,
+      "priority": 663,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25055,7 +25055,7 @@
       "shortcut": "EGG",
       "decimals": 18,
       "name": "Goose Golden Egg",
-      "priority": 507,
+      "priority": 512,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25066,7 +25066,7 @@
       "shortcut": "EGLD",
       "decimals": 18,
       "name": "Elrond eGold",
-      "priority": 53,
+      "priority": 52,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25121,7 +25121,7 @@
       "shortcut": "ELF",
       "decimals": 18,
       "name": "aelf",
-      "priority": 320,
+      "priority": 324,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25132,7 +25132,7 @@
       "shortcut": "ELG",
       "decimals": 9,
       "name": "$ElonGate",
-      "priority": 300,
+      "priority": 308,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25154,7 +25154,7 @@
       "shortcut": "ELON",
       "decimals": 18,
       "name": "Dogelon Moon",
-      "priority": 548,
+      "priority": 577,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25231,7 +25231,7 @@
       "shortcut": "EOS",
       "decimals": 18,
       "name": "EOS Token",
-      "priority": 33,
+      "priority": 31,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25253,7 +25253,7 @@
       "shortcut": "EQZ",
       "decimals": 18,
       "name": "Equalizer",
-      "priority": 100,
+      "priority": 956,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25264,7 +25264,7 @@
       "shortcut": "ERC20",
       "decimals": 18,
       "name": "ERC20",
-      "priority": 686,
+      "priority": 685,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25286,7 +25286,7 @@
       "shortcut": "ETC",
       "decimals": 18,
       "name": "Binance-Peg Ethereum Classic",
-      "priority": 20,
+      "priority": 19,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25506,7 +25506,7 @@
       "shortcut": "FARA",
       "decimals": 18,
       "name": "FaraCrystal",
-      "priority": 757,
+      "priority": 749,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25517,7 +25517,7 @@
       "shortcut": "FARM",
       "decimals": 18,
       "name": "Harvest Reward Token",
-      "priority": 250,
+      "priority": 267,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25693,7 +25693,7 @@
       "shortcut": "FINE",
       "decimals": 18,
       "name": "FINE Token",
-      "priority": 592,
+      "priority": 674,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25891,7 +25891,7 @@
       "shortcut": "FRAX",
       "decimals": 18,
       "name": "Frax",
-      "priority": 201,
+      "priority": 188,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25902,7 +25902,7 @@
       "shortcut": "FREE",
       "decimals": 18,
       "name": "FREE coin",
-      "priority": 828,
+      "priority": 745,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25946,7 +25946,7 @@
       "shortcut": "FRONT",
       "decimals": 18,
       "name": "Frontier",
-      "priority": 474,
+      "priority": 463,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26133,7 +26133,7 @@
       "shortcut": "FXS",
       "decimals": 18,
       "name": "Frax Share",
-      "priority": 357,
+      "priority": 339,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26441,7 +26441,7 @@
       "shortcut": "GMR",
       "decimals": 9,
       "name": "GAMER",
-      "priority": 882,
+      "priority": 852,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26474,7 +26474,7 @@
       "shortcut": "GNT",
       "decimals": 18,
       "name": "GreenTrust",
-      "priority": 906,
+      "priority": 958,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26694,7 +26694,7 @@
       "shortcut": "HARD",
       "decimals": 6,
       "name": "Hard Protocol",
-      "priority": 457,
+      "priority": 425,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26749,7 +26749,7 @@
       "shortcut": "Helmet",
       "decimals": 18,
       "name": "Helmet.insure",
-      "priority": 911,
+      "priority": 917,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26771,7 +26771,7 @@
       "shortcut": "HERO",
       "decimals": 18,
       "name": "Metahero",
-      "priority": 279,
+      "priority": 317,
       "support": {
         "optimum": "1.10.2"
       }
@@ -26903,7 +26903,7 @@
       "shortcut": "HOTCROSS",
       "decimals": 18,
       "name": "Hot Cross Token",
-      "priority": 735,
+      "priority": 803,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27156,7 +27156,7 @@
       "shortcut": "ICE",
       "decimals": 18,
       "name": "IceToken",
-      "priority": 858,
+      "priority": 897,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27200,7 +27200,7 @@
       "shortcut": "INJ",
       "decimals": 18,
       "name": "Injective Protocol",
-      "priority": 170,
+      "priority": 180,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27233,7 +27233,7 @@
       "shortcut": "IOTX",
       "decimals": 18,
       "name": "IoTeX Network",
-      "priority": 90,
+      "priority": 116,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27365,7 +27365,7 @@
       "shortcut": "JulD",
       "decimals": 18,
       "name": "JulSwap",
-      "priority": 839,
+      "priority": 870,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27519,7 +27519,7 @@
       "shortcut": "KEX",
       "decimals": 6,
       "name": "KIRA Network",
-      "priority": 843,
+      "priority": 865,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27662,7 +27662,7 @@
       "shortcut": "KODA",
       "decimals": 9,
       "name": "Summit Koda Token",
-      "priority": 785,
+      "priority": 732,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27893,7 +27893,7 @@
       "shortcut": "LINA",
       "decimals": 18,
       "name": "LINA",
-      "priority": 307,
+      "priority": 302,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27904,7 +27904,7 @@
       "shortcut": "LINK",
       "decimals": 18,
       "name": "Chainlink Token",
-      "priority": 15,
+      "priority": 14,
       "support": {
         "optimum": "1.10.2"
       }
@@ -27915,7 +27915,7 @@
       "shortcut": "LIT",
       "decimals": 18,
       "name": "Litentry",
-      "priority": 361,
+      "priority": 330,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28091,7 +28091,7 @@
       "shortcut": "LTC",
       "decimals": 18,
       "name": "Litecoin Token",
-      "priority": 14,
+      "priority": 15,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28223,7 +28223,7 @@
       "shortcut": "mAMZN",
       "decimals": 18,
       "name": "Wrapped Mirror AMZN Token",
-      "priority": 672,
+      "priority": 677,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28256,7 +28256,7 @@
       "shortcut": "MARSH",
       "decimals": 18,
       "name": "UnmarshalToken",
-      "priority": 775,
+      "priority": 876,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28267,7 +28267,7 @@
       "shortcut": "MATIC",
       "decimals": 18,
       "name": "Matic Token",
-      "priority": 16,
+      "priority": 17,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28289,7 +28289,7 @@
       "shortcut": "MATTER",
       "decimals": 18,
       "name": "Antimatter.Finance Governance Token",
-      "priority": 984,
+      "priority": 100,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28311,7 +28311,7 @@
       "shortcut": "MBOX",
       "decimals": 18,
       "name": "MOBOX",
-      "priority": 503,
+      "priority": 488,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28564,7 +28564,7 @@
       "shortcut": "mGOOGL",
       "decimals": 18,
       "name": "Wrapped Mirror GOOGL Token",
-      "priority": 656,
+      "priority": 651,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28619,7 +28619,7 @@
       "shortcut": "MiniDOGE",
       "decimals": 9,
       "name": "MiniDOGE",
-      "priority": 618,
+      "priority": 639,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28696,7 +28696,7 @@
       "shortcut": "MLN",
       "decimals": 4,
       "name": "1Million",
-      "priority": 301,
+      "priority": 321,
       "support": {
         "optimum": "1.10.2"
       }
@@ -28762,7 +28762,7 @@
       "shortcut": "mNFLX",
       "decimals": 18,
       "name": "Wrapped Mirror NFLX Token",
-      "priority": 698,
+      "priority": 694,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29202,7 +29202,7 @@
       "shortcut": "mTSLA",
       "decimals": 18,
       "name": "Wrapped Mirror TSLA Token",
-      "priority": 693,
+      "priority": 711,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29279,7 +29279,7 @@
       "shortcut": "NAFT",
       "decimals": 18,
       "name": "Nafter",
-      "priority": 972,
+      "priority": 832,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29367,7 +29367,7 @@
       "shortcut": "NEAR",
       "decimals": 18,
       "name": "NEAR Protocol",
-      "priority": 78,
+      "priority": 68,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29433,7 +29433,7 @@
       "shortcut": "NFT",
       "decimals": 16,
       "name": "NEFTiPEDiA",
-      "priority": 490,
+      "priority": 532,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29444,7 +29444,7 @@
       "shortcut": "NFTART",
       "decimals": 9,
       "name": "NFT-Art.Finance",
-      "priority": 658,
+      "priority": 742,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29554,7 +29554,7 @@
       "shortcut": "NMX",
       "decimals": 18,
       "name": "Nominex Token",
-      "priority": 370,
+      "priority": 377,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29598,7 +29598,7 @@
       "shortcut": "NRV",
       "decimals": 18,
       "name": "Nerve",
-      "priority": 560,
+      "priority": 435,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29653,7 +29653,7 @@
       "shortcut": "NWC",
       "decimals": 18,
       "name": "Newscrypto",
-      "priority": 351,
+      "priority": 368,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29675,7 +29675,7 @@
       "shortcut": "O3",
       "decimals": 18,
       "name": "O3 Swap",
-      "priority": 485,
+      "priority": 507,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29829,7 +29829,7 @@
       "shortcut": "OLYMPUS",
       "decimals": 9,
       "name": "OLYMPUS",
-      "priority": 154,
+      "priority": 199,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29862,7 +29862,7 @@
       "shortcut": "ONT",
       "decimals": 18,
       "name": "Ontology Token",
-      "priority": 101,
+      "priority": 100,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29873,7 +29873,7 @@
       "shortcut": "OOE",
       "decimals": 18,
       "name": "OpenOcean",
-      "priority": 599,
+      "priority": 484,
       "support": {
         "optimum": "1.10.2"
       }
@@ -29895,7 +29895,7 @@
       "shortcut": "ORBS",
       "decimals": 18,
       "name": "Orbs",
-      "priority": 219,
+      "priority": 222,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30005,7 +30005,7 @@
       "shortcut": "OXB",
       "decimals": 9,
       "name": "oxbull.tech",
-      "priority": 930,
+      "priority": 957,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30016,7 +30016,7 @@
       "shortcut": "OXT",
       "decimals": 18,
       "name": "OxSwapToken",
-      "priority": 218,
+      "priority": 226,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30225,7 +30225,7 @@
       "shortcut": "PEAK",
       "decimals": 8,
       "name": "PEAK",
-      "priority": 363,
+      "priority": 365,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30478,7 +30478,7 @@
       "shortcut": "PMON",
       "decimals": 9,
       "name": "PocMon",
-      "priority": 529,
+      "priority": 531,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30621,7 +30621,7 @@
       "shortcut": "PROM",
       "decimals": 18,
       "name": "Prometeus",
-      "priority": 172,
+      "priority": 189,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30742,7 +30742,7 @@
       "shortcut": "PVM",
       "decimals": 18,
       "name": "PRIVATEUM INITIATIVE",
-      "priority": 476,
+      "priority": 437,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30896,7 +30896,7 @@
       "shortcut": "Rai",
       "decimals": 18,
       "name": "Rai Finance",
-      "priority": 492,
+      "priority": 487,
       "support": {
         "optimum": "1.10.2"
       }
@@ -30918,7 +30918,7 @@
       "shortcut": "RAMP",
       "decimals": 18,
       "name": "RAMP DEFI",
-      "priority": 393,
+      "priority": 380,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31006,7 +31006,7 @@
       "shortcut": "REEF",
       "decimals": 18,
       "name": "Reef",
-      "priority": 190,
+      "priority": 209,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31380,7 +31380,7 @@
       "shortcut": "SAFEMARS",
       "decimals": 9,
       "name": "SafeMars",
-      "priority": 644,
+      "priority": 662,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31402,7 +31402,7 @@
       "shortcut": "SAFEMOON",
       "decimals": 9,
       "name": "SafeMoon",
-      "priority": 83,
+      "priority": 99,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31688,7 +31688,7 @@
       "shortcut": "SBD",
       "decimals": 18,
       "name": "Scooby",
-      "priority": 465,
+      "priority": 455,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31776,7 +31776,7 @@
       "shortcut": "SCRT",
       "decimals": 18,
       "name": "SCRT",
-      "priority": 215,
+      "priority": 220,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31952,7 +31952,7 @@
       "shortcut": "SFP",
       "decimals": 18,
       "name": "SafePal Token",
-      "priority": 324,
+      "priority": 312,
       "support": {
         "optimum": "1.10.2"
       }
@@ -31974,7 +31974,7 @@
       "shortcut": "SFUND",
       "decimals": 18,
       "name": "SeedifyFund",
-      "priority": 100,
+      "priority": 659,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32084,7 +32084,7 @@
       "shortcut": "SHIB",
       "decimals": 18,
       "name": "SHIBA INU",
-      "priority": 38,
+      "priority": 39,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32304,7 +32304,7 @@
       "shortcut": "SKILL",
       "decimals": 18,
       "name": "CryptoBlades Skill Token",
-      "priority": 703,
+      "priority": 724,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32381,7 +32381,7 @@
       "shortcut": "SMARS",
       "decimals": 9,
       "name": "SafeMars",
-      "priority": 644,
+      "priority": 662,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32557,7 +32557,7 @@
       "shortcut": "SOUL",
       "decimals": 8,
       "name": "APOyield SOULS",
-      "priority": 695,
+      "priority": 702,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32678,7 +32678,7 @@
       "shortcut": "SPND",
       "decimals": 9,
       "name": "SafePanda",
-      "priority": 749,
+      "priority": 828,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32898,7 +32898,7 @@
       "shortcut": "SUPER",
       "decimals": 18,
       "name": "SuperFarm",
-      "priority": 189,
+      "priority": 186,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32920,7 +32920,7 @@
       "shortcut": "SURE",
       "decimals": 18,
       "name": "inSure",
-      "priority": 390,
+      "priority": 397,
       "support": {
         "optimum": "1.10.2"
       }
@@ -32931,7 +32931,7 @@
       "shortcut": "SUSHI",
       "decimals": 18,
       "name": "Sushi",
-      "priority": 57,
+      "priority": 56,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33074,7 +33074,7 @@
       "shortcut": "SXP",
       "decimals": 18,
       "name": "Swipe",
-      "priority": 122,
+      "priority": 131,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33316,7 +33316,7 @@
       "shortcut": "TENDIE",
       "decimals": 18,
       "name": "TENDIE",
-      "priority": 980,
+      "priority": 996,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33404,7 +33404,7 @@
       "shortcut": "THOREUM",
       "decimals": 18,
       "name": "Thoreum Token",
-      "priority": 710,
+      "priority": 622,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33470,7 +33470,7 @@
       "shortcut": "TKO",
       "decimals": 18,
       "name": "Tokocrypto Token",
-      "priority": 292,
+      "priority": 261,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33492,7 +33492,7 @@
       "shortcut": "TLM",
       "decimals": 4,
       "name": "Alien Worlds Trilium",
-      "priority": 165,
+      "priority": 167,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33558,7 +33558,7 @@
       "shortcut": "TONE",
       "decimals": 8,
       "name": "NFTTONE",
-      "priority": 778,
+      "priority": 809,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33613,7 +33613,7 @@
       "shortcut": "TPT",
       "decimals": 4,
       "name": "TokenPocket Token",
-      "priority": 379,
+      "priority": 333,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33668,7 +33668,7 @@
       "shortcut": "TRONPAD",
       "decimals": 18,
       "name": "TRONPAD.network",
-      "priority": 964,
+      "priority": 899,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33679,7 +33679,7 @@
       "shortcut": "TRUBGR",
       "decimals": 18,
       "name": "TruBadger",
-      "priority": 908,
+      "priority": 100,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33690,7 +33690,7 @@
       "shortcut": "TRX",
       "decimals": 18,
       "name": "TRON",
-      "priority": 26,
+      "priority": 25,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33712,7 +33712,7 @@
       "shortcut": "TT",
       "decimals": 18,
       "name": "BSC-Peg Thunder Token",
-      "priority": 387,
+      "priority": 405,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33789,7 +33789,7 @@
       "shortcut": "TWT",
       "decimals": 18,
       "name": "Trust Wallet Token",
-      "priority": 252,
+      "priority": 193,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33877,7 +33877,7 @@
       "shortcut": "UMB",
       "decimals": 18,
       "name": "Umbrella Network Token",
-      "priority": 810,
+      "priority": 846,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33921,7 +33921,7 @@
       "shortcut": "UNFI",
       "decimals": 18,
       "name": "Unifi Protocol DAO",
-      "priority": 487,
+      "priority": 498,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33943,7 +33943,7 @@
       "shortcut": "UNI",
       "decimals": 18,
       "name": "Uniswap",
-      "priority": 10,
+      "priority": 11,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34031,7 +34031,7 @@
       "shortcut": "USDX",
       "decimals": 6,
       "name": "USDX",
-      "priority": 344,
+      "priority": 348,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34042,7 +34042,7 @@
       "shortcut": "UST",
       "decimals": 18,
       "name": "Wrapped UST Token",
-      "priority": 59,
+      "priority": 61,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34075,7 +34075,7 @@
       "shortcut": "VAI",
       "decimals": 18,
       "name": "VAI Stablecoin",
-      "priority": 264,
+      "priority": 272,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34262,7 +34262,7 @@
       "shortcut": "vETH",
       "decimals": 8,
       "name": "Venus ETH",
-      "priority": 902,
+      "priority": 838,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34317,7 +34317,7 @@
       "shortcut": "VIDT",
       "decimals": 18,
       "name": "VIDT Datalink BEP20",
-      "priority": 719,
+      "priority": 715,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34669,7 +34669,7 @@
       "shortcut": "WEX",
       "decimals": 18,
       "name": "WaultSwap",
-      "priority": 619,
+      "priority": 617,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34702,7 +34702,7 @@
       "shortcut": "WHALE",
       "decimals": 9,
       "name": "WhaleFall",
-      "priority": 435,
+      "priority": 430,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34724,7 +34724,7 @@
       "shortcut": "WILD",
       "decimals": 8,
       "name": "Wild Ride Token",
-      "priority": 486,
+      "priority": 433,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34746,7 +34746,7 @@
       "shortcut": "WIN",
       "decimals": 18,
       "name": "WINk",
-      "priority": 132,
+      "priority": 141,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34900,7 +34900,7 @@
       "shortcut": "WSG",
       "decimals": 18,
       "name": "Wall Street Games",
-      "priority": 734,
+      "priority": 690,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35043,7 +35043,7 @@
       "shortcut": "XCAD",
       "decimals": 18,
       "name": "XCAD Network",
-      "priority": 100,
+      "priority": 884,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35076,7 +35076,7 @@
       "shortcut": "XEND",
       "decimals": 18,
       "name": "XEND",
-      "priority": 989,
+      "priority": 912,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35164,7 +35164,7 @@
       "shortcut": "XPR",
       "decimals": 4,
       "name": "Proton",
-      "priority": 717,
+      "priority": 699,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35186,7 +35186,7 @@
       "shortcut": "XRT",
       "decimals": 9,
       "name": "Robonomics Token",
-      "priority": 783,
+      "priority": 786,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35208,7 +35208,7 @@
       "shortcut": "XTZ",
       "decimals": 18,
       "name": "Tezos Token",
-      "priority": 50,
+      "priority": 47,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35219,7 +35219,7 @@
       "shortcut": "XVS",
       "decimals": 18,
       "name": "Venus",
-      "priority": 166,
+      "priority": 159,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35263,7 +35263,7 @@
       "shortcut": "YFI",
       "decimals": 18,
       "name": "yearn.finance",
-      "priority": 79,
+      "priority": 78,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35285,7 +35285,7 @@
       "shortcut": "YFII",
       "decimals": 18,
       "name": "YFII.finance Token",
-      "priority": 265,
+      "priority": 279,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35296,7 +35296,7 @@
       "shortcut": "YOOSHI",
       "decimals": 9,
       "name": "YOOSHI Token",
-      "priority": 519,
+      "priority": 550,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35373,7 +35373,7 @@
       "shortcut": "ZEC",
       "decimals": 18,
       "name": "Zcash Token",
-      "priority": 72,
+      "priority": 75,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35395,7 +35395,7 @@
       "shortcut": "ZEE",
       "decimals": 18,
       "name": "ZeroSwap",
-      "priority": 925,
+      "priority": 836,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35604,9 +35604,45 @@
       "decimals": 18
     },
     {
+      "chain": "rsk",
+      "chain_id": 30,
+      "name": "RSK",
+      "rskip60": true,
+      "shortcut": "RBTC",
+      "slip44": 137,
+      "support": {
+        "optimum": "1.8.1"
+      },
+      "priority": 100,
+      "test": false,
+      "tx_url": "https://explorer.rsk.co/tx/{hash}",
+      "wallets": [
+        "wallet.prokey.io"
+      ],
+      "decimals": 18
+    },
+    {
+      "chain": "trsk",
+      "chain_id": 31,
+      "name": "RSK Testnet",
+      "rskip60": true,
+      "shortcut": "tRBTC",
+      "slip44": 37310,
+      "support": {
+        "optimum": "1.8.1"
+      },
+      "priority": 100,
+      "test": true,
+      "tx_url": "https://explorer.testnet.rsk.co/tx/{hash}",
+      "wallets": [
+        "wallet.prokey.io"
+      ],
+      "decimals": 18
+    },
+    {
       "chain": "bsc",
       "chain_id": 56,
-      "name": "Binance Smart Chain",
+      "name": "Binance Chain Native",
       "rskip60": false,
       "shortcut": "BNB",
       "slip44": 60,
@@ -35631,7 +35667,7 @@
       "support": {
         "optimum": "1.8.1"
       },
-      "priority": 20,
+      "priority": 19,
       "test": false,
       "tx_url": "https://blockscout.com/etc/mainnet/tx/{hash}",
       "wallets": [
