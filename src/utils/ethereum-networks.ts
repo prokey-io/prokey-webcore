@@ -31,7 +31,7 @@ export function GetNetworkByChainId(chainId: number): string {
        case 31102:
            return 'ESN';       // Ethersocial Network
        default:
-           return ''
+           return chainId.toString();
    }
 }
 
