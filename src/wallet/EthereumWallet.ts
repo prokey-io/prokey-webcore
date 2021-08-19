@@ -211,7 +211,8 @@ export class EthereumWallet extends BaseWallet {
 
             // Check transaction fee
             if( ethAddInfo.balance == null || gasPrice * this._gasLimit > ethAddInfo.balance) {
-                throw new Error("Insufficient balance in the Ethereum wallet to pay the transaction fee");
+                let networkName = EthereumNetworks.GetNetworkFullNameByChainId((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+                throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
 
             // Check account balance
