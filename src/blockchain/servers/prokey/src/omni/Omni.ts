@@ -18,18 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { httpclient } from 'typescript-http-client';
-import Request = httpclient.Request;
 import * as GenericWalletModel from '../../../../../models/GenericWalletModel';
 import { BtcFees } from '../bitcoin/BitcoinModel';
 import * as WalletModel from '../../../../../models/OmniWalletModel'
-import { BitcoinBlockchainAddress } from '../../../../../models/BitcoinWalletModel';
+import {BitcoinBlockchainAddress, BitcoinFee} from '../../../../../models/BitcoinWalletModel';
 
 import { 
     ProkeySendTransactionResponse,
 } from '../models/ProkeyGenericModel';
+import {ProkeyBaseBlockChain} from "../ProkeyBaseBlockChain";
+import {httpclient} from "typescript-http-client";
+import {CoinBaseType, CoinInfo} from "../../../../../coins/CoinInfo";
+import {BitcoinBaseCoinInfoModel} from "../../../../../models/CoinInfoModel";
+import Request = httpclient.Request
 
-export class OmniBlockChain {
+export class OmniBlockChain extends ProkeyBaseBlockChain {
     _network = "";
     _propertyId = 0;
     _blockchain = "";
@@ -42,6 +45,7 @@ export class OmniBlockChain {
      */
     constructor(network = 'omni', propertyId: number, blockchain = 'btc')
     {
+        super();
         this._propertyId = propertyId;
         this._network = network;
         this._blockchain = blockchain;
@@ -49,11 +53,10 @@ export class OmniBlockChain {
 
     /**
      * Request: Getting Omni Address Info from blocks.prokey.io
-     * @param ReqOmniAddressInfo
-     * @returns ResOmniAddressInfo  
+     * @returns ResOmniAddressInfo
      */
     public async GetAddressInfo(reqAddress: GenericWalletModel.RequestAddressInfo): Promise<WalletModel.OmniAddressInfo> {
-        let response: WalletModel.OmniAddressInfo = await this.GetFromServer(`address/${this._network}/${this._propertyId}/${reqAddress.address}`);
+        let response: WalletModel.OmniAddressInfo = await this.GetFromServer<WalletModel.OmniAddressInfo>(`address/${this._network}/${this._propertyId}/${reqAddress.address}`);
 
         return {
             addressModel: reqAddress.addressModel,
@@ -64,7 +67,7 @@ export class OmniBlockChain {
 
     /**
      * 
-     * @param reqAddresses Address to get info
+     * @param reqAddress Address to get info
      */
     public async GetBaseCoinAddressInfo(reqAddress: string): Promise<BitcoinBlockchainAddress> {
         return new Promise<BitcoinBlockchainAddress>(async (resolve, reject) => {
@@ -72,7 +75,7 @@ export class OmniBlockChain {
                 return reject("Requested address is null");
             }
 
-            let res = await this.GetFromServer(`address/${this._blockchain}/${reqAddress}`);
+            let res = await this.GetFromServer<BitcoinBlockchainAddress>(`address/${this._blockchain}/${reqAddress}`);
 
             return resolve(res[0]);
         });
@@ -83,23 +86,21 @@ export class OmniBlockChain {
      * @param hash transaction hash or id seperate each hash or id by comma
      * @returns Omni transaction info 
      */
-    public async GetTransaction(hash: string): Promise<Array<WalletModel.OmniTxInfo>> {
-        return await this.GetFromServer(`transaction/${this._network}/${this._propertyId}/${hash}`);
+    public async GetTransactions(hash: string): Promise<Array<WalletModel.OmniTxInfo>> {
+        return await this.GetFromServer<Array<WalletModel.OmniTxInfo>>(`transaction/${this._network}/${this._propertyId}/${hash}`);
     }
 
     /**
      * Load/Get Transactions list
-     * @param addresses List of addresses to get info
+     * @param trs List of transaction ids
      * @param count Number of transaction
      * @param offset Offset of first transaction
      */
-    public async GetLatestTransactions(address: WalletModel.OmniAddressInfo, count = 100, offset = 0) : Promise<Array<WalletModel.OmniTxInfo>> {
+    public async GetLatestTransactions(trs: Array<number>, count = 100, offset = 0) : Promise<Array<WalletModel.OmniTxInfo>> {
         return new Promise<Array<WalletModel.OmniTxInfo>>(async (resolve,reject)=>{
-            if(address.trKeys == undefined){
+            if(trs == undefined){
                 return reject("Transaction Keys' list is empty");
             }
-            
-            let trs: Array<number> = address.trKeys;
             
             if (count > 1000)
                 count = 1000;
@@ -124,7 +125,7 @@ export class OmniBlockChain {
                 }
                 ids = ids.substring(1);
                 try {
-                    let res = await this.GetTransaction(ids);
+                    let res = await this.GetTransactions(ids);
                     resolve(res);
                     return;
                 } catch (error) {
@@ -141,9 +142,54 @@ export class OmniBlockChain {
      * Get Bitcoin transaction fee from server
      * @returns ProkeyResBitcoinFee
      */
-    public async GetTxFee(): Promise<BtcFees> {
+    public async GetTxFeeFromServer(): Promise<BtcFees> {
         const feeUrl = `transaction/fee/${this._blockchain}`;
-        return this.GetFromServer(feeUrl);
+        return this.GetFromServer<BtcFees>(feeUrl);
+    }
+
+    public async GetTxFee(): Promise<BitcoinFee> {
+        var fee = <BitcoinFee>{};
+
+        try {
+
+            // get fee from https://bitcoinfees.earn.com/api/v1/fees/list
+            const client = httpclient.newHttpClient();
+
+            const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
+
+            var r = await client.execute<any>(request);
+            r.fees.forEach(element => {
+                if (element.maxMinutes == 360 && fee.economy == null) {
+                    fee.economy = element.minFee;
+                } else if (element.maxMinutes == 180 && fee.normal == null) {
+                    fee.normal = element.minFee;
+                } else if (element.maxMinutes == 60 && fee.high == null) {
+                    fee.high = element.minFee;
+                }
+            });
+
+            return fee;
+        }
+        catch (error) {
+        }
+
+        //! Get fee from prokey servers
+        var fees = await this.GetTxFeeFromServer();
+
+        fee.economy = fees.ecoFees[5].feerate * 100000;
+        fee.normal = fees.fees[3].feerate * 100000;
+        fee.high = fees.fees[1].feerate * 100000;
+
+        // Server may return the negative fee, so we should use the next returned fee
+        if (fee.high < 0)
+            fee.high = fees.fees[2].feerate * 100000;
+        if (fee.high < 0)
+        {
+            // We need to use the fee from coin info
+            fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( "Bitcoin", CoinBaseType.BitcoinBase).minfee_kb;
+        }
+
+        return fee;
     }
 
     /**
@@ -151,19 +197,6 @@ export class OmniBlockChain {
      * @param data Raw transaction to send to network
      */
     public async BroadCastTransaction(data: string): Promise<ProkeySendTransactionResponse> {
-        return this.GetFromServer(`transaction/send/${this._blockchain}/${data}`);
-    }
-
-    /**
-     * This is a private helper function to GET data from server
-     * @param toServer URL + data
-     */
-    private async GetFromServer(toServer: string) {        
-
-        const client = httpclient.newHttpClient();
-
-        const request = new Request('https://blocks.prokey.org/' + toServer, {method: 'GET'});
-
-        return JSON.parse(await client.execute<string>(request));
+        return this.GetFromServer<ProkeySendTransactionResponse>(`transaction/send/${this._blockchain}/${data}`);
     }
 }
