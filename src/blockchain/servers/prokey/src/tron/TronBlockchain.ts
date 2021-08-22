@@ -30,12 +30,11 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
         super();
         this._coinName = coinName;
     }
-   
+
     public async GetAccountInfo(account: string): Promise<TronAccountInfo | null> {
         try {
-            let r = await this.GetFromServer<any>(`address/${this._coinName}/${account}`);            
-            if (!r.success)
-            {
+            let r = await this.GetFromServer<any>(`address/${this._coinName}/${account}`);
+            if (!r.success) {
                 MyConsole.Error("Tron get account info error: ", r);
                 return null;
             }
@@ -48,7 +47,11 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
     // Get account resources the address must be in HEX format
     public async GetAccountResources(account: string): Promise<TronAccountResources | null> {
         try {
-            return await this.GetFromServer<any>(`address/resources/${this._coinName}/${account}`);            
+            let r = await this.GetFromServer<TronAccountResources>(`address/resources/${this._coinName}/${account}`);
+            if (r.freeNetUsed == undefined) {
+                r.freeNetUsed = 0;
+            }
+            return r;
         } catch (error) {
             MyConsole.Error("Tron get account resources error: ", error);
             return null;
@@ -57,8 +60,7 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
 
     public async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<TronTransactionDataInfo>> {
         let r = await this.GetFromServer<any>(`address/transactions/${this._coinName}/${account}/${limit}`);
-        if (!r.success)
-        {
+        if (!r.success) {
             MyConsole.Error("Tron get account transactions error: ", r);
             return [];
         }
@@ -68,8 +70,7 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
 
     public async GetAccountTrc20Transactions(account: string, limit: number = 10): Promise<Array<TronTrc20TransactionDataInfo>> {
         let r = await this.GetFromServer<any>(`address/trc20/transactions/${this._coinName}/${account}/${limit}`);
-        if (!r.success)
-        {
+        if (!r.success) {
             MyConsole.Error("Tron get account TRC20 transactions error: ", r);
             return [];
         }

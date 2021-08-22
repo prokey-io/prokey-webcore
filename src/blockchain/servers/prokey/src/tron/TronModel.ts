@@ -33,6 +33,7 @@ export type TronAccountResources = {
     NetLimit: number;           // Total bandwidth obtained by freezing
     TotalNetLimit: number;      // Total bandwidth can be obtained by freezing
     TotalNetWeight: number;     // Total TRX frozen for bandwidth
+    tronPowerUsed: number;      // TRON power used
     tronPowerLimit: number;     // TRON Power(vote)
     EnergyLimit: number;        // Total energy obtained by freezing
     TotalEnergyLimit: number;   // Total energy can be obtained by freezing
