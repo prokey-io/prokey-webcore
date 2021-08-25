@@ -48,8 +48,21 @@ export class TronBlockchain extends ProkeyBaseBlockChain {
     public async GetAccountResources(account: string): Promise<TronAccountResources | null> {
         try {
             let r = await this.GetFromServer<TronAccountResources>(`address/resources/${this._coinName}/${account}`);
+            MyConsole.Info("Tron account resources: ", r);
             if (r.freeNetUsed == undefined) {
                 r.freeNetUsed = 0;
+            }
+            if (r.EnergyLimit == undefined) {
+                r.EnergyLimit = 0;
+            }
+            if (r.EnergyUsed == undefined) {
+                r.EnergyUsed = 0;
+            }
+            if (r.tronPowerLimit == undefined) {
+                r.tronPowerLimit = 0;
+            }
+            if (r.tronPowerUsed == undefined) {
+                r.tronPowerUsed = 0;
             }
             return r;
         } catch (error) {

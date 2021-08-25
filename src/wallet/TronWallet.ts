@@ -23,7 +23,7 @@ import { Device } from "../device/Device";
 import { TronCoinInfoModel } from "../models/CoinInfoModel";
 import { BaseWallet } from "./BaseWallet";
 import * as PathUtil from '../utils/pathUtils';
-import { TronAddress, TronSignedTx, TronTransaction } from "../models/Prokey";
+import { TronAddress, TronFreezeBalance, TronSignedTx, TronTransaction } from "../models/Prokey";
 import { TronBlockchain } from "../blockchain/servers/prokey/src/tron/TronBlockchain";
 import { TronAccountInfo, TronAccountResources, TronBlock, TronTransactionDataInfo } from "../blockchain/servers/prokey/src/tron/TronModel";
 import * as Utils from '../utils/utils';
@@ -139,6 +139,14 @@ export class TronWallet extends BaseWallet {
                 }
             }
         };
+        return tx;
+    }
+
+    public async GenerateFreezeBalanceTransaction(data: TronFreezeBalance, accountNumber: number): Promise<TronTransaction> {
+        let tx = await this.GenerateTransaction("test", data.frozen_balance, accountNumber);
+        tx.contract.transfer_contract = undefined;
+        tx.contract.freeze_balance_contract = data;
+        data.frozen_balance = Math.floor(data.frozen_balance) * 1000000;
         return tx;
     }
 

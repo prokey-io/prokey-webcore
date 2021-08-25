@@ -36,6 +36,7 @@ export type TronAccountResources = {
     tronPowerUsed: number;      // TRON power used
     tronPowerLimit: number;     // TRON Power(vote)
     EnergyLimit: number;        // Total energy obtained by freezing
+    EnergyUsed: number;    // Total energy obtained by freezing
     TotalEnergyLimit: number;   // Total energy can be obtained by freezing
     TotalEnergyWeight: number;  // Total TRX frozen for energy}
 }

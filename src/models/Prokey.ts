@@ -1047,15 +1047,31 @@ export type LoadDeviceFlags = {
 }
 
 // Tron types
+export enum TronResourceCode {
+    BANDWIDTH = 0x00,
+    ENERGY = 0x01
+}
+
+export type TronFreezeBalance = {
+    frozen_balance: number;                 // Amount to freeze
+    frozen_duration?: number;               // (Optional)Freeze minimal duration in days currently 3 days is fixed on tron network
+    resource: TronResourceCode;             // Freeze the balance to get bandwidth or energy
+    receiver_address?: string;              // (Optional)Energy or bandwidth receiver address
+}
+
 export type TronTransaction = {
     address_n: Array<number>;
-    timestamp: number;
-    expiration?: number;
-    block_id: string;
+    timestamp: number;                              // UTC timestamp
+    expiration?: number;                            // Transaction expiration
+    block_id: string;                               // Now block ID
+    fee_limit?: number;                              // Max fee in TRX when calling contract address
     contract: {
+        // Transfer TRX
         transfer_contract?: {
-            to_address: string;
-            amount: number;
-        }
+            to_address: string;                     // To address
+            amount: number;                         // TRX amount in sun (10^-6)
+        };
+        // Freeze TRX balance
+        freeze_balance_contract?: TronFreezeBalance;
     }
 }
