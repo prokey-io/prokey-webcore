@@ -32,6 +32,7 @@ import { GeneralResponse } from '../models/GeneralResponse';
 import { BaseWallet } from './BaseWallet';
 import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
+import * as EthereumNetworks from "../utils/ethereum-networks";
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -59,11 +60,11 @@ export class EthereumWallet extends BaseWallet {
         if(isErc20) {
             this._gasLimit = 65000;
             const ci = (super.GetCoinInfo() as Erc20BaseCoinInfoModel);
-            this._network = this.GetNetworkByChainId(ci.chain_id);
+            this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
             this._ethBlockChain = new EthereumBlockchain(this._network, true, ci.address);
         } else {
             const ci = (this.GetCoinInfo() as EthereumBaseCoinInfoModel);
-            this._network = this.GetNetworkByChainId(ci.chain_id);
+            this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
             this._ethBlockChain = new EthereumBlockchain(this._network);
         }
     }
@@ -210,7 +211,8 @@ export class EthereumWallet extends BaseWallet {
 
             // Check transaction fee
             if( ethAddInfo.balance == null || gasPrice * this._gasLimit > ethAddInfo.balance) {
-                throw new Error("Insufficient balance in the Ethereum wallet to pay the transaction fee");
+                let networkName = EthereumNetworks.GetNetworkFullNameByChainId((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+                throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
 
             // Check account balance
@@ -431,36 +433,5 @@ export class EthereumWallet extends BaseWallet {
         }
 
         return addInfo[0];
-    }
-
-    /**
-     * Get network by chainId
-     * @param chainId 
-     */
-    private GetNetworkByChainId(chainId: number): string {
-        switch(chainId) {
-            case 1:
-                return 'eth';       // Ethereum Mainnet
-            case 2:
-                return 'exp';       // Expanse Network	
-            case 3:
-                return 'ropsten'    // Ethereum Testnet Ropsten
-            case 4:
-                return 'trin';      // Ethereum Testnet Rinkeby
-            case 5:
-                return 'goerli';    // Ethereum Testnet Görli
-            case 8:
-                return 'ubq';       // Ubiq Network Mainnet
-            case 42:
-                return 'kovan';     // Ethereum Testnet Kovan
-            case 61:
-                return 'etc';       // Ethereum Classic Mainnet
-            case 64:
-                return 'ella';      // Ellaism
-            case 31102:
-                return 'ESN';       // Ethersocial Network
-            default:
-                return ''
-        }
     }
 }
