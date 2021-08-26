@@ -372,8 +372,9 @@ export class EthereumWallet extends BaseWallet {
     public IsAddressValid(address: string): boolean {
         let coinInfo = this.GetCoinInfo();
 
-        let symbol: string = coinInfo.shortcut;
-        if(this._isErc20 == true || symbol.toLocaleLowerCase() == "trin"){
+        let symbol: string = coinInfo.shortcut.toLocaleLowerCase();
+        //! these coins are use same address encoding model
+        if(this._isErc20 == true || symbol == "trin" || symbol == "bnb" || symbol == "rbtc" || symbol == "trbtc"){
             symbol = "ETH";
         }
 
