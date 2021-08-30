@@ -85,11 +85,14 @@ export class BitcoinBlockchain {
                 
                 var r = await client.execute<any>(request);    
                 r.fees.forEach(element => {
-                    if (element.maxMinutes == 360 && fee.economy == null) {
+                    if ((element.maxMinutes == 360 && fee.economy == null) || 
+                        (element.minMinutes < 180 && fee.economy == null)) {
                         fee.economy = element.minFee;                        
-                    } else if (element.maxMinutes == 180 && fee.normal == null) {
+                    } else if ((element.maxMinutes == 180 && fee.normal == null) || 
+                               (element.minMinutes < 90 && fee.normal == null)) {
                         fee.normal = element.minFee;
-                    } else if (element.maxMinutes == 60 && fee.high == null) {
+                    } else if ((element.maxMinutes == 60 && fee.high == null) ||
+                               (element.minMinutes < 30 && fee.high == null)) {
                         fee.high = element.minFee;
                     }
                 });

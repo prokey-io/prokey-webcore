@@ -332,7 +332,7 @@ export class BitcoinWallet extends BaseWallet {
 
                     //! Check if it's OMNI
                     for(let j = 0; j<tx.outputs.length; j++) {
-                        if(tx.outputs[j].script.includes("OP_RETURN")) {
+                        if(tx.outputs[j].script && tx.outputs[j].script.includes("OP_RETURN")) {
                             isOpReturn = true;
                             break;
                         }
@@ -413,7 +413,7 @@ export class BitcoinWallet extends BaseWallet {
 
                     //! Check if there is a OP_RETURN 
                     for(let k = 0; k<tx.outputs.length; k++) {
-                        if(tx.outputs[k].script.includes("OP_RETURN")) {
+                        if(tx.outputs[k].script && tx.outputs[k].script.includes("OP_RETURN")) {
                             isOpReturn = true;
                         }
 
