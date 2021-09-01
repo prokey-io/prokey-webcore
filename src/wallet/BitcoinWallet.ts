@@ -686,9 +686,9 @@ export class BitcoinWallet extends BaseWallet {
         //! Fixed fees
         if(super.GetCoinInfo().name == "Dogecoin") {
             return <BitcoinFeeSelectionModel>{
-                economy: coinInfo.minfee_kb.toString(),
-                normal: coinInfo.minfee_kb.toString(),
-                priotity: coinInfo.minfee_kb.toString(),
+                economy: "100000000",
+                normal: "100000000",
+                priotity: "100000000",
                 decimal: coinInfo.decimals,
                 unit: coinInfo.shortcut,
             }
