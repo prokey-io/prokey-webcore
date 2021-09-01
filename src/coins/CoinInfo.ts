@@ -133,6 +133,10 @@ export class CoinInfo {
 
                 ci.id = `ripple_${ci.shortcut}`;
                 break;
+            case CoinBaseType.Tron:
+                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci.id = `tron_${ci.shortcut}`;
+                break;
             default:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
@@ -330,6 +334,18 @@ export class CoinInfo {
                     ...ripple,
                     coinBaseType: CoinBaseType.Ripple,
                     id: `ripple_${ripple.shortcut}`,
+                })
+            }
+        });
+
+        //! For all Tron base coins
+        ProkeyCoinInfoModel.tron.forEach(tron => {
+            //! Check the version
+            if(compareVersions(firmwareVersion, tron.support.optimum) >= 0) {
+                list.push({
+                    ...tron,
+                    coinBaseType: CoinBaseType.Tron,
+                    id: `tron${tron.shortcut}`,
                 })
             }
         });
