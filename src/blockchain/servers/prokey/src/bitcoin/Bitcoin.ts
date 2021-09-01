@@ -64,7 +64,6 @@ export class BitcoinBlockChain {
                     addresses += "," + req.address;
                 });
                 addresses = addresses.substring(1);
-                addresses = "/" + addresses;
 
                 var prokeyRes: Array<WalletModel.BitcoinBlockchainAddress> = await this.PostToServer<Array<WalletModel.BitcoinBlockchainAddress>>(`address/${this._coinName}/${addresses}`, null);
 
@@ -75,7 +74,7 @@ export class BitcoinBlockChain {
                             address: reqAddresses[n].address,
                             addressModel: reqAddresses[n].addressModel,
                             balance: fullAddress.totalReceive - fullAddress.totalSent,
-                            exist: (fullAddress.transactionIds && fullAddress.transactionIds.length > 0) ? true : false,
+                            exist: fullAddress.totalReceive > 0,
                             txInfo: fullAddress,
                         };
 
@@ -133,7 +132,7 @@ export class BitcoinBlockChain {
      */
     public async GetLatestTransactions(addresses: Array<WalletModel.BitcoinAddressInfo>, count = 100, offset = 0) : Promise<Array<WalletModel.BitcoinTxInfo>> {
         return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
-            let trs: Array<number> = [];
+            let trs: Array<number | string> = [];
             addresses.forEach(add => {
                 add.txInfo.transactionIds.forEach(tr => {
                     trs.push(tr);
@@ -146,11 +145,13 @@ export class BitcoinBlockChain {
                 offset = 0;
 
             // Sort the tr numbers desc
-            trs = trs.sort((a, b) => b - a);
-            // Remove the duplicates
-            trs = trs.filter((v, pos) => {
-                return trs.indexOf(v) == pos;
-            });
+            if (typeof trs[0] == "number") {
+                trs = trs.sort((a, b) => <number>b - <number>a);
+                // Remove the duplicates
+                trs = trs.filter((v, pos) => {
+                    return trs.indexOf(v) == pos;
+                });
+            }
 
             count = Math.min(trs.length - offset, count);
             if (count > 0)

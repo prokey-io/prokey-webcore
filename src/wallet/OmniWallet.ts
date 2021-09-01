@@ -52,7 +52,7 @@ export class OmniWallet extends BaseWallet {
      * @param device The prokey device instance
      * @param coinName Coin name, Check /data/ProkeyCoinsInfo.json
      */
-    constructor(device: Device, coinName: string) {
+    constructor(device: Device, coinName: string, propertyId?: number) {
         super(device, coinName, CoinBaseType.OMNI);
         
         const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;

@@ -81,27 +81,27 @@ export abstract class BaseWallet {
      * @param _coinName Coin name, Check /data/ProkeyCoinsInfo.json
      * @param _coinType Coin type BitcoinBase | EthereumBase | ERC20 | NEM | OMNI | OTHERS
      */
-    constructor(private _device: Device, private _coinName: string, private _coinType: CoinBaseType) {
+    constructor(private _device: Device, coinName: string, coinType: CoinBaseType, chainOrPropertyNumber?: number ) {
         if (_device == null)
             throw new Error('Device can not be null');
 
         // will threw an exception if coin can not be found
-        this._coinInfo = CoinInfo.Get(_coinName, _coinType);
+        this._coinInfo = CoinInfo.Get(coinName, coinType, chainOrPropertyNumber);
 
         // create the device commands
-        switch (_coinType) {
+        switch (coinType) {
             case CoinBaseType.BitcoinBase:
             case CoinBaseType.OMNI:
-                this._commands = new BitcoinCommands(_coinName, _coinType == CoinBaseType.OMNI);
+                this._commands = new BitcoinCommands(coinName, coinType == CoinBaseType.OMNI);
                 break;
 
             case CoinBaseType.EthereumBase:
             case CoinBaseType.ERC20:
-                this._commands = new EthereumCommands(_coinName, _coinType == CoinBaseType.ERC20);
+                this._commands = new EthereumCommands(coinName, coinType == CoinBaseType.ERC20);
                 break;
 
             case CoinBaseType.Ripple:
-                this._commands = new RippleCommands(_coinName);
+                this._commands = new RippleCommands(coinName);
                 break;
 
             case CoinBaseType.Tron:
