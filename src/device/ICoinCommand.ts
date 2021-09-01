@@ -26,11 +26,12 @@ import {
     BitcoinBaseCoinInfoModel, 
     EthereumBaseCoinInfoModel, 
     OmniCoinInfoModel, 
-    RippleCoinInfoModel } from '../models/CoinInfoModel';
+    RippleCoinInfoModel, 
+    TronCoinInfoModel} from '../models/CoinInfoModel';
 import { RippleTransaction } from '../models/Prokey';
 
 export interface ICoinCommands {
-    GetCoinInfo() : BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel | null;
+    GetCoinInfo() : BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel | TronCoinInfoModel | null;
 
     GetAddress(
         device: Device,

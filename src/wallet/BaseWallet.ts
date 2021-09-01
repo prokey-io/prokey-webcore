@@ -105,7 +105,7 @@ export abstract class BaseWallet {
                 break;
 
             case CoinBaseType.Tron:
-                this._commands = new TronCommands(_coinName);
+                this._commands = new TronCommands(coinName);
                 break;
 
             default:
