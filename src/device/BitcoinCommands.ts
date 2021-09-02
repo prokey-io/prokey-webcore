@@ -689,12 +689,18 @@ export class BitcoinCommands implements ICoinCommands {
             return await this.TxReqHandler(device, dicRefTx, res, resolve, reject);
         }
         catch (ex) {
-            this._isSigning = false;
-            return reject({
+            if (ex instanceof Error) {
+                this._isSigning = false;
+                return reject({
+                    success: false,
+                    errorCode: GeneralErrors.UNKNOWN,
+                    errorMessage: ex.message,
+                })
+            }
+            return {
                 success: false,
                 errorCode: GeneralErrors.UNKNOWN,
-                errorMessage: ex.message,
-            })
+            };
         }
     }
 }
