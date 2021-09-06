@@ -20,7 +20,8 @@ It is recommended to add this repository main branch to your project as a submod
  - Bitcoin based coins Like Bitcoin, Litecoin, Bitcoincash, Doge, Bitcoin Gold
  - Ethereum
  - ERC20
- - OMNI Protocol coin based on Bitcoin Blockchain and ERC20
+ - OMNI Protocol tokens based on Bitcoin Blockchain
+ - Ripple
 
 ## Sample code
  - First thing first, you need to create an instance of Prokey Device. 
@@ -88,10 +89,6 @@ It is recommended to add this repository main branch to your project as a submod
   
   console.log('XPUB:', publicKeyModel.xpub );
   ```
-  
-  ## Sample project
-  
-  Please check the [sample project](https://github.com/prokey-io/prokey-webcore-sample) repository
   
   ## Backend Servers(Blockchain)
   
