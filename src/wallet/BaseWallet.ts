@@ -23,7 +23,8 @@ import {
     BitcoinBaseCoinInfoModel,
     EthereumBaseCoinInfoModel,
     Erc20BaseCoinInfoModel,
-    OmniCoinInfoModel
+    OmniCoinInfoModel,
+    RippleCoinInfoModel
 } from '../models/CoinInfoModel'
 import { CoinBaseType, CoinInfo } from '../coins/CoinInfo'
 import { ICoinCommands } from '../device/ICoinCommand'
@@ -69,7 +70,7 @@ import { RippleSignedTx, RippleTransaction } from "../models/Responses-V6";
  * This is the base class for all implemented wallets
  */
 export abstract class BaseWallet {
-    private _coinInfo: BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel;
+    private _coinInfo: BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel;
     private _commands!: ICoinCommands;
 
     /**
@@ -78,12 +79,20 @@ export abstract class BaseWallet {
      * @param _coinName Coin name, Check /data/ProkeyCoinsInfo.json
      * @param _coinType Coin type BitcoinBase | EthereumBase | ERC20 | NEM | OMNI | OTHERS
      */
-    constructor(private _device: Device, coinName: string, coinType: CoinBaseType, chainOrPropertyNumber?: number ) {
+    constructor(private _device: Device, 
+        coinName: string, 
+        coinType: CoinBaseType, 
+        chainOrPropertyNumber?: number,
+        coinInfo?: BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel) {
         if (_device == null)
             throw new Error('Device can not be null');
 
-        // will threw an exception if coin can not be found
-        this._coinInfo = CoinInfo.Get(coinName, coinType, chainOrPropertyNumber);
+        if(coinInfo == null){
+            // will threw an exception if coin can not be found
+            this._coinInfo = CoinInfo.Get(coinName, coinType, chainOrPropertyNumber);
+        } else {
+            this._coinInfo = coinInfo;
+        }
 
         // create the device commands
         switch (coinType) {
@@ -94,7 +103,7 @@ export abstract class BaseWallet {
 
             case CoinBaseType.EthereumBase:
             case CoinBaseType.ERC20:
-                this._commands = new EthereumCommands(coinName, coinType == CoinBaseType.ERC20);
+                this._commands = new EthereumCommands();
                 break;
 
             case CoinBaseType.Ripple:
@@ -110,7 +119,7 @@ export abstract class BaseWallet {
     /**
      * Get CoinInfo
      */
-    public GetCoinInfo(): BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel {
+    public GetCoinInfo(): BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel {
         return this._coinInfo;
     }
 

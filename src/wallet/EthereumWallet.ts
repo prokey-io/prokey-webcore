@@ -51,9 +51,11 @@ export class EthereumWallet extends BaseWallet {
      * @param device Prokey device instance
      * @param coinNameOrContractAddress Coin name or contract address of ERC20, Check /data/ProkeyCoinsInfo.json
      * @param isErc20 Should be true if ERC20 is desired.
+     * @param coinInfo Optional coin info, If this parameter is not null, the wallet skips coinNameOrContractAddress 
      */
-    constructor(device: Device, coinNameOrContractAddress: string, isErc20: boolean) {
-        super(device, coinNameOrContractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase);
+    constructor(device: Device, coinNameOrContractAddress: string, isErc20: boolean, coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel) {
+        //! If coinInfo parameter is not null, the value of coinNameOrContractAddress doesn't matter
+        super(device, coinNameOrContractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, undefined, coinInfo);
         
         this._isErc20 = isErc20;
 

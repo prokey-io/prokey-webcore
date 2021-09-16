@@ -27,33 +27,14 @@ import { GeneralResponse, GeneralErrors } from '../models/GeneralResponse';
 import { ICoinCommands } from './ICoinCommand';
 import { EthereumTx, EthTxToProkey } from '../models/EthereumTx';
 import { validateParams } from '../utils/paramsValidator';
-import { EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
+import { Erc20BaseCoinInfoModel, EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
 import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
 
 export class EthereumCommands implements ICoinCommands {
 
     _isSigning = false;
-    private _coinInfo : EthereumBaseCoinInfoModel;
 
-    constructor(coinNameOrcontractAddress: string = "Ethereum", isErc20 = false) {
-        this._coinInfo = CoinInfo.Get<EthereumBaseCoinInfoModel>(coinNameOrcontractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase);
-        if (isErc20) {
-            const ethCoinInfo = CoinInfo.Get<EthereumBaseCoinInfoModel>('Ethereum', CoinBaseType.EthereumBase);
-            if (ethCoinInfo) {
-                this._coinInfo.tx_url = ethCoinInfo.tx_url;
-            }
-        }
-        if(this._coinInfo == null)
-        {
-            throw new Error(`Cannot load CoinInfo for ${coinNameOrcontractAddress}`);
-        }
-    }
-
-    /**
-     * Get Coin Info
-     */
-    public GetCoinInfo() : EthereumBaseCoinInfoModel {
-       return this._coinInfo;
+    constructor() {
     }
     
     /**

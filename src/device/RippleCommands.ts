@@ -44,13 +44,6 @@ export class RippleCommands implements ICoinCommands {
     }
 
     /**
-     * Get Coin Info
-     */
-    public GetCoinInfo(): RippleCoinInfoModel {
-        return this._coinInfo;
-    }
-
-    /**
     * Get Bitcoin/Litecoin and etc address
     * @param device Prokey device instance
     * @param path BIP path 
