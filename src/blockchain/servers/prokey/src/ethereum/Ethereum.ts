@@ -23,6 +23,7 @@ import { httpclient } from 'typescript-http-client'
 import Request = httpclient.Request
 import { ProkeySendTransactionResponse } from '../models/ProkeyGenericModel';
 import * as WalletModel from '../../../../../models/EthereumWalletModel'
+import { MyConsole } from '../../../../../utils/console';
 
 export class EthereumBlockChain {
     
@@ -50,12 +51,20 @@ export class EthereumBlockChain {
             response = await this.GetFromServer<Array<WalletModel.EthereumAddressInfo>>(`address/${this._network}/${reqAddress.address}`);
         }
 
-        return [{
+        let addInfo : Array<WalletModel.EthereumAddressInfo> = [{
             balance: response[0].balance,
             nonce: response[0].nonce,
             trKeys: response[0].trKeys,
             addressModel: reqAddress.addressModel,
         }];
+
+        if(this._isErc20) {
+            MyConsole.Info(`EthereumBlockChain::AddInfo:ERC20:${this._network}:${this._contractAddress}:${reqAddress.address}`, addInfo);
+        } else {
+            MyConsole.Info(`EthereumBlockChain::AddInfo:${this._network}:${reqAddress.address}`, addInfo);
+        }
+
+        return addInfo;
     }
 
     /**

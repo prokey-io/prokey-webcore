@@ -52,13 +52,6 @@ export class BitcoinCommands implements ICoinCommands {
             throw new Error(`Cannot load CoinInfo for ${coinNameOrShortcut}`);
         }
     }
-
-    /**
-     * Get Coin Info
-     */
-    public GetCoinInfo(): BitcoinBaseCoinInfoModel | OmniCoinInfoModel {
-        return this._coinInfo;
-    }
     
     /**
      * Get Bitcoin/Litecoin and etc address
