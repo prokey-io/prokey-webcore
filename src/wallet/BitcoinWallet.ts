@@ -756,6 +756,11 @@ export class BitcoinWallet extends BaseWallet {
 
         //! Create list of account UTXO
         let sortedUtoxs = this.CreateSortedUtxoList(acc);
+        if(sortedUtoxs.length == 0) {
+            MyConsole.Info("No UTXO");
+            //! Bitcoin based transactions has 1 input at least
+            return txLen + this._TX_DEFAULT_INPUT_SIZE;
+        }
 
         MyConsole.Info("Sorted UTXO", sortedUtoxs);
 
@@ -765,7 +770,7 @@ export class BitcoinWallet extends BaseWallet {
         receivers.forEach(element => {
             totalSend += element.value;
         });
-       
+
         // Check if we can handle this transaction only with one Input
         if (sortedUtoxs[0][0].amount >= totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
         {
