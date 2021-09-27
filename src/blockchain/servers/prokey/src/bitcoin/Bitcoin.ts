@@ -134,9 +134,16 @@ export class BitcoinBlockChain {
         return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
             let trs: Array<number | string> = [];
             addresses.forEach(add => {
-                add.txInfo.transactionIds.forEach(tr => {
-                    trs.push(tr);
-                });
+                if (add.txInfo.transactionIds) {
+                    add.txInfo.transactionIds.forEach(tr => {
+                        trs.push(tr);
+                    });
+                }
+                else if (add.txInfo.transactions) {
+                    add.txInfo.transactions.forEach(tr => {
+                        trs.push(tr.txId);
+                    });
+                }
             });
 
             if (count > 1000)
