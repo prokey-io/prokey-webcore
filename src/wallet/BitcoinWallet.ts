@@ -515,7 +515,7 @@ export class BitcoinWallet extends BaseWallet {
         if(selectedFee == 'economy' || selectedFee == 'low' || selectedFee == 'minimal' || selectedFee == 'min'){
             txFee = +fees.economy;
         } else if( selectedFee == 'priority' || selectedFee == 'high' || selectedFee == 'fast' || selectedFee == 'max') {
-            txFee = +fees.priotity;
+            txFee = +fees.priority;
         }
         
         let totalSend = 0;
@@ -688,7 +688,7 @@ export class BitcoinWallet extends BaseWallet {
             return <BitcoinFeeSelectionModel>{
                 economy: "100000000",
                 normal: "100000000",
-                priotity: "100000000",
+                priority: "100000000",
                 decimal: coinInfo.decimals,
                 unit: coinInfo.shortcut,
             }
@@ -706,7 +706,7 @@ export class BitcoinWallet extends BaseWallet {
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
-            priotity: (txLen * txFees.high).toString(),
+            priority: (txLen * txFees.high).toString(),
             unit: coinInfo.shortcut,
             decimal: coinInfo.decimals,
         }
