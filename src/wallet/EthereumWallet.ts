@@ -404,6 +404,15 @@ export class EthereumWallet extends BaseWallet {
     }
 
     /**
+     * Get the transaction fee
+     */
+    public async CalculateTransactionFee(): Promise<number> {
+        const gasPrice = await this._ethBlockChain.GetGasPrice();
+        
+        return gasPrice * this._gasLimit;
+    }
+
+    /**
      * Get raw byte array of ETH transaction
      * @param tx Etherem transaction
      */

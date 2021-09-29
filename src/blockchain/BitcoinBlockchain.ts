@@ -72,13 +72,12 @@ export class BitcoinBlockchain {
     }
         
     
-
     /**
      * Get Bitcoin transaction fee from server
      * @returns BitcoinFee
      */
     public async GetTxFee(): Promise<BitcoinFee> {
-        //! fetch/update the fee rate every 5 minutes 
+        //! fetch/update the fee rate every 1 minutes 
         const secondsPassedFromLastCall = (new Date().getTime() - this._lastFeeFetchTime.getTime()) / 1000;
         if(this._lastFee != null && secondsPassedFromLastCall < 60 ){
             return this._lastFee;
