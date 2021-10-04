@@ -882,55 +882,63 @@ export class BitcoinWallet extends BaseWallet {
             throw new Error("Transaction inputs cannot be null or empty")
         }
 
-        let txHashIds = "";
-        tx.inputs.forEach(element => {
-            txHashIds += "," + element.prev_hash;
-        });
-
-        //! Removing the first ','
-        txHashIds = txHashIds.substring(1);
-
-        let prevTxs = await this._blockchain.GetTransactions(txHashIds);
-
-        if(prevTxs == null || prevTxs.length != tx.inputs.length) {
-            throw new Error("PrevTx are not set correctly")
-        }
-
         tx.refTxs = new Array<RefTransaction>();
-
-        prevTxs.forEach(prev => {
-            let ref: RefTransaction = {
-                hash: prev.hash,
-                version: prev.version,
-                lock_time: prev.lockTime,
-                bin_outputs: [],
-                inputs: [],
+        let n = tx.inputs.length;
+        let i = 0;
+        while(n > 0)
+        {
+            let txHashIds = "";
+            let perRequest = (n > 10) ? 10 : n;
+            
+            for(let j=0; j<perRequest; j++)
+            {
+                txHashIds += "," + tx.inputs[i++].prev_hash;
+                n--;
             }
 
-            if(timestamp == true){
-                ref.timestamp = prev.timeStamp;
+            //! Removing the first ','
+            txHashIds = txHashIds.substring(1);
+
+            let prevTxs = await this._blockchain.GetTransactions(txHashIds);
+
+            if(prevTxs == null || prevTxs.length != perRequest) {
+                throw new Error("PrevTx are not set correctly")
             }
 
-            prev.inputs.forEach( inp => {
-                ref.inputs.push({
-                    prev_hash: inp.spentTxHash,
-                    prev_index: inp.spentOutputIndex,
-                    sequence: inp.sequence,
-                    script_sig: inp.scriptHex,
+            prevTxs.forEach(prev => {
+                let ref: RefTransaction = {
+                    hash: prev.hash,
+                    version: prev.version,
+                    lock_time: prev.lockTime,
+                    bin_outputs: [],
+                    inputs: [],
+                }
+
+                if(timestamp == true){
+                    ref.timestamp = prev.timeStamp;
+                }
+
+                prev.inputs.forEach( inp => {
+                    ref.inputs.push({
+                        prev_hash: inp.spentTxHash,
+                        prev_index: inp.spentOutputIndex,
+                        sequence: inp.sequence,
+                        script_sig: inp.scriptHex,
+                    });
                 });
-            });
 
-            prev.outputs.forEach( out => {
-                ref.bin_outputs.push({
-                    amount: out.value,
-                    script_pubkey: out.scriptHex,
-                })
-            });
+                prev.outputs.forEach( out => {
+                    ref.bin_outputs.push({
+                        amount: out.value,
+                        script_pubkey: out.scriptHex,
+                    })
+                });
 
-            if(tx.refTxs){
-                tx.refTxs.push(ref);
-            }
-        });
+                if(tx.refTxs){
+                    tx.refTxs.push(ref);
+                }
+            });
+        }
     }
 }
 
