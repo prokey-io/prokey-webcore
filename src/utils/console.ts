@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+import * as Utility from './utils';
 
 export enum LogLevel {
     INFO,
@@ -143,7 +143,13 @@ export class MyConsole {
         logs.push(current_log);
 
         // Re-serialize the array back into a string and store it in localStorage
-        localStorage.setItem('logs', JSON.stringify(logs));
+        localStorage.setItem('logs', JSON.stringify(logs, (key: string, value: any) => {
+            if(value instanceof Uint8Array){
+                return Utility.ByteArrayToHexString(value);
+            }
+
+            return value;
+        }));
     }
 
 }
