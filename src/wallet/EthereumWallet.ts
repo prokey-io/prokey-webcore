@@ -33,6 +33,7 @@ import { BaseWallet } from './BaseWallet';
 import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
 import * as EthereumNetworks from "../utils/ethereum-networks";
+import BigNumber from 'bignumber.js';
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -184,7 +185,7 @@ export class EthereumWallet extends BaseWallet {
      * @param amount Amount to be sent in WEI
      * @param accountNumber Account number to send fund from
      */
-    public async GenerateTransaction(receivedAddress: string, amount: number, accountNumber: number = 0): Promise<EthereumTx> {
+    public async GenerateTransaction(receivedAddress: string, amount: BigNumber, accountNumber: number = 0): Promise<EthereumTx> {
 
         // Check if wallet is already loaded
         if(this._ethereumWallet == null || this._ethereumWallet.accounts == null){
@@ -218,7 +219,7 @@ export class EthereumWallet extends BaseWallet {
             }
 
             // Check account balance
-            if(amount > account.balance) {
+            if(amount.gt(account.balance)) {
                 throw new Error("Insufficient balance");
             }
 
@@ -226,12 +227,13 @@ export class EthereumWallet extends BaseWallet {
             nonce = ethAddInfo.nonce || 0;
         } else {
             // Check account balance
-            if(amount > account.balance) {
+            if(amount.gt(account.balance)) {
                 throw new Error("Insufficient balance");
             }
 
             // Check account balance for pay the tx fee
-            if(amount + (gasPrice * this._gasLimit) > account.balance) {
+
+            if(amount.gt(account.balance - (gasPrice * this._gasLimit))) {
                 throw new Error("Insufficient balance to pay the transaction fee");
             }
 
