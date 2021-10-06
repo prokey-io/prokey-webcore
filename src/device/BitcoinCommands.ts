@@ -351,7 +351,7 @@ export class BitcoinCommands implements ICoinCommands {
                     // If there is amout in output, we need to check if it's less than dust_limit
                     // now we sum all output's amount
                     if(Object.prototype.hasOwnProperty.call(output, 'amount') && !Object.prototype.hasOwnProperty.call(output, 'op_return_data')) {
-                        totalOutputAmount.plus(typeof output.amount === 'string' ? output.amount : '0');
+                        totalOutputAmount = totalOutputAmount.plus(typeof output.amount === 'string' ? output.amount : '0');
                     }
 
 
