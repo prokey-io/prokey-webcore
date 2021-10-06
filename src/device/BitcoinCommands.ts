@@ -29,7 +29,7 @@ import { validateParams } from '../utils/paramsValidator';
 import { MyConsole } from '../utils/console';
 import { BitcoinBaseCoinInfoModel, OmniCoinInfoModel } from '../models/CoinInfoModel'
 import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
-import BigNumber from 'big-number';
+import BigNumber from 'bignumber.js';
 
 export class BitcoinCommands implements ICoinCommands {
     _bitcoinTx!: BitcoinTx;

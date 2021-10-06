@@ -1,6 +1,6 @@
 /* @flow */
 
-var BigNumber = require('big-number');
+var BigNumber = require('bignumber.js');
 
 
 type Param = {
