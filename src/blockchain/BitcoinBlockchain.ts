@@ -37,11 +37,16 @@ export class BitcoinBlockchain {
 
     _prokeyBtcBlockchain: BitcoinBlockChain;
     _coinName: string;
+    _lastFeeFetchTime: Date = new Date();
+    _lastFee: BitcoinFee = <BitcoinFee>{};
 
     constructor(coinName: string)
     {
         this._coinName = coinName;
         this._prokeyBtcBlockchain = new BitcoinBlockChain(coinName);
+
+        //! Initial time to yesterday
+        this._lastFeeFetchTime.setDate(this._lastFeeFetchTime.getDate() - 1);
     }
 
     /**
@@ -67,12 +72,17 @@ export class BitcoinBlockchain {
     }
         
     
-
     /**
      * Get Bitcoin transaction fee from server
      * @returns BitcoinFee
      */
     public async GetTxFee(): Promise<BitcoinFee> {
+        //! fetch/update the fee rate every 1 minutes 
+        const secondsPassedFromLastCall = (new Date().getTime() - this._lastFeeFetchTime.getTime()) / 1000;
+        if(this._lastFee != null && secondsPassedFromLastCall < 60 ){
+            return this._lastFee;
+        }
+
         var fee = <BitcoinFee>{};
         if (this._coinName === 'BTC')
         {
@@ -98,6 +108,9 @@ export class BitcoinBlockchain {
                 });
 
                 MyConsole.Info("Current bitcoinfees fee rates", fee);
+
+                this._lastFee = fee;
+                this._lastFeeFetchTime = new Date();
                 return fee;
             }
             catch (error) {
@@ -125,6 +138,9 @@ export class BitcoinBlockchain {
         }
 
         MyConsole.Info("Current server fee rates", fee);
+
+        this._lastFee = fee;
+        this._lastFeeFetchTime = new Date();
 
         return fee;
     }

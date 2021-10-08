@@ -29,13 +29,14 @@ import { validateParams } from '../utils/paramsValidator';
 import { MyConsole } from '../utils/console';
 import { BitcoinBaseCoinInfoModel, OmniCoinInfoModel } from '../models/CoinInfoModel'
 import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
-import BigNumber from 'big-number';
+import BigNumber from 'bignumber.js';
 
 export class BitcoinCommands implements ICoinCommands {
     _bitcoinTx!: BitcoinTx;
     _signatures: Array<string> = [];
     _serializedTx: string = '';
     _isSigning: boolean = false;
+    _failedSignHandler: any;
     private _coinInfo: BitcoinBaseCoinInfoModel | OmniCoinInfoModel;
 
     constructor(coinNameOrShortcut: string = "Bitcoin", isOmni = false) {
@@ -254,12 +255,12 @@ export class BitcoinCommands implements ICoinCommands {
 
             this._isSigning = true;
 
-            var OnFailure = (reason: any) => {
+            this._failedSignHandler = (reason: any) => {
                 // "this" can be null if the user after signing a transaction, change the coin 
                 if(this != undefined)
                     this._isSigning = false;
 
-                device.RemoveOnFailureCallBack(OnFailure);
+                device.RemoveOnFailureCallBack(this._failedSignHandler);
 
                 /*let e: GeneralResponse = {
                     success: false,
@@ -351,7 +352,7 @@ export class BitcoinCommands implements ICoinCommands {
                     // If there is amout in output, we need to check if it's less than dust_limit
                     // now we sum all output's amount
                     if(Object.prototype.hasOwnProperty.call(output, 'amount') && !Object.prototype.hasOwnProperty.call(output, 'op_return_data')) {
-                        totalOutputAmount.plus(typeof output.amount === 'string' ? output.amount : '0');
+                        totalOutputAmount = totalOutputAmount.plus(typeof output.amount === 'string' ? output.amount : '0');
                     }
 
 
@@ -427,7 +428,7 @@ export class BitcoinCommands implements ICoinCommands {
             MyConsole.Info(param);
         
             try{
-                device.AddOnFailureCallBack(OnFailure);
+                device.AddOnFailureCallBack(this._failedSignHandler);
                 let txReq = await device.SendMessage<ProkeyResponses.TxRequest>('SignTx', param, 'TxRequest');
                 await this.TxReqHandler(device, dicRefTx, txReq, resolve, reject);
             }catch(e){
@@ -663,8 +664,9 @@ export class BitcoinCommands implements ICoinCommands {
         // and the serialized data will be passed to it
         if (txReq.request_type == ProkeyResponses.eRequestType.TXFINISHED) {
             this._isSigning = false;
-          resolve({
-            serialized_tx: Utility.DecimalStrigArrayToHexString(this._serializedTx, ','),
+            device.RemoveOnFailureCallBack(this._failedSignHandler);
+            resolve({
+                serialized_tx: Utility.DecimalStrigArrayToHexString(this._serializedTx, ','),
                 signatures: this._signatures,
             });
             return { success: true };
@@ -683,6 +685,7 @@ export class BitcoinCommands implements ICoinCommands {
         }
         catch (ex) {
             this._isSigning = false;
+            device.RemoveOnFailureCallBack(this._failedSignHandler);
             return reject({
                 success: false,
                 errorCode: GeneralErrors.UNKNOWN,

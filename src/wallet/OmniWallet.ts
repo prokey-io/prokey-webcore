@@ -390,7 +390,7 @@ export class OmniWallet extends BaseWallet {
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
-            priotity: (txLen * txFees.high).toString(),
+            priority: (txLen * txFees.high).toString(),
             unit: 'BTC',
             decimal: 8
         }

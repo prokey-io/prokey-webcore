@@ -33,6 +33,7 @@ import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
 export class EthereumCommands implements ICoinCommands {
 
     _isSigning = false;
+    _failedSignHandler: any;
 
     constructor() {
     }
@@ -169,12 +170,6 @@ export class EthereumCommands implements ICoinCommands {
         if(!ethTx)
             throw new Error("Ethereum::SignTransaction->parameter ethTx cannot be null");
 
-        device.AddOnFailureCallBack((reason: string) => {
-            // "this" can be null if the user after signing a transaction, change the coin 
-            if(this != undefined)
-                this._isSigning = false;
-        });
-
         // reject if already in signing
         if(this._isSigning)
             return Promise.reject("Ethereum::SignTransaction->Already in signig");
@@ -182,6 +177,16 @@ export class EthereumCommands implements ICoinCommands {
         return new Promise<ProkeyResponses.EthereumSignedTx>(async (resolve,reject) => {
             // This var is using to reject new request until this one is begin resolved or rejected
             this._isSigning = true;
+
+            this._failedSignHandler = (reason: any) => {
+                // "this" can be null if the user after signing a transaction, change the coin 
+                if(this != undefined)
+                    this._isSigning = false;
+
+                device.RemoveOnFailureCallBack(this._failedSignHandler);
+
+                reject(`Signing transaction failed: ${reason.message}`);
+            };
 
             // Validate the parameters
             try {
@@ -212,6 +217,8 @@ export class EthereumCommands implements ICoinCommands {
                 this._isSigning = false;
                 return reject(ex);
             }
+
+            device.AddOnFailureCallBack(this._failedSignHandler);
 
             await this.signTx(device, ethTx, resolve, reject);
 
@@ -344,6 +351,9 @@ export class EthereumCommands implements ICoinCommands {
             if (v && chain_id && v <= 1) {
                 v += 2 * chain_id + 35;
             }
+
+            //! Remove Failure callback
+            device.RemoveOnFailureCallBack(this._failedSignHandler);
 
             if(v) {
                 resolve(
