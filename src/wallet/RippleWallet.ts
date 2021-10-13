@@ -109,14 +109,15 @@ export class RippleWallet extends BaseWallet {
             bal = +acc.Balance;
         }
 
+        let ci = super.GetCoinInfo() as RippleCoinInfoModel;
+
         bal = bal 
-            - 20000000 // 20 XRP for reserve
+            - ci.min_balance // 20 XRP for reserve
             - amount
             - (+selectedFee);
         if (bal < 0)
             throw new Error("Insufficient balance you need to hold 20 XRP in your account.");
 
-        let ci = super.GetCoinInfo() as RippleCoinInfoModel
         let slip44 = ci.slip44;
         let path = PathUtil.GetListOfBipPath(
         slip44,                 
