@@ -126,4 +126,5 @@ export interface RippleCoinInfoModel extends BaseCoinInfoModel {
     test?: boolean,
     tx_url: string,
     priority: number,
+    min_balance: number,
 }

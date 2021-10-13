@@ -35735,7 +35735,8 @@
       "tx_url": "https://xrpscan.com/tx/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
-      ]
+      ],
+      "min_balance": 20000000
     },
     {
       "name": "Ripple Testnet",
@@ -35751,7 +35752,8 @@
       "tx_url": "https://testnet.xrpl.org/transactions/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
-      ]
+      ],
+      "min_balance": 20000000
     }
   ]
 }
