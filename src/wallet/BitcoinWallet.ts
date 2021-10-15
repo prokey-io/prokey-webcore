@@ -289,13 +289,8 @@ export class BitcoinWallet extends BaseWallet {
         // WE ONLY CHECK THE CURRENT DISCOVERED ACCOUNT
         const account = this._bitcoinWallet.accounts[accountNumber];
 
-        // We need to get list of transaction for both wallet addresses and change addresses.
-        // Because the wallet may send a TX from change address
-        let trs: Array<number> = [];
-        account.addresses.concat(account.changeAddresses).forEach(address => address.txInfo.transactionIds.forEach(transactionId => trs.push(transactionId)));
-
         // Retrive transaction list from server
-        let listOfTransactions = await this._blockchain.GetLatestTransactions(trs, numberOfTransactions, startIndex);
+        let listOfTransactions = await this._blockchain.GetLatestTransactions(account.addresses, numberOfTransactions, startIndex);
 
         let txViewList = new Array<WalletModel.BitcoinTransactionView>();
 

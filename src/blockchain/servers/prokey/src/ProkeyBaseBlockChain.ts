@@ -7,7 +7,7 @@ export abstract class ProkeyBaseBlockChain {
     // These functions must be implemented in child classes
     public abstract GetAddressInfo(reqAddresses: Array<RequestAddressInfo> | RequestAddressInfo);
     public abstract GetTransactions(hash: string);
-    public abstract GetLatestTransactions(trs: Array<number>, count : number, offset: number);
+    public abstract GetLatestTransactions(trs: Array<any>, count : number, offset: number);
     public abstract BroadCastTransaction(data: string);
 
     /**
