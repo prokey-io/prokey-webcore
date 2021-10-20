@@ -157,7 +157,6 @@ export class EthereumWallet extends BaseWallet {
         accountInfo.addressModel = {
             address: address.address,
             path: path[0].path,
-            serializedPath: path[0].serializedPath,
         };
 
         // to lowercase

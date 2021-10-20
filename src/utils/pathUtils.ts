@@ -160,26 +160,8 @@ export function GetListOfBipPath(coinBip44: number, account: number, numberOfAdd
     let paths: Array<AddressModel> = new Array<AddressModel>();
     for(let i = 0; i<numberOfAddress; i++) {
 
+        // BIP44
         // m / purpose' / coin_type' / account' / change / address_index
-        let pathStr = 'm';
-        
-        // purpose: Bip44 or 49
-        if(isSegwit) {
-            pathStr += `/49'`;
-        }
-        else {
-            pathStr += `/44'`;
-        }
-
-        // / coin_type' / account'
-        pathStr += `/${coinBip44}'/${account}'`;
-
-        // / change
-        pathStr += (isChange) ? '/1' : '/0';
-
-        // / address_index
-        pathStr += `/${startIndex+i}`;
-
         let path: AddressModel = {
             path: [ 
                 0x80000000 + (isSegwit == true ? 49 : 44),
@@ -188,7 +170,6 @@ export function GetListOfBipPath(coinBip44: number, account: number, numberOfAdd
                 (isChange) ? 1 : 0,
                 startIndex + i,
             ],
-            serializedPath: pathStr,
             address: "",
         }
 
