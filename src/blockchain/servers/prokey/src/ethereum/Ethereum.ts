@@ -19,19 +19,19 @@
 */
 
 import { RequestAddressInfo } from '../../../../../models/GenericWalletModel';
-import { httpclient } from 'typescript-http-client'
-import Request = httpclient.Request
 import { ProkeySendTransactionResponse } from '../models/ProkeyGenericModel';
 import * as WalletModel from '../../../../../models/EthereumWalletModel'
-import { MyConsole } from '../../../../../utils/console';
+import {ProkeyBaseBlockChain} from "../ProkeyBaseBlockChain";
+import {MyConsole} from "../../../../../utils/console";
 
-export class EthereumBlockChain {
+export class EthereumBlockChain extends ProkeyBaseBlockChain {
     
     _contractAddress: string;
     _isErc20: boolean;
     _network: string;
     constructor(network = "eth", isErc20 = false, contractAddress = '')
     {
+        super();
         this._contractAddress = contractAddress.toLowerCase();
         this._isErc20 = isErc20;
         this._network = network;
@@ -39,12 +39,12 @@ export class EthereumBlockChain {
 
     /**
      * Request: Getting Ethereum Address Info from blocks.prokey.io
-     * @param ReqEthereumAddressInfo
+     * @param reqAddress
      * @returns ResEthereumAddressInfo  
      */
     public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<Array<WalletModel.EthereumAddressInfo>> {
         // Geting Address info from prokey server
-        let response : WalletModel.EthereumAddressInfo;
+        let response : Array<WalletModel.EthereumAddressInfo>;
         if(this._isErc20){
             response = await this.GetFromServer<Array<WalletModel.EthereumAddressInfo>>(`address/${this._network}/erc20/${this._contractAddress}/${reqAddress.address}`);
         } else {
@@ -58,7 +58,7 @@ export class EthereumBlockChain {
             addressModel: reqAddress.addressModel,
         }];
 
-        if(this._isErc20) {
+        if (this._isErc20) {
             MyConsole.Info(`EthereumBlockChain::AddInfo:ERC20:${this._network}:${this._contractAddress}:${reqAddress.address}`, addInfo);
         } else {
             MyConsole.Info(`EthereumBlockChain::AddInfo:${this._network}:${reqAddress.address}`, addInfo);
@@ -71,7 +71,7 @@ export class EthereumBlockChain {
      * Getting transaction information
      * @param id Transaction Key (TrKey) or Transaction HASH
      */
-    public async GetTransaction(id: string): Promise<Array<WalletModel.EthereumTransaction>> {
+    public async GetTransactions(id: string): Promise<Array<WalletModel.EthereumTransaction>> {
         if(this._isErc20) {
             return await this.GetFromServer<Array<WalletModel.EthereumTransaction>>(`Transaction/${this._network}/erc20/${this._contractAddress}/${id}`);
         } else {
@@ -97,11 +97,18 @@ export class EthereumBlockChain {
      * Broadcasting a transaction 
      * @param data Transaction data
      */
-    public async SendTransaction(data: string): Promise<ProkeySendTransactionResponse> {
-        return await this.GetFromServer<string>(`transaction/Send/${this._network}/${data}`);
+    public async BroadCastTransaction(data: string): Promise<ProkeySendTransactionResponse> {
+        return await this.GetFromServer<ProkeySendTransactionResponse>(`transaction/Send/${this._network}/${data}`);
     }
 
-    public async GetLatestTransactions(trKeys: Array<number>, count = 100, offset = 0) : Promise<Array<WalletModel.EthereumTransaction>> {
+    /**
+     * Get List of transaction, this list is good for view(showing transaction history)
+     * @param trKeys List of transaction IDs, You can get these IDs from GetAddressInfo
+     * @param count Number of transaction
+     * @param offset Start index
+     * @returns
+     */
+    public async GetLatestTransactions(trKeys: Array<number>, count = 100, offset = 0) : Promise<Array<any>> {
         return new Promise<Array<WalletModel.EthereumTransaction>>(async (resolve,reject) => {
             if (count > 1000)
                 count = 1000;
@@ -126,7 +133,7 @@ export class EthereumBlockChain {
                 }
                 ids = ids.substring(1);
                 try {
-                    let res = await this.GetTransaction(ids);
+                    let res = await this.GetTransactions(ids);
                     resolve(res);
                     return;
                 } catch (error) {
@@ -138,19 +145,6 @@ export class EthereumBlockChain {
             resolve([]);
 
         });
-    }
-
-    /**
-     * This is a private helper function to GET data from server
-     * @param toServer URL + data
-     */
-    private async GetFromServer<T>(toServer: string) {        
-
-        const client = httpclient.newHttpClient();
-
-        const request = new Request('https://blocks.prokey.org/' + toServer, {method: 'GET'});
-
-        return JSON.parse(await client.execute<string>(request));
     }
 }
 
