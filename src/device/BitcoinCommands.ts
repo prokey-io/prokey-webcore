@@ -653,7 +653,7 @@ export class BitcoinCommands implements ICoinCommands {
         resolve: any,
         reject: any, ): Promise<GeneralResponse> {
 
-        MyConsole.Info(txReq);
+        MyConsole.Info("BitcoinCommands::TxReqHandler->Request", txReq);
 
         // Save signature and serialized transaction
         if (txReq.serialized != null) {
@@ -677,7 +677,10 @@ export class BitcoinCommands implements ICoinCommands {
             
             //! Prepare the answer
             const resTx = this.RequestTxInfo(txReq, dicRefTx);
-            MyConsole.Info("Ack", resTx);
+
+            //! Log the response
+            MyConsole.Info("BitcoinCommands::LogAck->Ack", resTx);
+
             //! Send the answer to deivce
             const res = await device.SendMessage<ProkeyResponses.TxRequest>('TxAck', { tx: resTx }, 'TxRequest')
             //! Check device response
