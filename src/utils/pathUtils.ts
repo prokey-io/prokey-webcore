@@ -193,7 +193,7 @@ export function GetOutputScriptType(path?: Array<number>): EnumOutputScriptType 
 export function GetBipPath(coinType: CoinBaseType, account?: number, coinInfo?: GeneralCoinInfoModel, isChange?: boolean, startIndex?: number ): AddressModel {
     // Each coin uses BIP44 path schema, For Bitcoin like coins which have UTXO, all 5 parts should be
     // available. But for the account-based coins the path could be different and unfortunately
-    // there is no specific standars that all the wallet follow and there are many exceptions here.
+    // there is no specific standards that all the wallet follow and there are many exceptions here.
 
     // BIP44 path is:
     // For UTXO-based coins (like Bitcoin, Bitcoin cash, Litecoin and etc) we use:
