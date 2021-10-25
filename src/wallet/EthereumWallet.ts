@@ -145,7 +145,6 @@ export class EthereumWallet extends BaseWallet {
         let path = PathUtil.GetListOfBipPath(
             slip44,                 
             0,                      // Ethereum, each address is considered as an account
-            1,                      // We only need an address
             false,                  // Segwit not defined so we should use 44'
             false,                  // No change address defined in ethereum
             accountNumber);

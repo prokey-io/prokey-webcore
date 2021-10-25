@@ -124,7 +124,6 @@ export class OmniWallet extends BaseWallet {
         let path = PathUtil.GetListOfBipPath(
             coinInfo.slip44,                 
             0,                      // Each address is considered as an account
-            1,                      // We only need an address
             true,                   // Segwit
             false,                  // No change address
             accountNumber);

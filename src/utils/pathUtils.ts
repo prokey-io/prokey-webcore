@@ -156,24 +156,22 @@ export function GetOutputScriptType(path?: Array<number>): EnumOutputScriptType 
     }
 };
 
-export function GetListOfBipPath(coinBip44: number, account: number, numberOfAddress: number, isSegwit: boolean, isChange: boolean = false, startIndex: number = 0 ): Array<AddressModel>{
-    let paths: Array<AddressModel> = new Array<AddressModel>();
-    for(let i = 0; i<numberOfAddress; i++) {
-
-        // BIP44
-        // m / purpose' / coin_type' / account' / change / address_index
-        let path: AddressModel = {
-            path: [ 
-                0x80000000 + (isSegwit == true ? 49 : 44),
-                0x80000000 + coinBip44,
-                0x80000000 + account,
-                (isChange) ? 1 : 0,
-                startIndex + i,
-            ],
-            address: "",
-        }
-
-        paths.push(path);
+export function GetListOfBipPath(coinBip44: number, account: number, isSegwit: boolean, isChange: boolean = false, startIndex?: number ): AddressModel{
+    // BIP44
+    // m / purpose' / coin_type' / account' / change / address_index
+    let path: AddressModel = {
+        path: [ 
+            0x80000000 + (isSegwit == true ? 49 : 44),
+            0x80000000 + coinBip44,
+            0x80000000 + account,
+            (isChange) ? 1 : 0,
+        ],
+        address: "",
     }
-    return paths;
+
+    if(startIndex){
+        path.path.push(startIndex);
+    }
+
+    return path;
 }
