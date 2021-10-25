@@ -41,6 +41,7 @@ export enum CoinBaseType {
     NEM,
     OMNI,
     Ripple,
+    Stellar,
     OTHERS
 }
 

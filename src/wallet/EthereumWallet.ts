@@ -132,30 +132,19 @@ export class EthereumWallet extends BaseWallet {
             balance: 0,
         }
 
-        //! read slip44 from coinInfo
-        let slip44 = 60; // Ethereum is 60'
-        if(!this._isErc20) {
-            let ci = super.GetCoinInfo() as EthereumBaseCoinInfoModel;
-            if(ci.slip44 != undefined) {
-                slip44 = ci.slip44;
-            }
-        }
-
-        // Makinging a list of paths
-        let path = PathUtil.GetListOfBipPath(
-            slip44,                 
-            0,                      // Ethereum, each address is considered as an account
-            false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in ethereum
-            accountNumber);
+        let path = PathUtil.GetBipPath(
+            (this._isErc20) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, // CoinType
+            accountNumber, // Account Number
+            (this._isErc20) ? undefined : (super.GetCoinInfo() as EthereumBaseCoinInfoModel), // Coin Info
+        );
 
         // Getting addresses from Prokey
-        let address = await super.GetAddress<EthereumAddress>(path[0].path, false);
+        let address = await super.GetAddress<EthereumAddress>(path.path, false);
 
         // Update the account info address
         accountInfo.addressModel = {
             address: address.address,
-            path: path[0].path,
+            path: path.path,
         };
 
         // to lowercase
@@ -164,7 +153,7 @@ export class EthereumWallet extends BaseWallet {
         // creating the request
         let req: GenericWalletModel.RequestAddressInfo = {
             address: lowerCaseAddress,      // Address
-            addressModel: path[0],
+            addressModel: path,
         }
 
         // Getting addresses' info

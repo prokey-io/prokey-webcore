@@ -22,6 +22,8 @@ interface ProkeySupport {
     optimum: string,
 }
 
+export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | RippleCoinInfoModel | OmniCoinInfoModel;
+
 export interface BaseCoinInfoModel {
     name: string,
     shortcut: string,

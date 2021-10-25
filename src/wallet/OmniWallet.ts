@@ -119,28 +119,25 @@ export class OmniWallet extends BaseWallet {
         }
 
         const coinInfo = super.GetCoinInfo() as OmniCoinInfoModel;
-        
-        // Makinging a list of paths
-        let path = PathUtil.GetListOfBipPath(
-            coinInfo.slip44,                 
-            0,                      // Each address is considered as an account
-            true,                   // Segwit
-            false,                  // No change address
-            accountNumber);
+
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.OMNI,   // Coin Type
+            accountNumber,       // Account Number
+        );
 
         // Getting addresses from Prokey
-        let address = await super.GetAddress(path[0].path, false);
+        let address = await super.GetAddress(path.path, false);
         
         // Update the account info address
         accountInfo.addressModel = {
             address: address.address,
-            path: path[0].path,
+            path: path.path,
         }
 
         // Getting address' info
         var addInfo = await this._blockchain.GetAddressInfo(<GenericWalletModel.RequestAddressInfo>{
             address: address.address,      // Address
-            addressModel: path[0],
+            addressModel: path,
         });
 
         if(coinInfo.divisible) {
