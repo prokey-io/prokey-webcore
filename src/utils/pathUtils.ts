@@ -190,6 +190,15 @@ export function GetOutputScriptType(path?: Array<number>): EnumOutputScriptType 
     }
 };
 
+/**
+ * Will return BIP Path based on the coin type and parameters. The number of parameters can be vary and depends on the coin type.
+ * @param coinType Should be one of the CoinBaseType
+ * @param account Account Number, This is mandatory parameters for all coins except Ethereum in case you want to get PublicKey path
+ * @param coinInfo This parameter is mandatory for Bitcoin-based, Ethereum-Based and Ripple
+ * @param isChange Only needed for Bitcoin-Based
+ * @param startIndex Only needed for Bitcoin-Based
+ * @returns AddressModel
+ */
 export function GetBipPath(coinType: CoinBaseType, account?: number, coinInfo?: GeneralCoinInfoModel, isChange?: boolean, startIndex?: number ): AddressModel {
     // Each coin uses BIP44 path schema, For Bitcoin like coins which have UTXO, all 5 parts should be
     // available. But for the account-based coins the path could be different and unfortunately

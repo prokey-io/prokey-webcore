@@ -76,7 +76,18 @@ export class RippleWallet extends BaseWallet {
         
         let address = await this.GetAddress<RippleAddress>(path.path, false);
 
-        return await this._block_chain.GetAddressInfo({address: address.address});
+        //! Save address
+        path.address = address.address;
+
+        //! Getting address(account) info. from blockchain
+        let addressInfo = await this._block_chain.GetAddressInfo({address: address.address});
+        
+        //! Add AddressModel
+        if(addressInfo != null){
+            addressInfo.addressModel = path;
+        } 
+
+        return addressInfo;
     }
 
     public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
