@@ -71,3 +71,36 @@ export function GetNetworkFullNameByChainId(chainId: number){
             return ''
     }
 }
+
+export function GetSlip44ByChainId(chainId: number): number {
+    switch(chainId) {
+        case 1:
+            return 60;          // Ethereum Mainnet
+        case 2:
+            return 40;          // Expanse Network	
+        case 3:
+            return 1;           // Ethereum Testnet Ropsten
+        case 4:
+            return 1;      // Ethereum Testnet Rinkeby
+        case 5:
+            return 1;    // Ethereum Testnet Görli
+        case 8:
+            return 108;       // Ubiq Network Mainnet
+        case 30:
+            return 137;       // RSK
+        case 31:
+            return 1;      // RSK Testnet
+        case 42:
+            return 1;     // Ethereum Testnet Kovan
+        case 56:
+            return 60;       // Binance Smart Chain
+        case 61:
+            return 61;       // Ethereum Classic Mainnet
+        case 64:
+            return 163;      // Ellaism
+        case 31102:
+            return 31102;       // Ethersocial Network
+        default:
+            throw new Error("GetSlip44ByChainId->Undefined chain id");
+    }
+}

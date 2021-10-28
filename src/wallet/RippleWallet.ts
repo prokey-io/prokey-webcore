@@ -68,18 +68,26 @@ export class RippleWallet extends BaseWallet {
 
     // Get ripple account info from blockchain
     private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo | null> {
-        let slip44 = (super.GetCoinInfo() as RippleCoinInfoModel).slip44;
-        let path = PathUtil.GetListOfBipPath(
-        slip44,                 
-            accountNumber,          // Ripple, each address is considered as an account
-            1,                      // We only need an address
-            false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in ripple
-            0);
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.Ripple,
+            accountNumber,
+            super.GetCoinInfo()
+        )
         
-        let address = await this.GetAddress<RippleAddress>(path[0].path, false);
+        let address = await this.GetAddress<RippleAddress>(path.path, false);
 
-        return await this._block_chain.GetAddressInfo({address: address.address});
+        //! Save address
+        path.address = address.address;
+
+        //! Getting address(account) info. from blockchain
+        let addressInfo = await this._block_chain.GetAddressInfo({address: address.address});
+        
+        //! Add AddressModel
+        if(addressInfo != null){
+            addressInfo.addressModel = path;
+        } 
+
+        return addressInfo;
     }
 
     public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
@@ -114,17 +122,14 @@ export class RippleWallet extends BaseWallet {
         if (bal < 0)
             throw new Error("Insufficient balance you need to hold 20 XRP in your account.");
 
-        let slip44 = ci.slip44;
-        let path = PathUtil.GetListOfBipPath(
-        slip44,                 
-            accountNumber,          // Ripple, each address is considered as an account
-            1,                      // We only need an address
-            false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in ripple
-            0);
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.Ripple,
+            accountNumber,
+            ci
+        )
             
         let tx: RippleTransaction = {
-            address_n: path[0].path,
+            address_n: path.path,
             fee: +selectedFee,
             sequence: this._accounts[accountNumber].Sequence,
             payment: {

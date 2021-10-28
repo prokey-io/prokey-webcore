@@ -98,7 +98,6 @@ export class BitcoinCommands implements ICoinCommands {
         return {
             address: res.address,
             path: address_n,
-            serializedPath: PathUtil.getSerializedPath(address_n),
         };
     }
     
@@ -159,7 +158,6 @@ export class BitcoinCommands implements ICoinCommands {
                 lstAddress.push({
                     address: res.address,
                     path: lstPathN[i],
-                    serializedPath: PathUtil.getSerializedPath(lstPathN[i]),
                 });
 
             }

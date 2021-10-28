@@ -22,12 +22,20 @@ interface ProkeySupport {
     optimum: string,
 }
 
+export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel | 
+    EthereumBaseCoinInfoModel | 
+    Erc20BaseCoinInfoModel | 
+    RippleCoinInfoModel | 
+    OmniCoinInfoModel | 
+    MiscCoinInfoModel;
+
 export interface BaseCoinInfoModel {
     name: string,
     shortcut: string,
     support: ProkeySupport,
     test?: boolean,
     decimals: number,
+    slip44: number,
 
     //! Dynamic properties, Not in json file
     coinBaseType: CoinBaseType,
@@ -49,7 +57,6 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     minfee_kb: number,
     segwit: boolean,
     // signed_message_header: in Network
-    slip44: number,
     
     //xPubMagic: number,
     //xPubMagicSegwitNative?: number,
@@ -75,7 +82,6 @@ export interface EthereumBaseCoinInfoModel extends BaseCoinInfoModel {
     chain_id: number,
     rskip60: boolean,
     shortcut: string,
-    slip44: number,
     url: string,
     on_device?: string,
     tx_url: string,
@@ -100,7 +106,6 @@ export interface MiscCoinInfoModel extends BaseCoinInfoModel {
     min_fee: number;
     max_fee: number;
     label: string; 
-    slip44: number;
     decimals: number;
     on_device: string,
     tx_url: string,
@@ -110,7 +115,6 @@ export interface MiscCoinInfoModel extends BaseCoinInfoModel {
 export interface OmniCoinInfoModel extends BaseCoinInfoModel {
     blockchain: string,
     segwit: boolean,
-    slip44: number,
     divisible: boolean,
     proparty_id: number,
     on_device: string,
@@ -121,7 +125,6 @@ export interface OmniCoinInfoModel extends BaseCoinInfoModel {
 }
 
 export interface RippleCoinInfoModel extends BaseCoinInfoModel {
-    slip44: number;
     on_device: string,
     test?: boolean,
     tx_url: string,

@@ -41,6 +41,7 @@ export enum CoinBaseType {
     NEM,
     OMNI,
     Ripple,
+    Stellar,
     OTHERS
 }
 
@@ -114,6 +115,7 @@ export class CoinInfo {
                 ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
                 ci.id = `erc20_${EthereumNetworks.GetNetworkByChainId(ci.chain_id)}_${ci.shortcut}`;
+                ci.slip44 = EthereumNetworks.GetSlip44ByChainId(ci.chain_id);
                 break;
             case CoinBaseType.OMNI:
                 if(chainOrPropertyId != null) {
@@ -193,6 +195,7 @@ export class CoinInfo {
                     ...token,
                     coinBaseType: CoinBaseType.ERC20,
                     id: `erc20_${EthereumNetworks.GetNetworkByChainId(token.chain_id)}_${token.shortcut}`,
+                    slip44: EthereumNetworks.GetSlip44ByChainId(token.chain_id),
                 });
             }
         });
@@ -226,103 +229,6 @@ export class CoinInfo {
             if (a.priority > b.priority)
                 return 1;
             else if (a.priority < b.priority)
-                return -1;
-            else
-                return 0;
-        });
-
-        return list;
-    }
-
-    /**
-     * Returning the sorted list of a specific coin type
-     * @param coinType is the Coin type needed
-     */
-    public static GetCoinsByType(coinType: CoinBaseType, chainOrPropertyId = 0): Array<CoinNameModel> {
-        let list = new Array<CoinNameModel>();
-
-        if (coinType == CoinBaseType.BitcoinBase) {
-            // Add list of bitcoin base coins
-            ProkeyCoinInfoModel.bitcoin.forEach(element => {
-                list.push({
-                    Name: element.name,
-                    Shortcut: element.shortcut,
-                    Type: CoinBaseType.BitcoinBase,
-                    Priority: element.priority,
-                    ContractAddress: '',
-                    Decimals: element.decimals,
-                });
-            });
-        }
-        else if (coinType == CoinBaseType.EthereumBase) {
-            // Add list of ethereum base coins
-            ProkeyCoinInfoModel.eth.forEach(element => {
-                if(chainOrPropertyId != 0) {
-                    if(element.chain_id == chainOrPropertyId) {
-                        list.push({
-                            Name: element.name,
-                            Shortcut: element.shortcut,
-                            Type: CoinBaseType.EthereumBase,
-                            Priority: element.priority,
-                            ContractAddress: '',
-                            Decimals: element.decimals,
-                        });
-                    }
-                } else {
-                    list.push({
-                        Name: element.name,
-                        Shortcut: element.shortcut,
-                        Type: CoinBaseType.EthereumBase,
-                        Priority: element.priority,
-                        ContractAddress: '',
-                        Decimals: element.decimals,
-                    });
-                }
-            });
-        }
-        else if (coinType == CoinBaseType.ERC20) {
-            // Add list of ERC20 coins
-            ProkeyCoinInfoModel.erc20.forEach(element => {
-                list.push({
-                    Name: element.name,
-                    Shortcut: element.shortcut,
-                    Type: CoinBaseType.ERC20,
-                    Priority: element.priority,
-                    ContractAddress: element.address,
-                    Decimals: element.decimals,
-                });
-            });
-        }
-        else if (coinType == CoinBaseType.OMNI) {
-            ProkeyCoinInfoModel.omni.forEach(element => {
-                list.push({
-                    Name: element.name,
-                    Shortcut: element.shortcut,
-                    Type: CoinBaseType.OMNI,
-                    Priority: element.priority,
-                    ContractAddress: element.address,
-                    Decimals: element.divisible ? 8 : 0,
-                });
-            });
-        }
-        else if(coinType == CoinBaseType.Ripple){
-            ProkeyCoinInfoModel.ripple.foreach(element => {
-                list.push({
-                    Name: element.name,
-                    Shortcut: element.shortcut,
-                    Type: CoinBaseType.Ripple,
-                    Priority: element.priority,
-                    ContractAddress: '',
-                    Decimals: element.decimals,
-                });
-            });
-        }
-
-        //! Sort the list by Priority
-        list.sort((a, b) => {
-            if (a.Priority > b.Priority)
-                return 1;
-            else if (a.Priority < b.Priority)
                 return -1;
             else
                 return 0;

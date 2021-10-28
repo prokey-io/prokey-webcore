@@ -151,14 +151,19 @@ export class BitcoinWallet extends BaseWallet {
         var finished: boolean = false;
         var startIndex: number = 0;
 
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-
         do {
             // Makinging a list of paths
-            let paths = PathUtil.GetListOfBipPath(coinInfo.slip44, accountNumber, 20, coinInfo.segwit, true, startIndex);
-            var justPaths = paths.map(a =>{
-                return a.path;
-            });
+            let justPaths : Array<Array<number>> = [];
+            for(let i=0; i<20; i++) {
+                let path = PathUtil.GetBipPath(
+                    CoinBaseType.BitcoinBase,   // Coin Type
+                    accountNumber,              // Account Number
+                    super.GetCoinInfo(),                   // CoinInfo
+                    true,                       // Change addresses
+                    startIndex + i,             // address index
+                );
+                justPaths.push(path.path);
+            }
 
             // Getting addresses from Prokey
             let addresses = await super.GetAddresses<AddressModel>(justPaths);
@@ -204,14 +209,21 @@ export class BitcoinWallet extends BaseWallet {
 
         let startIndex = 0;
 
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-
         do {  
+
+            let justPaths : Array<Array<number>> = [];
+
             // Makinging a list of paths
-            let paths = PathUtil.GetListOfBipPath(coinInfo.slip44, accountNumber, 20, coinInfo.segwit, false, startIndex);
-            var justPaths = paths.map(a =>{
-                return a.path;
-            });
+            for(let i=0; i<20; i++) {
+                let path = PathUtil.GetBipPath(
+                    CoinBaseType.BitcoinBase,   // Coin Type
+                    accountNumber,              // Account Number
+                    super.GetCoinInfo(),                   // CoinInfo
+                    false,                      // External chain address
+                    startIndex + i,             // address index
+                );
+                justPaths.push(path.path);
+            }
 
             // Getting addresses from Prokey
             let addresses = await super.GetAddresses<AddressModel>(justPaths);
@@ -622,14 +634,20 @@ export class BitcoinWallet extends BaseWallet {
         //! Add change - fee
         let change = utxoBal - totalSend - txFee;        
 
-        let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
+        let changePaths = PathUtil.GetBipPath(
+            CoinBaseType.BitcoinBase,   // Coin Type
+            fromAccount,              // Account Number
+            coinInfo,                   // CoinInfo
+            true,                       // Change addresses
+            changeIndex,             // address index
+        );
 
         //! No change if the change is less than dust
         if(coinInfo.dust_limit != null)
         {
             if(change >= coinInfo.dust_limit) { 
                 tx.outputs.push({
-                    address_n: changePaths[0].path,
+                    address_n: changePaths.path,
                     amount: change.toFixed(0),
                     script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
                 });
@@ -637,7 +655,7 @@ export class BitcoinWallet extends BaseWallet {
         }
         else if (change > 0) {
             tx.outputs.push({
-                address_n: changePaths[0].path,
+                address_n: changePaths.path,
                 amount: change.toFixed(0),
                 script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
             });

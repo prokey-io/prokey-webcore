@@ -1,7 +1,41 @@
+/*
+ * This is part of PROKEY HARDWARE WALLET project
+ * Copyright (C) Prokey.io
+ * 
+ * Hadi Robati, hadi@prokey.io
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 /* @flow */
 'use strict';
 
-import { EnumOutputScriptType, AddressModel, EnumInputScriptType } from '../models/Prokey';
+import { 
+    EnumOutputScriptType, 
+    AddressModel, 
+    EnumInputScriptType 
+} from '../models/Prokey';
+
+import { CoinBaseType } from "../coins/CoinInfo";
+
+import {
+    GeneralCoinInfoModel,
+    BitcoinBaseCoinInfoModel,
+    EthereumBaseCoinInfoModel,
+    RippleCoinInfoModel,
+} from '../models/CoinInfoModel'
+
 
 export const HD_HARDENED = 0x80000000;
 export const toHardened = (n: number): number => (n | HD_HARDENED) >>> 0;
@@ -156,43 +190,214 @@ export function GetOutputScriptType(path?: Array<number>): EnumOutputScriptType 
     }
 };
 
-export function GetListOfBipPath(coinBip44: number, account: number, numberOfAddress: number, isSegwit: boolean, isChange: boolean = false, startIndex: number = 0 ): Array<AddressModel>{
-    let paths: Array<AddressModel> = new Array<AddressModel>();
-    for(let i = 0; i<numberOfAddress; i++) {
+/**
+ * Will return BIP Path based on the coin type and parameters. The number of parameters can be vary and depends on the coin type.
+ * @param coinType Should be one of the CoinBaseType
+ * @param account Account Number, This is mandatory parameters for all coins except Ethereum in case you want to get PublicKey path
+ * @param coinInfo This parameter is mandatory for Bitcoin-based, Ethereum-Based and Ripple
+ * @param isChange Only needed for Bitcoin-Based
+ * @param startIndex Only needed for Bitcoin-Based
+ * @returns AddressModel
+ */
+export function GetBipPath(coinType: CoinBaseType, account?: number, coinInfo?: GeneralCoinInfoModel, isChange?: boolean, startIndex?: number ): AddressModel {
+    // Each coin uses BIP44 path schema, For Bitcoin like coins which have UTXO, all 5 parts should be
+    // available. But for the account-based coins the path could be different and unfortunately
+    // there is no specific standards that all the wallet follow and there are many exceptions here.
 
+    // BIP44 path is:
+    // For UTXO-based coins (like Bitcoin, Bitcoin cash, Litecoin and etc) we use:
+    //   m / purpose'(44 or 49) / coin_type' / account' / change / address_index
+
+    // For account-based coins (like Stellar, NEM and etc) we use:
+    // Stellar's SEP-0005
+    //   m / 44' / coin_type' / account'
+
+    // EXCEPTIONS: 
+    // There are some exception here that we need to follow for compatibility reasons with other wallets/tools.
+    //   Ethereum: To be compatible with tools like MEW and Metamask we use:
+    //     m / 44' / coin_type' / 0' / 0 / account'
+    //   Ripple: To be compatible with other Hardware wallets, we use:
+    //     m / 44' / 144' / account' / 0 / 0
+
+    switch(coinType){
         // m / purpose' / coin_type' / account' / change / address_index
-        let pathStr = 'm';
-        
-        // purpose: Bip44 or 49
-        if(isSegwit) {
-            pathStr += `/49'`;
+        case CoinBaseType.BitcoinBase:
+        {
+            if(coinInfo == null) {
+                throw new Error("pathUtils::GetBipPath->For Bitcoin-based, coinInfo can not be null");
+            }
+
+            //! For getting publicKey, both isChange and startIndex should be null
+            if(isChange == null && startIndex != null) {
+                throw new Error("pathUtils::GetBipPath->For Bitcoin-based, isChange can not be null");
+            }
+
+            if(startIndex == null && isChange != null) {
+                throw new Error("pathUtils::GetBipPath->For Bitcoin-based, startIndex can not be null")
+            }
+
+            if(account == null) {
+                throw new Error("pathUtils::GetBipPath->For Bitcoin-based, account can not be null")
+            }
+
+            let ci = coinInfo as BitcoinBaseCoinInfoModel;
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + ((ci.segwit) ? 49 : 44),   // purpose'
+                    HD_HARDENED + ci.slip44,                 // coin_type'
+                    HD_HARDENED + account,                   // account'
+                ]
+            }
+
+            // For getting Public Key isChange should be null
+            if(isChange != null){
+                path.path.push((isChange == true) ? 1 : 0);
+            }
+
+            // For getting Public Key startIndex should be null
+            if(startIndex != null) {
+                path.path.push(startIndex);
+            }
+            
+            return path;
         }
-        else {
-            pathStr += `/44'`;
+        // m / purpose' / coin_type' / 0' / 0 / account
+        case CoinBaseType.EthereumBase:
+        {
+            if(coinInfo == null) {
+                throw new Error("pathUtils::GetBipPath->For Ethereum, coinInfo can not be null")
+            }
+
+            let ci = coinInfo as EthereumBaseCoinInfoModel;
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + 44,        // purpose'
+                    HD_HARDENED + ci.slip44, // coin_type'
+                    HD_HARDENED,             // 0' as account
+                    0                       // No change
+                ]
+            }
+
+            // For getting Public Key the account should be null
+            if(account != null) {
+                path.path.push(account);
+            }
+            
+            return path;
         }
+        // m / purpose' / 0' / 0' / 0 / account
+        case CoinBaseType.OMNI:
+        {
+            if(account == null) {
+                throw new Error("pathUtils::GetBipPath->For Omni, account can not be null")
+            }
 
-        // / coin_type' / account'
-        pathStr += `/${coinBip44}'/${account}'`;
-
-        // / change
-        pathStr += (isChange) ? '/1' : '/0';
-
-        // / address_index
-        pathStr += `/${startIndex+i}`;
-
-        let path: AddressModel = {
-            path: [ 
-                0x80000000 + (isSegwit == true ? 49 : 44),
-                0x80000000 + coinBip44,
-                0x80000000 + account,
-                (isChange) ? 1 : 0,
-                startIndex + i,
-            ],
-            serializedPath: pathStr,
-            address: "",
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + 49,    // Segwit
+                    HD_HARDENED,         // Bitcoin coin_type is 0
+                    HD_HARDENED,         // 0' for account
+                    0,                  // no change
+                    account
+                ]
+            }
+            
+            return path;
         }
+        // m / purpose' / coin_type' / account' / 0 / 0
+        case CoinBaseType.Ripple:
+        {
+            if(account == null) {
+                throw new Error("pathUtils::GetBipPath->For Ripple, account can not be null")
+            }
 
-        paths.push(path);
+            if(coinInfo == null) {
+                throw new Error("pathUtils::GetBipPath->For Ripple, coinInfo can not be null")
+            }
+
+            const ci = coinInfo as RippleCoinInfoModel;
+
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + 44,        // BIP44
+                    HD_HARDENED + ci.slip44, // Ripple mainnet coin_type is 144 and testnet is 1
+                    HD_HARDENED + account,   // account
+                    0,
+                    0
+                ]
+            }
+            
+            return path;
+        }
+        // m / purpose' / coin_type' / 0' / 0 / account
+        case CoinBaseType.ERC20:
+        {
+            if(account == null) {
+                throw new Error("pathUtils::GetBipPath->For ERC20, account can not be null")
+            }
+
+            if(coinInfo == null) {
+                throw new Error("pathUtils::GetBipPath->For ERC20, coinInfo can not be null")
+            }
+
+            let ci = coinInfo as EthereumBaseCoinInfoModel;
+
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + 44,        // purpose'
+                    HD_HARDENED + ci.slip44, // coin_type' 
+                    HD_HARDENED,             // 0' for account
+                    0,                      // No change
+                    account                 // account
+                ]
+            }
+            
+            return path;
+        }
+        // m / purpose' / coin_type' / account'
+        case CoinBaseType.NEM:
+        {
+            if(account == null) {
+                throw new Error("pathUtils::GetBipPath->For NEM, account can not be null")
+            }
+
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + 44,        // BIP44
+                    HD_HARDENED + 43,        // coin_type' 
+                    HD_HARDENED + account,   // account'
+                ]
+            }
+            
+            return path;       
+        }
+        // m / purpose' / coin_type' / account'
+        case CoinBaseType.Stellar:
+        {
+            if(account == null) {
+                throw new Error("pathUtils::GetBipPath->For Stellar, account can not be null")
+            }
+
+            let path = <AddressModel>{
+                address: "",
+                path: [
+                    HD_HARDENED + 44,        // BIP44
+                    HD_HARDENED + 148,       // coin_type'
+                    HD_HARDENED + account,   // account'
+                ]
+            }
+            
+            return path;       
+        }
+        default:
+        {
+            throw new Error("pathUtil::GetBipPath->Undefined coin type")   
+        }
     }
-    return paths;
 }
