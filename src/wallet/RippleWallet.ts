@@ -71,7 +71,7 @@ export class RippleWallet extends BaseWallet {
         let path = PathUtil.GetBipPath(
             CoinBaseType.Ripple,
             accountNumber,
-            super.GetCoinInfo() as RippleCoinInfoModel
+            super.GetCoinInfo()
         )
         
         let address = await this.GetAddress<RippleAddress>(path.path, false);

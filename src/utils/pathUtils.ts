@@ -265,6 +265,10 @@ export function GetBipPath(coinType: CoinBaseType, account?: number, coinInfo?: 
         // m / purpose' / coin_type' / 0' / 0 / account
         case CoinBaseType.EthereumBase:
         {
+            if(coinInfo == null) {
+                throw new Error("pathUtils::GetBipPath->For Ethereum, coinInfo can not be null")
+            }
+
             let ci = coinInfo as EthereumBaseCoinInfoModel;
             let path = <AddressModel>{
                 address: "",
@@ -336,11 +340,17 @@ export function GetBipPath(coinType: CoinBaseType, account?: number, coinInfo?: 
                 throw new Error("pathUtils::GetBipPath->For ERC20, account can not be null")
             }
 
+            if(coinInfo == null) {
+                throw new Error("pathUtils::GetBipPath->For ERC20, coinInfo can not be null")
+            }
+
+            let ci = coinInfo as EthereumBaseCoinInfoModel;
+
             let path = <AddressModel>{
                 address: "",
                 path: [
                     HD_HARDENED + 44,        // purpose'
-                    HD_HARDENED + 60,        // coin_type' 
+                    HD_HARDENED + ci.slip44, // coin_type' 
                     HD_HARDENED,             // 0' for account
                     0,                      // No change
                     account                 // account

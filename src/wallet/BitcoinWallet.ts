@@ -151,8 +151,6 @@ export class BitcoinWallet extends BaseWallet {
         var finished: boolean = false;
         var startIndex: number = 0;
 
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-
         do {
             // Makinging a list of paths
             let justPaths : Array<Array<number>> = [];
@@ -160,7 +158,7 @@ export class BitcoinWallet extends BaseWallet {
                 let path = PathUtil.GetBipPath(
                     CoinBaseType.BitcoinBase,   // Coin Type
                     accountNumber,              // Account Number
-                    coinInfo,                   // CoinInfo
+                    super.GetCoinInfo(),                   // CoinInfo
                     true,                       // Change addresses
                     startIndex + i,             // address index
                 );
@@ -211,8 +209,6 @@ export class BitcoinWallet extends BaseWallet {
 
         let startIndex = 0;
 
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-
         do {  
 
             let justPaths : Array<Array<number>> = [];
@@ -222,7 +218,7 @@ export class BitcoinWallet extends BaseWallet {
                 let path = PathUtil.GetBipPath(
                     CoinBaseType.BitcoinBase,   // Coin Type
                     accountNumber,              // Account Number
-                    coinInfo,                   // CoinInfo
+                    super.GetCoinInfo(),                   // CoinInfo
                     false,                      // External chain address
                     startIndex + i,             // address index
                 );

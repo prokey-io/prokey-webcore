@@ -135,7 +135,7 @@ export class EthereumWallet extends BaseWallet {
         let path = PathUtil.GetBipPath(
             (this._isErc20) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, // CoinType
             accountNumber, // Account Number
-            (this._isErc20) ? undefined : (super.GetCoinInfo() as EthereumBaseCoinInfoModel), // Coin Info
+            super.GetCoinInfo(), // Coin Info
         );
 
         // Getting addresses from Prokey
