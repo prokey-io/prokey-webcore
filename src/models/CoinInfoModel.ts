@@ -1,7 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,11 +22,11 @@ interface ProkeySupport {
     optimum: string,
 }
 
-export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel | 
-    EthereumBaseCoinInfoModel | 
-    Erc20BaseCoinInfoModel | 
-    RippleCoinInfoModel | 
-    OmniCoinInfoModel | 
+export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel |
+    EthereumBaseCoinInfoModel |
+    Erc20BaseCoinInfoModel |
+    RippleCoinInfoModel |
+    OmniCoinInfoModel |
     MiscCoinInfoModel;
 
 export interface BaseCoinInfoModel {
@@ -36,6 +36,7 @@ export interface BaseCoinInfoModel {
     test?: boolean,
     decimals: number,
     slip44: number,
+    network: string,
 
     //! Dynamic properties, Not in json file
     coinBaseType: CoinBaseType,
@@ -46,8 +47,8 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     blocktime: number,
     //cashAddrPrefix?: string,
     label: string, // this is human readable format, could be different from "name"
-    
-    
+
+
     dust_limit: number,
     force_bip143: boolean,
     fork_id?: number,
@@ -57,7 +58,7 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     minfee_kb: number,
     segwit: boolean,
     // signed_message_header: in Network
-    
+
     //xPubMagic: number,
     //xPubMagicSegwitNative?: number,
     //xPubMagicSegwit?: number,
@@ -70,7 +71,7 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     blocks?: number,
     decimals: number,
     on_device: string,
-    
+
     tx_url: string,
     timestamp: boolean,
     priority: number,
@@ -105,7 +106,7 @@ export interface MiscCoinInfoModel extends BaseCoinInfoModel {
     curve: string;
     min_fee: number;
     max_fee: number;
-    label: string; 
+    label: string;
     decimals: number;
     on_device: string,
     tx_url: string,

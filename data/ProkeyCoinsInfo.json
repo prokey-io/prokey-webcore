@@ -35680,6 +35680,7 @@
     {
       "shortcut": "USDT",
       "name": "USD Tether (omni)",
+      "network": "btc",
       "blockchain": "BTC",
       "segwit": true,
       "slip44": 0,
