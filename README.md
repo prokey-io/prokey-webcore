@@ -61,7 +61,7 @@ It is recommended to add this repository main branch to your project as a submod
    import { BitcoinCommands } from 'lib/prokey-webcore/src/device/BitcoinCommands'
    import * as Util from 'lib/prokey-webcore/src/utils/pathUtil'
    import { CoinBaseType } from "lib/prokey-webcore/src/coins/CoinInfo";
-   import { GeneralCoinInfoModel } from 'lib/prokey-webcore/src/models/CoinInfoModel'
+   import { GeneralCoinInfoModel, BitcoinBaseCoinInfoModel } from 'lib/prokey-webcore/src/models/CoinInfoModel'
    import { CoinInfo } from 'lib/prokey-webcore/src/coins/CoinInfo'
    
    
