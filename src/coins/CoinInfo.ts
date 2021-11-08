@@ -175,7 +175,7 @@ export class CoinInfo {
                     ...coin,
                     coinBaseType: CoinBaseType.BitcoinBase,
                     id: `btc_${coin.shortcut}`,
-                    network: coin.shortcut
+                    network: coin.network ? coin.network : coin.shortcut
                 });
             }
         });
@@ -187,7 +187,7 @@ export class CoinInfo {
                     ...coin,
                     coinBaseType: CoinBaseType.EthereumBase,
                     id: `eth_${coin.shortcut}`,
-                    network: coin.shortcut
+                    network: coin.network ? coin.network : coin.shortcut
                 });
             }
         });
@@ -200,7 +200,7 @@ export class CoinInfo {
                     coinBaseType: CoinBaseType.ERC20,
                     id: `erc20_${EthereumNetworks.GetNetworkByChainId(token.chain_id)}_${token.shortcut}`,
                     slip44: EthereumNetworks.GetSlip44ByChainId(token.chain_id),
-                    network: 'eth'
+                    network: token.network ? token.network : 'eth'
                 });
             }
         });
@@ -213,7 +213,7 @@ export class CoinInfo {
                     decimals: (omni.divisible) ? 8 : 0,
                     coinBaseType: CoinBaseType.OMNI,
                     id: `omni_${omni.shortcut}`,
-                    network: omni.shortcut
+                    network: omni.network ? omni.network : omni.shortcut
                 });
             }
         });
@@ -226,7 +226,7 @@ export class CoinInfo {
                     ...ripple,
                     coinBaseType: CoinBaseType.Ripple,
                     id: `ripple_${ripple.shortcut}`,
-                    network: ripple.shortcut
+                    network: ripple.network ? ripple.network : ripple.shortcut
                 });
             }
         });
@@ -245,11 +245,6 @@ export class CoinInfo {
     }
 
     private static addNetworkFieldIfMissed(ci: any) {
-      console.log('step2');
-      if (ci.shortcut === 'DOGE') {
-         console.log('step1');
-         console.log(ci.network);
-       }
       if (!ci.network) {
         ci.network = ci.shortcut.toLowerCase();
       }
