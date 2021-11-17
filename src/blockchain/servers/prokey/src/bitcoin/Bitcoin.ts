@@ -44,6 +44,9 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
     {
         super();
         this._coinName = coinName;
+
+        //! Initial time to yesterday
+        this._lastFeeFetchTime.setDate(this._lastFeeFetchTime.getDate() - 1);
     }
 
     /**
