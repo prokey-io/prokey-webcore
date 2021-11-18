@@ -27,33 +27,15 @@ import { GeneralResponse, GeneralErrors } from '../models/GeneralResponse';
 import { ICoinCommands } from './ICoinCommand';
 import { EthereumTx, EthTxToProkey } from '../models/EthereumTx';
 import { validateParams } from '../utils/paramsValidator';
-import { EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
+import { Erc20BaseCoinInfoModel, EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
 import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
 
 export class EthereumCommands implements ICoinCommands {
 
     _isSigning = false;
-    private _coinInfo : EthereumBaseCoinInfoModel;
+    _failedSignHandler: any;
 
-    constructor(coinNameOrcontractAddress: string = "Ethereum", isErc20 = false) {
-        this._coinInfo = CoinInfo.Get<EthereumBaseCoinInfoModel>(coinNameOrcontractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase);
-        if (isErc20) {
-            const ethCoinInfo = CoinInfo.Get<EthereumBaseCoinInfoModel>('Ethereum', CoinBaseType.EthereumBase);
-            if (ethCoinInfo) {
-                this._coinInfo.tx_url = ethCoinInfo.tx_url;
-            }
-        }
-        if(this._coinInfo == null)
-        {
-            throw new Error(`Cannot load CoinInfo for ${coinNameOrcontractAddress}`);
-        }
-    }
-
-    /**
-     * Get Coin Info
-     */
-    public GetCoinInfo() : EthereumBaseCoinInfoModel {
-       return this._coinInfo;
+    constructor() {
     }
     
     /**
@@ -188,12 +170,6 @@ export class EthereumCommands implements ICoinCommands {
         if(!ethTx)
             throw new Error("Ethereum::SignTransaction->parameter ethTx cannot be null");
 
-        device.AddOnFailureCallBack((reason: string) => {
-            // "this" can be null if the user after signing a transaction, change the coin 
-            if(this != undefined)
-                this._isSigning = false;
-        });
-
         // reject if already in signing
         if(this._isSigning)
             return Promise.reject("Ethereum::SignTransaction->Already in signig");
@@ -201,6 +177,16 @@ export class EthereumCommands implements ICoinCommands {
         return new Promise<ProkeyResponses.EthereumSignedTx>(async (resolve,reject) => {
             // This var is using to reject new request until this one is begin resolved or rejected
             this._isSigning = true;
+
+            this._failedSignHandler = (reason: any) => {
+                // "this" can be null if the user after signing a transaction, change the coin 
+                if(this != undefined)
+                    this._isSigning = false;
+
+                device.RemoveOnFailureCallBack(this._failedSignHandler);
+
+                reject(`Signing transaction failed: ${reason.message}`);
+            };
 
             // Validate the parameters
             try {
@@ -231,6 +217,8 @@ export class EthereumCommands implements ICoinCommands {
                 this._isSigning = false;
                 return reject(ex);
             }
+
+            device.AddOnFailureCallBack(this._failedSignHandler);
 
             await this.signTx(device, ethTx, resolve, reject);
 
@@ -363,6 +351,9 @@ export class EthereumCommands implements ICoinCommands {
             if (v && chain_id && v <= 1) {
                 v += 2 * chain_id + 35;
             }
+
+            //! Remove Failure callback
+            device.RemoveOnFailureCallBack(this._failedSignHandler);
 
             if(v) {
                 resolve(

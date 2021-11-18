@@ -13,7 +13,7 @@
     "dependencies": {
         "@types/bytebuffer": "^5.0.40",
         "assert": "^2.0.0",
-        "big-number": "^2.0.0",
+        "bignumber.js": "^9.0.1",
         "buffer": "^5.4.3",
         "bytebuffer": "^5.0.1",
         "compare-versions": "^3.6.0",

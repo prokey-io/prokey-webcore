@@ -22,17 +22,9 @@ import { Device } from './Device';
 import * as ProkeyResponses from '../models/Prokey';
 import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
-import { 
-    BitcoinBaseCoinInfoModel, 
-    EthereumBaseCoinInfoModel, 
-    OmniCoinInfoModel, 
-    RippleCoinInfoModel, 
-    TronCoinInfoModel} from '../models/CoinInfoModel';
 import { RippleTransaction } from '../models/Prokey';
 
 export interface ICoinCommands {
-    GetCoinInfo() : BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel | TronCoinInfoModel | null;
-
     GetAddress(
         device: Device,
         path: Array<number> | string,

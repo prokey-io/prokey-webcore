@@ -19,7 +19,7 @@
 export interface BitcoinFeeSelectionModel {
     economy: string,
     normal: string,
-    priotity: string,
+    priority: string,
     unit: string,
     decimal: number,
 }

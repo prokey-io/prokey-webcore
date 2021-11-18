@@ -376,11 +376,17 @@ export class Device {
             return await this._transport.SendProtoMsg(msgId, buffer);
 
         } catch (e) {
-            MyConsole.Exception('DeviceCommands::SendMessageByType->' + e);
-            return { 
-                success: false, 
-                errorCode: GeneralErrors.PROTO_ERR,
-                errorMessage: e 
+            if (e instanceof Error) {
+                MyConsole.Exception('DeviceCommands::SendMessageByType->' + e);
+                return {
+                    success: false,
+                    errorCode: GeneralErrors.PROTO_ERR,
+                    errorMessage: e.message
+                };
+            }
+            return {
+                success: false,
+                errorCode: GeneralErrors.UNKNOWN,
             };
         }
     }
@@ -487,10 +493,16 @@ export class Device {
                 payload: msg.decode(msgPayload.ProtoPayload),
             };
         } catch (e) {
-            MyConsole.Exception('DeviceCommands::GetMessage->' + e);
+            if (e instanceof Error) {
+                MyConsole.Exception('DeviceCommands::GetMessage->' + e);
+                return {
+                    success: false,
+                    errorMessage: e.message,
+                };
+            }
             return {
                 success: false,
-                errorMessage: e,
+                errorCode: GeneralErrors.UNKNOWN,
             };
         }
     }

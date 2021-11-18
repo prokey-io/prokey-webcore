@@ -35,6 +35,7 @@ import { BaseCommands } from './BaseCommands';
 export class RippleCommands extends BaseCommands implements ICoinCommands {
 
     private _coinInfo: RippleCoinInfoModel;
+    _failedSignHandler: any;
 
     constructor(coinName: string) {
         super();
@@ -52,7 +53,7 @@ export class RippleCommands extends BaseCommands implements ICoinCommands {
     }
 
     /**
-    * Get Ripple address
+    * Get Bitcoin/Litecoin and etc address
     * @param device Prokey device instance
     * @param path BIP path 
     * @param showOnProkey true means show the address on device display
@@ -121,8 +122,8 @@ export class RippleCommands extends BaseCommands implements ICoinCommands {
         }
 
         return new Promise<ProkeyResponses.RippleSignedTx>(async (resolve, reject) => {
-            var OnFailure = (reason: any) => {
-                device.RemoveOnFailureCallBack(OnFailure);
+            this._failedSignHandler = (reason: any) => {
+                device.RemoveOnFailureCallBack(this._failedSignHandler);
 
                 reject(`Signing transaction failed: ${reason.message}`);
             };
@@ -145,10 +146,14 @@ export class RippleCommands extends BaseCommands implements ICoinCommands {
             }
             catch (ex) {
                 MyConsole.Info(ex);
+                device.RemoveOnFailureCallBack(this._failedSignHandler);
                 return reject(ex);
             }
 
-            resolve(await device.SendMessage<ProkeyResponses.RippleSignedTx>('RippleSignTx', transaction, 'RippleSignedTx'));
+            device.AddOnFailureCallBack(this._failedSignHandler);
+            let res = await device.SendMessage<ProkeyResponses.RippleSignedTx>('RippleSignTx', transaction, 'RippleSignedTx');
+            device.RemoveOnFailureCallBack(this._failedSignHandler);
+            resolve(res);
         });
     }
 

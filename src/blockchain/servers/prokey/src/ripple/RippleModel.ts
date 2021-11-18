@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AddressModel } from "../../../../../models/Prokey";
+
 export interface RippleAccountInfo
 {
     Account: string,
@@ -35,7 +37,9 @@ export interface RippleAccountInfo
     TransferRate: number,
     LedgerEntryType: string,
     Flags: number,
-    index: string
+    index: string,
+
+    addressModel?: AddressModel,
 }
 
 export interface RippleTransactionInfo

@@ -18,11 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { RequestAddressInfo } from '../../../../../models/GenericWalletModel';
 import { MyConsole } from '../../../../../utils/console';
 import { ProkeyBaseBlockChain } from '../ProkeyBaseBlockChain';
 import { TronAccountInfo, TronAccountResources, TronBlock, TronTransactionDataInfo, TronTrc20TransactionDataInfo } from './TronModel';
 
 export class TronBlockchain extends ProkeyBaseBlockChain {
+
+    public GetAddressInfo(reqAddresses: RequestAddressInfo | RequestAddressInfo[]) {
+        throw new Error('Method not needed here.');
+    }
+    public GetTransactions(hash: string) {
+        throw new Error('Method not needed here.');
+    }
+    public GetLatestTransactions(trs: any[], count: number, offset: number) {
+        throw new Error('Method not needed here.');
+    }
 
     _coinName: string;
 

@@ -165,7 +165,7 @@
       "label": "Dogecoin",
       "name": "Dogecoin",
       "shortcut": "DOGE",
-      "dust_limit": 10000000,
+      "dust_limit": 100000000,
       "fork_id": null,
       "force_bip143": false,
       "max_address_length": 34,
@@ -16749,7 +16749,7 @@
       "address": "0x97deC872013f6B5fB443861090ad931542878126",
       "shortcut": "uniUSDC",
       "decimals": 18,
-      "name": "Uniswap: USD//C",
+      "name": "Uniswap: USDC",
       "priority": 100,
       "support": {
         "optimum": "1.10.2"
@@ -18542,7 +18542,7 @@
       "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "shortcut": "USDC",
       "decimals": 6,
-      "name": "USD//Coin",
+      "name": "USD Coin",
       "priority": 8,
       "support": {
         "optimum": "1.8.1"
@@ -20765,7 +20765,7 @@
       "shortcut": "DOT",
       "decimals": 8,
       "name": "DOT",
-      "priority": 9,
+      "priority": 99,
       "support": {
         "optimum": "1.8.1"
       }
@@ -21216,7 +21216,7 @@
       "shortcut": "ADA",
       "decimals": 18,
       "name": "Cardano Token",
-      "priority": 3,
+      "priority": 25,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24692,7 +24692,7 @@
       "shortcut": "DOGE",
       "decimals": 8,
       "name": "Binance-Peg Dogecoin",
-      "priority": 7,
+      "priority": 38,
       "support": {
         "optimum": "1.10.2"
       }
@@ -24890,7 +24890,7 @@
       "shortcut": "DOT",
       "decimals": 18,
       "name": "Polkadot Token",
-      "priority": 9,
+      "priority": 98,
       "support": {
         "optimum": "1.10.2"
       }
@@ -25319,7 +25319,7 @@
       "shortcut": "ETH",
       "decimals": 18,
       "name": "Ethereum Token",
-      "priority": 2,
+      "priority": 200,
       "support": {
         "optimum": "1.10.2"
       }
@@ -33998,7 +33998,7 @@
       "shortcut": "USDC",
       "decimals": 18,
       "name": "Binance-Peg USD Coin",
-      "priority": 8,
+      "priority": 48,
       "support": {
         "optimum": "1.10.2"
       }
@@ -34019,7 +34019,7 @@
       "address": "0x55d398326f99059fF775485246999027B3197955",
       "shortcut": "USDT",
       "decimals": 18,
-      "name": "Tether USD",
+      "name": "Tether USD (bep20)",
       "priority": 4,
       "support": {
         "optimum": "1.10.2"
@@ -35175,7 +35175,7 @@
       "shortcut": "XRP",
       "decimals": 18,
       "name": "XRP Token",
-      "priority": 6,
+      "priority": 26,
       "support": {
         "optimum": "1.10.2"
       }
@@ -35735,7 +35735,8 @@
       "tx_url": "https://xrpscan.com/tx/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
-      ]
+      ],
+      "min_balance": 20000000
     },
     {
       "name": "Ripple Testnet",
@@ -35751,7 +35752,8 @@
       "tx_url": "https://testnet.xrpl.org/transactions/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
-      ]
+      ],
+      "min_balance": 20000000
     }
   ],
   "tron": [

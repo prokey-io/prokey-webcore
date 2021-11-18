@@ -980,7 +980,6 @@ export type BinanceSignedTx = {
 export type AddressModel = {
     address: string,
     path: Array<number>,
-    serializedPath: string,
 }
 
 // Reset device flags
