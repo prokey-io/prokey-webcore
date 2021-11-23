@@ -229,15 +229,16 @@ export class WebUsb implements ITransport {
                 res = await this._port.transferIn(1, 64);
             }
             catch (e) {
-                MyConsole.Exception("WebUsb::ReceiveData", e);
-                if (e.name == "NotFoundError") {
-                    return {
-                        success: false,
-                        errorMessage: "The device was disconnected",
-                        errorCode: GeneralErrors.NO_DEVICE,
-                    };
+                if (e instanceof Error) {
+                    MyConsole.Exception("WebUsb::ReceiveData", e);
+                    if (e.name == "NotFoundError") {
+                        return {
+                            success: false,
+                            errorMessage: "The device was disconnected",
+                            errorCode: GeneralErrors.NO_DEVICE,
+                        };
+                    }
                 }
-
                 return {
                     success: false,
                     errorCode: GeneralErrors.UNKNOWN,

@@ -68,6 +68,15 @@ export interface BitcoinAddressInfo {
     txInfo: BitcoinBlockchainAddress,      // List of this address transactions
 }
 
+export interface BitcoinTransactionShort
+{
+    balanceChange: number,
+    blockNumber: number,
+    hash: string,
+    timeStamp: number,
+    txId: number,
+}
+
 /**
  * Model of an exist address in blockchain
  * Each exist address should have at least one transaction
@@ -77,7 +86,8 @@ export interface BitcoinBlockchainAddress {
     totalReceive: number,
     totalSent: number,
     utxOs: Array<BitcoinUtxo>,
-    transactionIds: Array<number | string>,
+    transactionIds: Array<number | string> | null,
+    transactions: Array<BitcoinTransactionShort> | null
 }
 
 /**

@@ -4,3 +4,4 @@ package-lock.json
 src/**/*.js
 src/**/*.js.map
 dist
+yarn.lock

@@ -25,8 +25,8 @@ import { BitcoinBaseCoinInfoModel } from '../models/CoinInfoModel';
 import { Device } from '../device/Device'
 import * as PathUtil from '../utils/pathUtils';
 import { BitcoinOutputModel, BitcoinTx } from '../models/BitcoinTx';
-import { BitcoinBlockchain } from '../blockchain/BitcoinBlockchain';
-import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel'; 
+import { BitcoinBlockChain } from '../blockchain/servers/prokey/src/bitcoin/Bitcoin';
+import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel';
 import {
     RefTransaction,
     TransactionInput,
@@ -44,7 +44,7 @@ var WAValidator = require('multicoin-address-validator');
  */
 export class BitcoinWallet extends BaseWallet {
     private _bitcoinWallet!: WalletModel.BitcoinWalletModel 
-    private _blockchain: BitcoinBlockchain;
+    private _blockchain: BitcoinBlockChain;
 
 
     // -----------------  Segwit TX -----------------------
@@ -69,7 +69,7 @@ export class BitcoinWallet extends BaseWallet {
         super(device, coinName, CoinBaseType.BitcoinBase);
 
         // Initial Bitcoin Blockchain
-        this._blockchain = new BitcoinBlockchain(super.GetCoinInfo().shortcut);
+        this._blockchain = new BitcoinBlockChain(super.GetCoinInfo().shortcut);
     }
 
     /**
@@ -136,7 +136,7 @@ export class BitcoinWallet extends BaseWallet {
     /**
      * Get blockchain 
      */
-    public GetBlockChain(): BitcoinBlockchain {
+    public GetBlockChain(): BitcoinBlockChain {
         return this._blockchain;
     }
 
@@ -151,14 +151,19 @@ export class BitcoinWallet extends BaseWallet {
         var finished: boolean = false;
         var startIndex: number = 0;
 
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-
         do {
             // Makinging a list of paths
-            let paths = PathUtil.GetListOfBipPath(coinInfo.slip44, accountNumber, 20, coinInfo.segwit, true, startIndex);
-            var justPaths = paths.map(a =>{
-                return a.path;
-            });
+            let justPaths : Array<Array<number>> = [];
+            for(let i=0; i<20; i++) {
+                let path = PathUtil.GetBipPath(
+                    CoinBaseType.BitcoinBase,   // Coin Type
+                    accountNumber,              // Account Number
+                    super.GetCoinInfo(),                   // CoinInfo
+                    true,                       // Change addresses
+                    startIndex + i,             // address index
+                );
+                justPaths.push(path.path);
+            }
 
             // Getting addresses from Prokey
             let addresses = await super.GetAddresses<AddressModel>(justPaths);
@@ -204,14 +209,21 @@ export class BitcoinWallet extends BaseWallet {
 
         let startIndex = 0;
 
-        const coinInfo = super.GetCoinInfo() as BitcoinBaseCoinInfoModel;
-
         do {  
+
+            let justPaths : Array<Array<number>> = [];
+
             // Makinging a list of paths
-            let paths = PathUtil.GetListOfBipPath(coinInfo.slip44, accountNumber, 20, coinInfo.segwit, false, startIndex);
-            var justPaths = paths.map(a =>{
-                return a.path;
-            });
+            for(let i=0; i<20; i++) {
+                let path = PathUtil.GetBipPath(
+                    CoinBaseType.BitcoinBase,   // Coin Type
+                    accountNumber,              // Account Number
+                    super.GetCoinInfo(),                   // CoinInfo
+                    false,                      // External chain address
+                    startIndex + i,             // address index
+                );
+                justPaths.push(path.path);
+            }
 
             // Getting addresses from Prokey
             let addresses = await super.GetAddresses<AddressModel>(justPaths);
@@ -289,12 +301,8 @@ export class BitcoinWallet extends BaseWallet {
         // WE ONLY CHECK THE CURRENT DISCOVERED ACCOUNT
         const account = this._bitcoinWallet.accounts[accountNumber];
 
-        // We need to get list of transaction for both wallet addresses and change addresses.
-        // Because the wallet may send a TX from change address
-        let allAddresses: Array<WalletModel.BitcoinAddressInfo> = account.addresses.concat(account.changeAddresses);
-
         // Retrive transaction list from server
-        let listOfTransactions = await this._blockchain.GetLatestTransactions(allAddresses, numberOfTransactions, startIndex);
+        let listOfTransactions = await this._blockchain.GetLatestTransactions(account.addresses, numberOfTransactions, startIndex);
 
         let txViewList = new Array<WalletModel.BitcoinTransactionView>();
 
@@ -515,7 +523,7 @@ export class BitcoinWallet extends BaseWallet {
         if(selectedFee == 'economy' || selectedFee == 'low' || selectedFee == 'minimal' || selectedFee == 'min'){
             txFee = +fees.economy;
         } else if( selectedFee == 'priority' || selectedFee == 'high' || selectedFee == 'fast' || selectedFee == 'max') {
-            txFee = +fees.priotity;
+            txFee = +fees.priority;
         }
         
         let totalSend = 0;
@@ -626,14 +634,20 @@ export class BitcoinWallet extends BaseWallet {
         //! Add change - fee
         let change = utxoBal - totalSend - txFee;        
 
-        let changePaths = PathUtil.GetListOfBipPath(coinInfo.slip44, fromAccount, 1, coinInfo.segwit, true, changeIndex);
+        let changePaths = PathUtil.GetBipPath(
+            CoinBaseType.BitcoinBase,   // Coin Type
+            fromAccount,              // Account Number
+            coinInfo,                   // CoinInfo
+            true,                       // Change addresses
+            changeIndex,             // address index
+        );
 
         //! No change if the change is less than dust
         if(coinInfo.dust_limit != null)
         {
             if(change >= coinInfo.dust_limit) { 
                 tx.outputs.push({
-                    address_n: changePaths[0].path,
+                    address_n: changePaths.path,
                     amount: change.toFixed(0),
                     script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
                 });
@@ -641,7 +655,7 @@ export class BitcoinWallet extends BaseWallet {
         }
         else if (change > 0) {
             tx.outputs.push({
-                address_n: changePaths[0].path,
+                address_n: changePaths.path,
                 amount: change.toFixed(0),
                 script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
             });
@@ -657,7 +671,7 @@ export class BitcoinWallet extends BaseWallet {
      * @param txData Signed Transaction to be sent to the network
      */
     public async SendTransaction(txData: string){
-        return this._blockchain.BroadcastTransaction(txData);
+        return this._blockchain.BroadCastTransaction(txData);
     }
 
     /**
@@ -688,7 +702,7 @@ export class BitcoinWallet extends BaseWallet {
             return <BitcoinFeeSelectionModel>{
                 economy: "100000000",
                 normal: "100000000",
-                priotity: "100000000",
+                priority: "100000000",
                 decimal: coinInfo.decimals,
                 unit: coinInfo.shortcut,
             }
@@ -706,7 +720,7 @@ export class BitcoinWallet extends BaseWallet {
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
             normal: (txLen * txFees.normal).toString(),
-            priotity: (txLen * txFees.high).toString(),
+            priority: (txLen * txFees.high).toString(),
             unit: coinInfo.shortcut,
             decimal: coinInfo.decimals,
         }
@@ -756,6 +770,11 @@ export class BitcoinWallet extends BaseWallet {
 
         //! Create list of account UTXO
         let sortedUtoxs = this.CreateSortedUtxoList(acc);
+        if(sortedUtoxs.length == 0) {
+            MyConsole.Info("No UTXO");
+            //! Bitcoin based transactions has 1 input at least
+            return txLen + this._TX_DEFAULT_INPUT_SIZE;
+        }
 
         MyConsole.Info("Sorted UTXO", sortedUtoxs);
 
@@ -765,7 +784,7 @@ export class BitcoinWallet extends BaseWallet {
         receivers.forEach(element => {
             totalSend += element.value;
         });
-       
+
         // Check if we can handle this transaction only with one Input
         if (sortedUtoxs[0][0].amount >= totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
         {
@@ -877,55 +896,63 @@ export class BitcoinWallet extends BaseWallet {
             throw new Error("Transaction inputs cannot be null or empty")
         }
 
-        let txHashIds = "";
-        tx.inputs.forEach(element => {
-            txHashIds += "," + element.prev_hash;
-        });
-
-        //! Removing the first ','
-        txHashIds = txHashIds.substring(1);
-
-        let prevTxs = await this._blockchain.GetTransactions(txHashIds);
-
-        if(prevTxs == null || prevTxs.length != tx.inputs.length) {
-            throw new Error("PrevTx are not set correctly")
-        }
-
         tx.refTxs = new Array<RefTransaction>();
-
-        prevTxs.forEach(prev => {
-            let ref: RefTransaction = {
-                hash: prev.hash,
-                version: prev.version,
-                lock_time: prev.lockTime,
-                bin_outputs: [],
-                inputs: [],
+        let n = tx.inputs.length;
+        let i = 0;
+        while(n > 0)
+        {
+            let txHashIds = "";
+            let perRequest = (n > 10) ? 10 : n;
+            
+            for(let j=0; j<perRequest; j++)
+            {
+                txHashIds += "," + tx.inputs[i++].prev_hash;
+                n--;
             }
 
-            if(timestamp == true){
-                ref.timestamp = prev.timeStamp;
+            //! Removing the first ','
+            txHashIds = txHashIds.substring(1);
+
+            let prevTxs = await this._blockchain.GetTransactions(txHashIds);
+
+            if(prevTxs == null || prevTxs.length != perRequest) {
+                throw new Error("PrevTx are not set correctly")
             }
 
-            prev.inputs.forEach( inp => {
-                ref.inputs.push({
-                    prev_hash: inp.spentTxHash,
-                    prev_index: inp.spentOutputIndex,
-                    sequence: inp.sequence,
-                    script_sig: inp.scriptHex,
+            prevTxs.forEach(prev => {
+                let ref: RefTransaction = {
+                    hash: prev.hash,
+                    version: prev.version,
+                    lock_time: prev.lockTime,
+                    bin_outputs: [],
+                    inputs: [],
+                }
+
+                if(timestamp == true){
+                    ref.timestamp = prev.timeStamp;
+                }
+
+                prev.inputs.forEach( inp => {
+                    ref.inputs.push({
+                        prev_hash: inp.spentTxHash,
+                        prev_index: inp.spentOutputIndex,
+                        sequence: inp.sequence,
+                        script_sig: inp.scriptHex,
+                    });
                 });
-            });
 
-            prev.outputs.forEach( out => {
-                ref.bin_outputs.push({
-                    amount: out.value,
-                    script_pubkey: out.scriptHex,
-                })
-            });
+                prev.outputs.forEach( out => {
+                    ref.bin_outputs.push({
+                        amount: out.value,
+                        script_pubkey: out.scriptHex,
+                    })
+                });
 
-            if(tx.refTxs){
-                tx.refTxs.push(ref);
-            }
-        });
+                if(tx.refTxs){
+                    tx.refTxs.push(ref);
+                }
+            });
+        }
     }
 }
 

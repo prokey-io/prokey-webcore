@@ -71,16 +71,12 @@ export class TronWallet extends BaseWallet {
 
     // Get Tron account info from blockchain
     private async GetAccountInfo(accountNumber: number): Promise<TronAccountInfo | null> {
-        let slip44 = (super.GetCoinInfo() as TronCoinInfoModel).slip44;
-        let path = PathUtil.GetListOfBipPath(
-            slip44,
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.Tron,
             accountNumber,          // Tron, each address is considered as an account
-            1,                      // We only need an address
-            false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in Tron
-            0);
+            super.GetCoinInfo());
 
-        let address = await this.GetAddress<TronAddress>(path[0].path, false);
+        let address = await this.GetAddress<TronAddress>(path.path, false);
 
         return await this._block_chain.GetAccountInfo(address.address);
     }
@@ -115,16 +111,11 @@ export class TronWallet extends BaseWallet {
         if (bal < 0)
             throw new Error("Insufficient balance in your account.");
 
-        let ci = super.GetCoinInfo() as TronCoinInfoModel
-        let slip44 = ci.slip44;
-        let path = PathUtil.GetListOfBipPath(
-            slip44,
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.Tron,
             accountNumber,          // Tron, each address is considered as an account
-            1,                      // We only need an address
-            false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in Tron
-            0);
-
+            super.GetCoinInfo());
+    
         // get the now block
         let last_block = await this._block_chain.GetLatestBlock(1);
         let now_block = last_block.block[0] as TronBlock;

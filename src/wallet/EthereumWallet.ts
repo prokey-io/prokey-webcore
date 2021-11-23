@@ -27,12 +27,13 @@ import { EthereumBaseCoinInfoModel, Erc20BaseCoinInfoModel } from '../models/Coi
 import { EthereumTx } from '../models/EthereumTx';
 import { RlpEncoding } from "../utils/rlp-encoding"
 import * as ProkeyResponses from '../models/Prokey';
-import { EthereumBlockchain } from '../blockchain/EthereumBlockchain';
+import { EthereumBlockChain } from '../blockchain/servers/prokey/src/ethereum/Ethereum';
 import { GeneralResponse } from '../models/GeneralResponse';
 import { BaseWallet } from './BaseWallet';
 import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
 import * as EthereumNetworks from "../utils/ethereum-networks";
+import BigNumber from 'bignumber.js';
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -42,7 +43,7 @@ var WAValidator = require('multicoin-address-validator');
 export class EthereumWallet extends BaseWallet {
     _ethereumWallet!: WalletModel.EthereumWalletModel;
     _gasLimit: number = 21000;
-    _ethBlockChain: EthereumBlockchain;
+    _ethBlockChain: EthereumBlockChain;
     _isErc20 = false;
     _network = 'eth';
 
@@ -51,9 +52,11 @@ export class EthereumWallet extends BaseWallet {
      * @param device Prokey device instance
      * @param coinNameOrContractAddress Coin name or contract address of ERC20, Check /data/ProkeyCoinsInfo.json
      * @param isErc20 Should be true if ERC20 is desired.
+     * @param coinInfo Optional coin info, If this parameter is not null, the wallet skips coinNameOrContractAddress
      */
-    constructor(device: Device, coinNameOrContractAddress: string, isErc20: boolean) {
-        super(device, coinNameOrContractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase);
+    constructor(device: Device, coinNameOrContractAddress: string, isErc20: boolean, coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel) {
+        //! If coinInfo parameter is not null, the value of coinNameOrContractAddress doesn't matter
+        super(device, coinNameOrContractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, undefined, coinInfo);
         
         this._isErc20 = isErc20;
 
@@ -61,11 +64,11 @@ export class EthereumWallet extends BaseWallet {
             this._gasLimit = 65000;
             const ci = (super.GetCoinInfo() as Erc20BaseCoinInfoModel);
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
-            this._ethBlockChain = new EthereumBlockchain(this._network, true, ci.address);
+            this._ethBlockChain = new EthereumBlockChain(this._network, true, ci.address);
         } else {
             const ci = (this.GetCoinInfo() as EthereumBaseCoinInfoModel);
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
-            this._ethBlockChain = new EthereumBlockchain(this._network);
+            this._ethBlockChain = new EthereumBlockChain(this._network);
         }
     }
 
@@ -129,32 +132,19 @@ export class EthereumWallet extends BaseWallet {
             balance: 0,
         }
 
-        //! read slip44 from coinInfo
-        let slip44 = 60; // Ethereum is 60'
-        if(this._isErc20 == false) {
-            let ci = super.GetCoinInfo() as EthereumBaseCoinInfoModel;
-            if(ci.slip44 != undefined) {
-                slip44 = ci.slip44;
-            }
-        }
-
-        // Makinging a list of paths
-        let path = PathUtil.GetListOfBipPath(
-            slip44,                 
-            0,                      // Ethereum, each address is considered as an account
-            1,                      // We only need an address
-            false,                  // Segwit not defined so we should use 44'
-            false,                  // No change address defined in ethereum
-            accountNumber);
+        let path = PathUtil.GetBipPath(
+            (this._isErc20) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, // CoinType
+            accountNumber, // Account Number
+            super.GetCoinInfo(), // Coin Info
+        );
 
         // Getting addresses from Prokey
-        let address = await super.GetAddress<EthereumAddress>(path[0].path, false);
+        let address = await super.GetAddress<EthereumAddress>(path.path, false);
 
         // Update the account info address
         accountInfo.addressModel = {
             address: address.address,
-            path: path[0].path,
-            serializedPath: path[0].serializedPath,
+            path: path.path,
         };
 
         // to lowercase
@@ -163,7 +153,7 @@ export class EthereumWallet extends BaseWallet {
         // creating the request
         let req: GenericWalletModel.RequestAddressInfo = {
             address: lowerCaseAddress,      // Address
-            addressModel: path[0],
+            addressModel: path,
         }
 
         // Getting addresses' info
@@ -182,7 +172,7 @@ export class EthereumWallet extends BaseWallet {
      * @param amount Amount to be sent in WEI
      * @param accountNumber Account number to send fund from
      */
-    public async GenerateTransaction(receivedAddress: string, amount: number, accountNumber: number = 0): Promise<EthereumTx> {
+    public async GenerateTransaction(receivedAddress: string, amount: BigNumber, accountNumber: number = 0): Promise<EthereumTx> {
 
         // Check if wallet is already loaded
         if(this._ethereumWallet == null || this._ethereumWallet.accounts == null){
@@ -216,7 +206,7 @@ export class EthereumWallet extends BaseWallet {
             }
 
             // Check account balance
-            if(amount > account.balance) {
+            if(amount.gt(account.balance)) {
                 throw new Error("Insufficient balance");
             }
 
@@ -224,12 +214,13 @@ export class EthereumWallet extends BaseWallet {
             nonce = ethAddInfo.nonce || 0;
         } else {
             // Check account balance
-            if(amount > account.balance) {
+            if(amount.gt(account.balance)) {
                 throw new Error("Insufficient balance");
             }
 
             // Check account balance for pay the tx fee
-            if(amount + (gasPrice * this._gasLimit) > account.balance) {
+
+            if(amount.gt(account.balance - (gasPrice * this._gasLimit))) {
                 throw new Error("Insufficient balance to pay the transaction fee");
             }
 
@@ -250,7 +241,7 @@ export class EthereumWallet extends BaseWallet {
             chainId: coinInfo.chain_id,
         };
 
-        if(this._isErc20 == true){
+        if(this._isErc20){
             //! TO ERC20 contract address
             txToSign.to = (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address;
             //! Value should be empty
@@ -303,7 +294,7 @@ export class EthereumWallet extends BaseWallet {
      * @param txData Transaction to be sent to the network
      */
     public async SendTransaction(txData: string): Promise<GeneralResponse> {
-        return this._ethBlockChain.SendTransaction(txData);
+        return this._ethBlockChain.BroadCastTransaction(txData);
     }
 
     /**
@@ -326,7 +317,7 @@ export class EthereumWallet extends BaseWallet {
         const account = this._ethereumWallet.accounts[accountNumber];
 
         // Retrive transaction list from server
-        let listOfTransactions = await this._ethBlockChain.GetLatestTransactions(account, numberOfTransactions, startIndex);
+        let listOfTransactions = !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex);
 
         MyConsole.Info('listOfTransactions', listOfTransactions);
         
@@ -374,11 +365,11 @@ export class EthereumWallet extends BaseWallet {
 
         let symbol: string = coinInfo.shortcut.toLocaleLowerCase();
         //! these coins are use same address encoding model
-        if(this._isErc20 == true || symbol == "trin" || symbol == "bnb" || symbol == "rbtc" || symbol == "trbtc"){
+        if(this._isErc20 || symbol == "trin" || symbol == "bnb" || symbol == "rbtc" || symbol == "trbtc"){
             symbol = "ETH";
         }
 
-        if(coinInfo.test != undefined && coinInfo.test == true){
+        if(coinInfo.test != undefined && coinInfo.test){
             if(symbol.substr(0,1) == 't'){
                 symbol = symbol.substring(1);
             }
@@ -388,7 +379,7 @@ export class EthereumWallet extends BaseWallet {
             return false;
         }
         
-        if(coinInfo.test != undefined && coinInfo.test == true) {
+        if(coinInfo.test != undefined && coinInfo.test) {
             if(WAValidator.validate(address, symbol, 'testnet')) {
                 return true;
             }
@@ -399,6 +390,15 @@ export class EthereumWallet extends BaseWallet {
         }
         
         return false;
+    }
+
+    /**
+     * Get the transaction fee
+     */
+    public async CalculateTransactionFee(): Promise<number> {
+        const gasPrice = await this._ethBlockChain.GetGasPrice();
+
+        return gasPrice * this._gasLimit;
     }
 
     /**
@@ -424,7 +424,7 @@ export class EthereumWallet extends BaseWallet {
      * @param address ETH address
      */
     private async GetEthAddressInfo(address: string): Promise<WalletModel.EthereumAddressInfo> {
-        var ethBlockchain = new EthereumBlockchain(this._network);
+        var ethBlockchain = new EthereumBlockChain(this._network);
         var addInfo = await ethBlockchain.GetAddressInfo({
             address: address
         });

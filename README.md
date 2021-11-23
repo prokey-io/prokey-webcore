@@ -20,7 +20,8 @@ It is recommended to add this repository main branch to your project as a submod
  - Bitcoin based coins Like Bitcoin, Litecoin, Bitcoincash, Doge, Bitcoin Gold
  - Ethereum
  - ERC20
- - OMNI Protocol coin based on Bitcoin Blockchain and ERC20
+ - OMNI Protocol tokens based on Bitcoin Blockchain
+ - Ripple
 
 ## Sample code
  - First thing first, you need to create an instance of Prokey Device. 
@@ -59,19 +60,25 @@ It is recommended to add this repository main branch to your project as a submod
    import { Device } from 'lib/prokey-webcore/src/device/Device'
    import { BitcoinCommands } from 'lib/prokey-webcore/src/device/BitcoinCommands'
    import * as Util from 'lib/prokey-webcore/src/utils/pathUtil'
+   import { CoinBaseType } from "lib/prokey-webcore/src/coins/CoinInfo";
+   import { GeneralCoinInfoModel, BitcoinBaseCoinInfoModel } from 'lib/prokey-webcore/src/models/CoinInfoModel'
+   import { CoinInfo } from 'lib/prokey-webcore/src/coins/CoinInfo'
+   
    
    ...
    
    let btcCommands = new BitcoinCommands();
    
+   const coinInfo = CoinInfo.Get<BitcoinBaseCoinInfoModel>('Bitcoin', CoinBaseType.BitcoinBase );
+   
    // Getting path to the desire address using a helper function
-   let pathModel = Util.GetListOfBipPath(
-                          0, // SLIP44 CoinId check:https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+   let pathModel = Util.GetBipPath(
+                          CoinBaseType.BitcoinBase, // CoinType
                           0,  // Account
-                          1,  // Number of paths
-                          true, // Segwit
+                          coinInfo, // CoinInfo model, This model is mandatory for Bitcoin-based, Ethereum-Based and Ripple
                           false, // Change address
-                          0); // Address Index
+                          0 // Address Index
+                          );
    
    let addressModel = btcCommands.GetAddress( device, pathModel.path, true ); 
    
@@ -84,14 +91,17 @@ It is recommended to add this repository main branch to your project as a submod
   ```
   ...
   // for pathModel.path, check GetAddress
+  // Getting path to the desire public key using a helper function
+  let pathModel = Util.GetBipPath(
+                          CoinBaseType.BitcoinBase, // CoinType
+                          0,  // Account
+                          coinInfo, // CoinInfo model, This model is mandatory for Bitcoin-based, Ethereum-Based and Ripple
+                          ); 
+                          
   let publicKeyModel = btcCommands.GetPublicKey( device, pathModel.path, true );
   
   console.log('XPUB:', publicKeyModel.xpub );
   ```
-  
-  ## Sample project
-  
-  Please check the [sample project](https://github.com/prokey-io/prokey-webcore-sample) repository
   
   ## Backend Servers(Blockchain)
   
