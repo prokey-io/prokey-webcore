@@ -20,17 +20,30 @@
 
 export type TronAccountInfo = {
     latest_opration_time: number;
+    account_resource?: {
+        frozen_balance_for_energy?: {
+            frozen_balance: number,
+            expire_time: number
+        };
+        delegated_frozen_balance_for_energy?: number;
+    };
     address: string;
     balance: number;
     create_time: number;
     trc20?: Array<any>; // TRC20 balances
     latest_consume_free_time: number;
+    frozen?: Array<{
+        frozen_balance: number,
+        expire_time: number
+    }>;
+    delegated_frozen_balance_for_bandwidth?: number;
 }
 
 export type TronAccountResources = {
     freeNetUsed: number;        // Free bandwidth used
     freeNetLimit: number;       // Total free bandwidth
     NetLimit: number;           // Total bandwidth obtained by freezing
+    NetUsed: number;            // Total bandwidth used
     TotalNetLimit: number;      // Total bandwidth can be obtained by freezing
     TotalNetWeight: number;     // Total TRX frozen for bandwidth
     tronPowerUsed: number;      // TRON power used

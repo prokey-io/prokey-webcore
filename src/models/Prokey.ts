@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
- 
+
 const Long = require('../protobuf/long');
 
 export type CipheredKeyValue = {
@@ -307,7 +307,7 @@ export type SignTxInfo = {
     inputs_cnt: number,
     outputs_cnt: number,
     extra_data_len?: number,
-    timestamp:number,
+    timestamp: number,
     version_group_id: number,
 };
 
@@ -1058,6 +1058,13 @@ export type TronFreezeBalance = {
     resource: TronResourceCode;             // Freeze the balance to get bandwidth or energy
     receiver_address?: string;              // (Optional)Energy or bandwidth receiver address
 }
+
+// Unfreeze TRX Balance
+export type TronUnfreezeBalance = {
+    resource: TronResourceCode;             // Unfreeze the bandwidth or energy
+    receiver_address: string;               // (Optional)Energy or bandwidth receiver address
+}
+
 
 export type TronTransaction = {
     address_n: Array<number>;

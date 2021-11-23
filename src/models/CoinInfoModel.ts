@@ -128,7 +128,7 @@ export interface RippleCoinInfoModel extends BaseCoinInfoModel {
     priority: number,
 }
 
-export type TronCoinInfoModel = {
+export interface TronCoinInfoModel extends BaseCoinInfoModel {
     name: string,
     shortcut: string,
     slip44: number,
