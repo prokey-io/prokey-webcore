@@ -23,6 +23,7 @@ export interface EthereumAddressInfo {
     balance?: number,
     nonce?: number,
     trKeys?: Array<number>,
+    transactions?: Array<EthereumTransaction>,
     addressModel?: AddressModel,
 }
 

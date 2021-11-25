@@ -317,7 +317,7 @@ export class EthereumWallet extends BaseWallet {
         const account = this._ethereumWallet.accounts[accountNumber];
 
         // Retrive transaction list from server
-        let listOfTransactions = !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex);
+        let listOfTransactions = !account.transactions ? !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex) : account.transactions;
 
         MyConsole.Info('listOfTransactions', listOfTransactions);
         
@@ -337,7 +337,7 @@ export class EthereumWallet extends BaseWallet {
             let txView: WalletModel.EthereumTransactionView = {
                 blockNumber: tx.blockNumber,
                 hash: tx.hash,
-                fee: tx.gasPrice,
+                fee: tx.gasPrice * tx.gas,
                 date: new Date(tx.timeStamp * 1000).toLocaleString(),
                 status: isSent ? 'SENT' : 'RECEIVED',
                 amount: tx.amount,

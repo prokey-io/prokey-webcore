@@ -55,6 +55,7 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
             balance: response[0].balance,
             nonce: response[0].nonce,
             trKeys: response[0].trKeys,
+            transactions: response[0].transactions,
             addressModel: reqAddress.addressModel,
         }];
 
