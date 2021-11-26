@@ -106,7 +106,7 @@ export class EthereumWallet extends BaseWallet {
                     this._ethereumWallet.totalBalance += account.balance;
                     
                     // If there is no transaction, the discovery finished
-                    if(account.trKeys == null || account.trKeys.length == 0){
+                    if (account.transactions == null && (account.trKeys == null || account.trKeys.length == 0)){
                         return resolve(this._ethereumWallet);
                     }
 
@@ -161,6 +161,7 @@ export class EthereumWallet extends BaseWallet {
 
         accountInfo.balance += (addInfo[0].balance == null) ? 0 : addInfo[0].balance;
         accountInfo.trKeys = addInfo[0].trKeys;
+        accountInfo.transactions = addInfo[0].transactions;
         accountInfo.nonce = addInfo[0].nonce;
 
         return accountInfo;
