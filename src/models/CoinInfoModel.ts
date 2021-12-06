@@ -27,6 +27,7 @@ export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel |
     Erc20BaseCoinInfoModel | 
     RippleCoinInfoModel | 
     OmniCoinInfoModel | 
+    TronCoinInfoModel |
     MiscCoinInfoModel;
 
 export interface BaseCoinInfoModel {
