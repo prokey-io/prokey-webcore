@@ -106,7 +106,7 @@ export class EthereumWallet extends BaseWallet {
                     this._ethereumWallet.totalBalance += account.balance;
                     
                     // If there is no transaction, the discovery finished
-                    if(account.trKeys == null || account.trKeys.length == 0){
+                    if (account.transactions == null && (account.trKeys == null || account.trKeys.length == 0)){
                         return resolve(this._ethereumWallet);
                     }
 
@@ -161,6 +161,7 @@ export class EthereumWallet extends BaseWallet {
 
         accountInfo.balance += (addInfo[0].balance == null) ? 0 : addInfo[0].balance;
         accountInfo.trKeys = addInfo[0].trKeys;
+        accountInfo.transactions = addInfo[0].transactions;
         accountInfo.nonce = addInfo[0].nonce;
 
         return accountInfo;
@@ -317,7 +318,7 @@ export class EthereumWallet extends BaseWallet {
         const account = this._ethereumWallet.accounts[accountNumber];
 
         // Retrive transaction list from server
-        let listOfTransactions = !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex);
+        let listOfTransactions = !account.transactions ? !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex) : account.transactions;
 
         MyConsole.Info('listOfTransactions', listOfTransactions);
         
@@ -337,7 +338,7 @@ export class EthereumWallet extends BaseWallet {
             let txView: WalletModel.EthereumTransactionView = {
                 blockNumber: tx.blockNumber,
                 hash: tx.hash,
-                fee: tx.gasPrice,
+                fee: tx.gasPrice * tx.gas,
                 date: new Date(tx.timeStamp * 1000).toLocaleString(),
                 status: isSent ? 'SENT' : 'RECEIVED',
                 amount: tx.amount,
