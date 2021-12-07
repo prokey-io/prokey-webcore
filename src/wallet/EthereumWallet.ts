@@ -424,7 +424,8 @@ export class EthereumWallet extends BaseWallet {
      * @param address ETH address
      */
     private async GetEthAddressInfo(address: string): Promise<WalletModel.EthereumAddressInfo> {
-        var addInfo = await this._ethBlockChain.GetAddressInfo({
+        var ethBlockchain = new EthereumBlockChain(this._network);
+        var addInfo = await ethBlockchain.GetAddressInfo({
             address: address
         });
 
