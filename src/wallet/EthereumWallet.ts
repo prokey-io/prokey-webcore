@@ -166,18 +166,6 @@ export class EthereumWallet extends BaseWallet {
         return accountInfo;
     }
 
-    private GetErc20TransactionData(receivingAddress: string, amount: BigNumber): string {
-        //! The address must not start with 0x
-        if (receivingAddress.substr(0, 2).toLowerCase() == '0x') {
-            receivingAddress = receivingAddress.substr(2);
-        }
-
-        let amountInHex = amount.toString(16);
-        let amount64 = ("0000000000000000000000000000000000000000000000000000000000000000" + (amountInHex)).substr(-64);
-        //! Data struct is 16Bytes * TransferTo(a9059cbb...) + 20Bytes * receiverAddress + 32Bytes * amount
-        return `a9059cbb000000000000000000000000${receivingAddress}${amount64}`; //! SmartContract function call
-    }
-
     /**
      * This function generates an ethereum transaction
      * @param receivedAddress Address to send the fund
@@ -405,6 +393,7 @@ export class EthereumWallet extends BaseWallet {
 
     /**
      * Get the transaction fee
+     * @returns TransactionFee, GasPrice * GasLimit
      */
     public async CalculateTransactionFee(): Promise<number> {
         const gasPrice = await this._ethBlockChain.GetGasPrice();
@@ -446,6 +435,13 @@ export class EthereumWallet extends BaseWallet {
         return addInfo[0];
     }
 
+    /**
+     * Estimate the transaction fee (GasLimit)
+     * @param from The wallet address
+     * @param to The receiver address
+     * @param data ERC20 Data (Function call with parameters)
+     * @returns Estimated fee for this transaction
+     */
     private async EstimateFee(from: string, to: string, data: string): Promise<number> {
         try {
             var fee = await this._ethBlockChain.EstimateFee(from, to, data);
@@ -456,5 +452,23 @@ export class EthereumWallet extends BaseWallet {
         } catch (error) {
             return 65000;
         }
+    }
+
+    /**
+     * Get ERC20 data for calling "TransferTo" function
+     * @param receivingAddress The receiver address
+     * @param amount Amount to be send
+     * @returns Data in string
+     */
+    private GetErc20TransactionData(receivingAddress: string, amount: BigNumber): string {
+        //! The address must not start with 0x
+        if (receivingAddress.substr(0, 2).toLowerCase() == '0x') {
+            receivingAddress = receivingAddress.substr(2);
+        }
+
+        let amountInHex = amount.toString(16);
+        let amount64 = ("0000000000000000000000000000000000000000000000000000000000000000" + (amountInHex)).substr(-64);
+        //! Data struct is 16Bytes * TransferTo(a9059cbb...) + 20Bytes * receiverAddress + 32Bytes * amount
+        return `a9059cbb000000000000000000000000${receivingAddress}${amount64}`; //! SmartContract function call
     }
 }
