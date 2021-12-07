@@ -57,10 +57,10 @@ export class EthereumWallet extends BaseWallet {
     constructor(device: Device, coinNameOrContractAddress: string, isErc20: boolean, coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel) {
         //! If coinInfo parameter is not null, the value of coinNameOrContractAddress doesn't matter
         super(device, coinNameOrContractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, undefined, coinInfo);
-        
+
         this._isErc20 = isErc20;
 
-        if(isErc20) {
+        if (isErc20) {
             this._gasLimit = 65000;
             const ci = (super.GetCoinInfo() as Erc20BaseCoinInfoModel);
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
@@ -77,48 +77,47 @@ export class EthereumWallet extends BaseWallet {
      * @param accountFindCallBack is an optional callback function, this function will be called when an account discovered
      * @returns Ethereum Wallet Model
      */
-    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.EthereumAccountInfo) => void, allAccounts = false): Promise<WalletModel.EthereumWalletModel>{
+    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.EthereumAccountInfo) => void, allAccounts = false): Promise<WalletModel.EthereumWalletModel> {
         this._ethereumWallet = {
             totalBalance: 0,
         }
 
-        return new Promise<WalletModel.EthereumWalletModel>(async (resolve,reject)=>{
+        return new Promise<WalletModel.EthereumWalletModel>(async (resolve, reject) => {
             let an = 0;
             try {
 
-                do
-                {
+                do {
                     // Discover the account number n
                     let account = await this.AccountDiscovery(an);
 
-                    if(this._ethereumWallet.accounts == undefined) {
+                    if (this._ethereumWallet.accounts == undefined) {
                         this._ethereumWallet.accounts = new Array<WalletModel.EthereumAccountInfo>();
                     }
 
                     this._ethereumWallet.accounts.push(account);
 
                     // Calling callback to update the UI
-                    if(accountFindCallBack) {
+                    if (accountFindCallBack) {
                         accountFindCallBack(account);
                     }
-                   
+
                     // update the total wallet balance 
                     this._ethereumWallet.totalBalance += account.balance;
-                    
+
                     // If there is no transaction, the discovery finished
-                    if (account.transactions == null && (account.trKeys == null || account.trKeys.length == 0)){
+                    if (account.transactions == null && (account.trKeys == null || account.trKeys.length == 0)) {
                         return resolve(this._ethereumWallet);
                     }
 
                     // go for next account
                     an++;
-                
-                } while(true);
+
+                } while (true);
             }
-            catch(reason) {
+            catch (reason) {
                 reject(reason);
             }
-        
+
         });
     }
 
@@ -176,12 +175,12 @@ export class EthereumWallet extends BaseWallet {
     public async GenerateTransaction(receivedAddress: string, amount: BigNumber, accountNumber: number = 0): Promise<EthereumTx> {
 
         // Check if wallet is already loaded
-        if(this._ethereumWallet == null || this._ethereumWallet.accounts == null){
+        if (this._ethereumWallet == null || this._ethereumWallet.accounts == null) {
             throw new Error('Wallet is not loaded');
         }
 
         // Validate accountNumber
-        if(accountNumber >= this._ethereumWallet.accounts.length){
+        if (accountNumber >= this._ethereumWallet.accounts.length) {
             throw new Error('Account number is wrong');
         }
 
@@ -191,23 +190,30 @@ export class EthereumWallet extends BaseWallet {
         // Get the gas price from server
         const gasPrice = await this._ethBlockChain.GetGasPrice();
 
-        if(account.addressModel == null) {
+        if (account.addressModel == null) {
             throw new Error("Invalid data");
         }
 
         let nonce = 0;
-        if(this._isErc20) {
+        if (this._isErc20) {
+            // Estimate the transaction fee
+            this._gasLimit = await this.EstimateFee(
+                account.addressModel.address, // from address
+                (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address, // to contract address
+                this.GetErc20TransactionData(receivedAddress, amount)
+            );
+
             // Reading balance & nonce from ETH
             const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
 
             // Check transaction fee
-            if( ethAddInfo.balance == null || gasPrice * this._gasLimit > ethAddInfo.balance) {
+            if (ethAddInfo.balance == null || gasPrice * this._gasLimit > ethAddInfo.balance) {
                 let networkName = EthereumNetworks.GetNetworkFullNameByChainId((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
                 throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
 
             // Check account balance
-            if(amount.gt(account.balance)) {
+            if (amount.gt(account.balance)) {
                 throw new Error("Insufficient balance");
             }
 
@@ -215,13 +221,13 @@ export class EthereumWallet extends BaseWallet {
             nonce = ethAddInfo.nonce || 0;
         } else {
             // Check account balance
-            if(amount.gt(account.balance)) {
+            if (amount.gt(account.balance)) {
                 throw new Error("Insufficient balance");
             }
 
             // Check account balance for pay the tx fee
 
-            if(amount.gt(account.balance - (gasPrice * this._gasLimit))) {
+            if (amount.gt(account.balance - (gasPrice * this._gasLimit))) {
                 throw new Error("Insufficient balance to pay the transaction fee");
             }
 
@@ -242,21 +248,13 @@ export class EthereumWallet extends BaseWallet {
             chainId: coinInfo.chain_id,
         };
 
-        if(this._isErc20){
+        if (this._isErc20) {
             //! TO ERC20 contract address
             txToSign.to = (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address;
             //! Value should be empty
             txToSign.value = "0";
 
-            //! The address must not start with 0x
-            if (receivedAddress.substr(0, 2).toLowerCase() == '0x') {
-                receivedAddress = receivedAddress.substr(2);
-            }
-
-            let amountInHex = amount.toString(16);
-            let amount64 = ("0000000000000000000000000000000000000000000000000000000000000000" + (amountInHex)).substr(-64);
-            //! Data struct is 16Bytes * TransferTo(a9059cbb...) + 20Bytes * receiverAddress + 32Bytes * amount
-            txToSign.data = `a9059cbb000000000000000000000000${receivedAddress}${amount64}`; //! SmartContract function call
+            txToSign.data = this.GetErc20TransactionData(receivedAddress, amount);
         }
 
         return txToSign;
@@ -268,11 +266,11 @@ export class EthereumWallet extends BaseWallet {
      * @param signedValues Signature values, R,S and V
      */
     public async PrepareAndSendTransaction(transaction: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
-        if(transaction == undefined) {
+        if (transaction == undefined) {
             throw new Error("Transaction can not be null");
         }
 
-        if(signedValues == undefined) {
+        if (signedValues == undefined) {
             throw new Error("SignedValues can not be null");
         }
 
@@ -304,13 +302,13 @@ export class EthereumWallet extends BaseWallet {
      * @param startIndex 
      * @param numberOfTransactions 
      */
-    public async GetTransactionViewList(accountNumber: number = 0, startIndex: number = 0, numberOfTransactions: number ): Promise<Array<WalletModel.EthereumTransactionView>>{
-        if(this._ethereumWallet.accounts == null){
+    public async GetTransactionViewList(accountNumber: number = 0, startIndex: number = 0, numberOfTransactions: number): Promise<Array<WalletModel.EthereumTransactionView>> {
+        if (this._ethereumWallet.accounts == null) {
             throw new Error("There is no account in wallet, Do Wallet Discovery First");
         }
 
         // Validate account
-        if(accountNumber >= this._ethereumWallet.accounts.length){
+        if (accountNumber >= this._ethereumWallet.accounts.length) {
             throw new Error(`Cannot fine account #${accountNumber}`);
         }
 
@@ -321,20 +319,20 @@ export class EthereumWallet extends BaseWallet {
         let listOfTransactions = !account.transactions ? !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex) : account.transactions;
 
         MyConsole.Info('listOfTransactions', listOfTransactions);
-        
+
         let txViews = new Array<WalletModel.EthereumTransactionView>();
 
-        if(listOfTransactions == undefined || listOfTransactions.length == 0){
+        if (listOfTransactions == undefined || listOfTransactions.length == 0) {
             return txViews;
         }
-        
+
         listOfTransactions.forEach(tx => {
             let isSent = false;
             // To skip the warning/error
-            if(account.addressModel != undefined) {
+            if (account.addressModel != undefined) {
                 isSent = account.addressModel.address.toLowerCase() == tx.fromAddress;
             }
-            
+
             let txView: WalletModel.EthereumTransactionView = {
                 blockNumber: tx.blockNumber,
                 hash: tx.hash,
@@ -344,14 +342,14 @@ export class EthereumWallet extends BaseWallet {
                 amount: tx.amount,
             }
 
-            if(isSent) {
+            if (isSent) {
                 txView.sent = tx.toAddress;
             } else {
                 txView.received = tx.fromAddress;
             }
 
             txViews.push(txView);
-            
+
         });
 
         return txViews;
@@ -366,35 +364,36 @@ export class EthereumWallet extends BaseWallet {
 
         let symbol: string = coinInfo.shortcut.toLocaleLowerCase();
         //! these coins are use same address encoding model
-        if(this._isErc20 || symbol == "trin" || symbol == "bnb" || symbol == "rbtc" || symbol == "trbtc"){
+        if (this._isErc20 || symbol == "trin" || symbol == "bnb" || symbol == "rbtc" || symbol == "trbtc") {
             symbol = "ETH";
         }
 
-        if(coinInfo.test != undefined && coinInfo.test){
-            if(symbol.substr(0,1) == 't'){
+        if (coinInfo.test != undefined && coinInfo.test) {
+            if (symbol.substr(0, 1) == 't') {
                 symbol = symbol.substring(1);
             }
         }
 
-        if(!WAValidator.findCurrency(symbol)){
+        if (!WAValidator.findCurrency(symbol)) {
             return false;
         }
-        
-        if(coinInfo.test != undefined && coinInfo.test) {
-            if(WAValidator.validate(address, symbol, 'testnet')) {
+
+        if (coinInfo.test != undefined && coinInfo.test) {
+            if (WAValidator.validate(address, symbol, 'testnet')) {
                 return true;
             }
         } else {
-            if(WAValidator.validate(address, symbol)) {
+            if (WAValidator.validate(address, symbol)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
     /**
      * Get the transaction fee
+     * @returns TransactionFee, GasPrice * GasLimit
      */
     public async CalculateTransactionFee(): Promise<number> {
         const gasPrice = await this._ethBlockChain.GetGasPrice();
@@ -409,14 +408,14 @@ export class EthereumWallet extends BaseWallet {
     private rawTx(tx: EthereumTx): any[] {
         let nonce = (tx.nonce == '0' || tx.nonce == '00') ? '' : tx.nonce;
         let value = (tx.value == '0' || tx.value == '00') ? '' : tx.value;
-    
+
         return [
-          '0x' + nonce,
-          '0x' + (tx.gasPrice || ''),
-          '0x' + (tx.gasLimit || ''),
-          '0x' + tx.to.toLowerCase() || '',
-          '0x' + value,
-          '0x' + (tx.data || '')
+            '0x' + nonce,
+            '0x' + (tx.gasPrice || ''),
+            '0x' + (tx.gasLimit || ''),
+            '0x' + tx.to.toLowerCase() || '',
+            '0x' + value,
+            '0x' + (tx.data || '')
         ];
     }
 
@@ -429,11 +428,48 @@ export class EthereumWallet extends BaseWallet {
         var addInfo = await ethBlockchain.GetAddressInfo({
             address: address
         });
-        
-        if(addInfo == null || addInfo.length == 0){
+
+        if (addInfo == null || addInfo.length == 0) {
             throw new Error("The ETH address is not valid");
         }
 
         return addInfo[0];
+    }
+
+    /**
+     * Estimate the transaction fee (GasLimit)
+     * @param from The wallet address
+     * @param to The receiver address
+     * @param data ERC20 Data (Function call with parameters)
+     * @returns Estimated fee for this transaction
+     */
+    private async EstimateFee(from: string, to: string, data: string): Promise<number> {
+        try {
+            var fee = await this._ethBlockChain.EstimateFee(from, to, data);
+
+            if (fee < 40000)
+                fee = 40000;
+            return fee;
+        } catch (error) {
+            return 65000;
+        }
+    }
+
+    /**
+     * Get ERC20 data for calling "TransferTo" function
+     * @param receivingAddress The receiver address
+     * @param amount Amount to be send
+     * @returns Data in string
+     */
+    private GetErc20TransactionData(receivingAddress: string, amount: BigNumber): string {
+        //! The address must not start with 0x
+        if (receivingAddress.substr(0, 2).toLowerCase() == '0x') {
+            receivingAddress = receivingAddress.substr(2);
+        }
+
+        let amountInHex = amount.toString(16);
+        let amount64 = ("0000000000000000000000000000000000000000000000000000000000000000" + (amountInHex)).substr(-64);
+        //! Data struct is 16Bytes * TransferTo(a9059cbb...) + 20Bytes * receiverAddress + 32Bytes * amount
+        return `a9059cbb000000000000000000000000${receivingAddress}${amount64}`; //! SmartContract function call
     }
 }
