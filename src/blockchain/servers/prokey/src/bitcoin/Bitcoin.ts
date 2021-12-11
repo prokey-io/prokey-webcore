@@ -36,12 +36,17 @@ import {BitcoinBaseCoinInfoModel} from "../../../../../models/CoinInfoModel";
 
 export class BitcoinBlockChain extends ProkeyBaseBlockChain {
     _coinName: string;
+    _lastFeeFetchTime: Date = new Date();
+    _lastFee: BitcoinFee = <BitcoinFee>{};
 
     // Constructor
     constructor(coinName: string)
     {
         super();
         this._coinName = coinName;
+
+        //! Initial time to yesterday
+        this._lastFeeFetchTime.setDate(this._lastFeeFetchTime.getDate() - 1);
     }
 
     /**
@@ -206,6 +211,13 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
      * @returns BitcoinFee
      */
     public async GetTxFee(): Promise<BitcoinFee> {
+
+        //! fetch/update the fee rate every 1 minutes 
+        const secondsPassedFromLastCall = (new Date().getTime() - this._lastFeeFetchTime.getTime()) / 1000;
+        if(this._lastFee != null && secondsPassedFromLastCall < 60 ){
+            return this._lastFee;
+        }
+        
         var fee = <BitcoinFee>{};
         if (this._coinName === 'BTC')
         {
@@ -216,13 +228,16 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
 
                 const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
 
-                var r = await client.execute<any>(request);
+                var r = await client.execute<any>(request);    
                 r.fees.forEach(element => {
-                    if (element.maxMinutes == 360 && fee.economy == null) {
-                        fee.economy = element.minFee;
-                    } else if (element.maxMinutes == 180 && fee.normal == null) {
+                    if ((element.maxMinutes == 360 && fee.economy == null) || 
+                        (element.minMinutes < 180 && fee.economy == null)) {
+                        fee.economy = element.minFee;                        
+                    } else if ((element.maxMinutes == 180 && fee.normal == null) || 
+                               (element.minMinutes < 90 && fee.normal == null)) {
                         fee.normal = element.minFee;
-                    } else if (element.maxMinutes == 60 && fee.high == null) {
+                    } else if ((element.maxMinutes == 60 && fee.high == null) ||
+                               (element.minMinutes < 30 && fee.high == null)) {
                         fee.high = element.minFee;
                     }
                 });

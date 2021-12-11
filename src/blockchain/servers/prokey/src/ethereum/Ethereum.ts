@@ -55,6 +55,7 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
             balance: response[0].balance,
             nonce: response[0].nonce,
             trKeys: response[0].trKeys,
+            transactions: response[0].transactions,
             addressModel: reqAddress.addressModel,
         }];
 
@@ -145,6 +146,10 @@ export class EthereumBlockChain extends ProkeyBaseBlockChain {
             resolve([]);
 
         });
+    }
+
+    public async EstimateFee(from: string, to: string, data: string): Promise<number> {
+        return await this.GetFromServer<number>(`transaction/estimatefee/${this._network}?from=${from}&to=${to}&data=${data}`);        
     }
 }
 
