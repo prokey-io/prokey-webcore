@@ -27,10 +27,10 @@ import {
     ProkeySendTransactionResponse,
 } from '../models/ProkeyGenericModel';
 import {ProkeyBaseBlockChain} from "../ProkeyBaseBlockChain";
-import {httpclient} from "typescript-http-client";
+import { Request,
+        newHttpClient } from 'typescript-http-client';
 import {CoinBaseType, CoinInfo} from "../../../../../coins/CoinInfo";
 import {BitcoinBaseCoinInfoModel} from "../../../../../models/CoinInfoModel";
-import Request = httpclient.Request
 
 export class OmniBlockChain extends ProkeyBaseBlockChain {
     _network = "";
@@ -153,7 +153,7 @@ export class OmniBlockChain extends ProkeyBaseBlockChain {
         try {
 
             // get fee from https://bitcoinfees.earn.com/api/v1/fees/list
-            const client = httpclient.newHttpClient();
+            const client = newHttpClient();
 
             const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
 

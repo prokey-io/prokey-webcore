@@ -1,5 +1,5 @@
-import { httpclient } from "typescript-http-client";
-import Request = httpclient.Request
+import { Request,
+         newHttpClient } from 'typescript-http-client';
 import {RequestAddressInfo} from "../../../../models/GenericWalletModel";
 
 export abstract class ProkeyBaseBlockChain {
@@ -17,7 +17,7 @@ export abstract class ProkeyBaseBlockChain {
      */
     protected async GetFromServer<T>(toServer: string, changeJson?: (json: string) => string) {
 
-        const client = httpclient.newHttpClient();
+        const client = newHttpClient();
 
         const request = new Request('https://blocks.prokey.org/' + toServer, { method: 'GET' });
 
@@ -37,7 +37,7 @@ export abstract class ProkeyBaseBlockChain {
      * @returns Response data from server
      */
     protected async PostToServer<T>(toServer: string, body: any): Promise<T> {
-        const client = httpclient.newHttpClient();
+        const client = newHttpClient();
 
         const request = new Request("https://blocks.prokey.org/" + toServer, {body: body, method: 'POST'});
 
