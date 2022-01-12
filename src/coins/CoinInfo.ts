@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BitcoinBaseCoinInfoModel, 
+import { BitcoinBaseCoinInfoModel,
     EthereumBaseCoinInfoModel,
     Erc20BaseCoinInfoModel,
     MiscCoinInfoModel,
@@ -151,18 +151,18 @@ export class CoinInfo {
      * Returning the sorted list of all coins
      * @param firmwareVersion Specific Version of Prokey which support this coin
      */
-     public static GetAllCoinsInfoByVersion(firmwareVersion: string): Array< BitcoinBaseCoinInfoModel | 
-                                                                        EthereumBaseCoinInfoModel | 
-                                                                        Erc20BaseCoinInfoModel | 
-                                                                        MiscCoinInfoModel | 
-                                                                        OmniCoinInfoModel | 
+     public static GetAllCoinsInfoByVersion(firmwareVersion: string): Array< BitcoinBaseCoinInfoModel |
+                                                                        EthereumBaseCoinInfoModel |
+                                                                        Erc20BaseCoinInfoModel |
+                                                                        MiscCoinInfoModel |
+                                                                        OmniCoinInfoModel |
                                                                         RippleCoinInfoModel> {
 
-        let list = new Array<BitcoinBaseCoinInfoModel | 
-                                EthereumBaseCoinInfoModel | 
-                                Erc20BaseCoinInfoModel | 
-                                MiscCoinInfoModel | 
-                                OmniCoinInfoModel | 
+        let list = new Array<BitcoinBaseCoinInfoModel |
+                                EthereumBaseCoinInfoModel |
+                                Erc20BaseCoinInfoModel |
+                                MiscCoinInfoModel |
+                                OmniCoinInfoModel |
                                 RippleCoinInfoModel>();
 
         //! For all bitcoin base coins
@@ -235,5 +235,8 @@ export class CoinInfo {
         });
 
         return list;
+    }
+    static compareVersions(firmwareVersion, networkVersion) {
+      return compareVersions(firmwareVersion, networkVersion);
     }
 }
