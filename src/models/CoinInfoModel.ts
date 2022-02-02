@@ -27,7 +27,8 @@ export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel |
     Erc20BaseCoinInfoModel |
     RippleCoinInfoModel |
     OmniCoinInfoModel |
-    MiscCoinInfoModel;
+    MiscCoinInfoModel |
+    NemCoinInfoModel;
 
 export interface BaseCoinInfoModel {
     name: string,
@@ -130,4 +131,11 @@ export interface RippleCoinInfoModel extends BaseCoinInfoModel {
     tx_url: string,
     priority: number,
     min_balance: number,
+}
+
+export interface NemCoinInfoModel extends BaseCoinInfoModel {
+  slip44: number;
+  on_device: string,
+  tx_url: string,
+  priority: number,
 }

@@ -3,12 +3,19 @@ import { Request,
 import {RequestAddressInfo} from "../../../../models/GenericWalletModel";
 
 export abstract class ProkeyBaseBlockChain {
+    _url = 'https://blocks.prokey.org/';
 
-    // These functions must be implemented in child classes
+    constructor(url?: string) {
+        if (url) {
+            this._url = url;
+        }
+    }
+
+// These functions must be implemented in child classes
     public abstract GetAddressInfo(reqAddresses: Array<RequestAddressInfo> | RequestAddressInfo);
     public abstract GetTransactions(hash: string);
     public abstract GetLatestTransactions(trs: Array<any>, count : number, offset: number);
-    public abstract BroadCastTransaction(data: string);
+    public abstract BroadCastTransaction(data: any);
 
     /**
      * This is a private helper function to GET data from server
@@ -19,7 +26,7 @@ export abstract class ProkeyBaseBlockChain {
 
         const client = newHttpClient();
 
-        const request = new Request('https://blocks.prokey.org/' + toServer, { method: 'GET' });
+        const request = new Request(this._url + toServer, { method: 'GET' });
 
         let json = await client.execute<string>(request);
 
@@ -39,7 +46,7 @@ export abstract class ProkeyBaseBlockChain {
     protected async PostToServer<T>(toServer: string, body: any): Promise<T> {
         const client = newHttpClient();
 
-        const request = new Request("https://blocks.prokey.org/" + toServer, {body: body, method: 'POST'});
+        const request = new Request(this._url + toServer, {body: body, method: 'POST'});
 
         return JSON.parse(await client.execute<string>(request));
     }
