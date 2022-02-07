@@ -16,6 +16,13 @@ It is recommended to add this repository main branch to your project as a submod
 
   After adding, you need to run 'npm install' in the root directory of this module in order to install all prerequisites.
 
+## Warning!
+if you get any error about node-gyp or sodium-native. try deleting this two files
+  
+  C:\Users\{YourUserName}\AppData\Local\node-gyp
+  
+  C:\Users\{YourUserName}\.node-gyp
+
 ## Supported Coins
  - Bitcoin based coins Like Bitcoin, Litecoin, Bitcoincash, Doge, Bitcoin Gold
  - Ethereum

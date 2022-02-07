@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- *
+ * 
  * Hadi Robati, hadi@prokey.io
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +23,7 @@ import * as ProkeyResponses from '../models/Prokey';
 import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
 import { RippleTransaction } from '../models/Responses-V6';
+import {StellarSignTransactionRequest} from "../models/Prokey";
 import {NEMSignTxMessage} from "../models/Prokey";
 
 export interface ICoinCommands {
@@ -41,7 +42,7 @@ export interface ICoinCommands {
     GetAddresses(
         device: Device,
         path: Array<Array<number> | string>,
-    ): Promise<Array<
+    ): Promise<Array< 
         ProkeyResponses.AddressModel |
         ProkeyResponses.EthereumAddress |
         ProkeyResponses.LiskAddress |
@@ -63,9 +64,10 @@ export interface ICoinCommands {
 
     SignTransaction(
         device: Device,
-        transaction:BitcoinTx |
+        transaction:BitcoinTx | 
                     EthereumTx |
                     RippleTransaction |
+                    StellarSignTransactionRequest |
                     NEMSignTxMessage,
     ): Promise<ProkeyResponses.SignedTx |
         ProkeyResponses.EthereumSignedTx |
@@ -75,7 +77,8 @@ export interface ICoinCommands {
         ProkeyResponses.BinanceSignTx |
         ProkeyResponses.CardanoSignedTx |
         ProkeyResponses.RippleSignedTx |
-        ProkeyResponses.NEMSignedTx>;
+        ProkeyResponses.NEMSignedTx |
+        string>;
 
     SignMessage(
         device: Device,
@@ -84,7 +87,7 @@ export interface ICoinCommands {
         coinName?: string
     ): Promise<ProkeyResponses.MessageSignature |
         ProkeyResponses.LiskMessageSignature>;
-
+    
     VerifyMessage(
         device: Device,
         address: string,

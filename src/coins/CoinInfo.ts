@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- *
+ * 
  * Hadi Robati, hadi@prokey.io
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -95,6 +95,9 @@ export class CoinInfo {
             case CoinBaseType.NEM:
                 c = ProkeyCoinInfoModel.NEM;
                 break;
+            case CoinBaseType.Stellar:
+                c = ProkeyCoinInfoModel.stellar;
+                break;
         }
 
         let f = coinName.toLowerCase();
@@ -140,6 +143,11 @@ export class CoinInfo {
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
                 ci.id = `nem_${ci.shortcut}`;
+                break;
+            case CoinBaseType.Stellar:
+                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+                ci.id = `stellar_${ci.shortcut}`;
                 break;
             default:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
@@ -244,6 +252,18 @@ export class CoinInfo {
                     ...nem,
                     coinBaseType: CoinBaseType.NEM,
                     id: `nem_${nem.shortcut}`,
+                })
+            }
+        });
+
+        //! For all Stellar base coins
+        ProkeyCoinInfoModel.stellar.forEach(stellar => {
+            //! Check the version
+            if(compareVersions(firmwareVersion, stellar.support.optimum) >= 0) {
+                list.push({
+                    ...stellar,
+                    coinBaseType: CoinBaseType.Stellar,
+                    id: `stellar_${stellar.shortcut}`,
                 })
             }
         });

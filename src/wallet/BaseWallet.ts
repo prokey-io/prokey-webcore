@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- *
+ * 
  * Hadi Robati, hadi@prokey.io
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,11 +20,12 @@
 
 import { Device } from "../device/Device";
 import {
-    BitcoinBaseCoinInfoModel,
-    EthereumBaseCoinInfoModel,
-    Erc20BaseCoinInfoModel,
-    OmniCoinInfoModel,
-    RippleCoinInfoModel
+  BitcoinBaseCoinInfoModel,
+  EthereumBaseCoinInfoModel,
+  Erc20BaseCoinInfoModel,
+  OmniCoinInfoModel,
+  RippleCoinInfoModel,
+  StellarCoinInfoModel
 } from '../models/CoinInfoModel'
 import { CoinBaseType, CoinInfo } from '../coins/CoinInfo'
 import { ICoinCommands } from '../device/ICoinCommand'
@@ -54,6 +55,7 @@ import {
     CardanoSignedTx,
     NEMSignedTx,
     NEMSignTxMessage,
+    StellarSignTransactionRequest,
     Success
 } from "../models/Prokey";
 
@@ -68,6 +70,7 @@ import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
 import { RippleCommands } from "../device/RippleCommands";
 import { RippleSignedTx, RippleTransaction } from "../models/Responses-V6";
+import {StellarCommands} from "../device/StellarCommands";
 
 /**
  * This is the base class for all implemented wallets
@@ -82,9 +85,9 @@ export abstract class BaseWallet {
      * @param _coinName Coin name, Check /data/ProkeyCoinsInfo.json
      * @param _coinType Coin type BitcoinBase | EthereumBase | ERC20 | NEM | OMNI | OTHERS
      */
-    constructor(private _device: Device,
-        coinName: string,
-        coinType: CoinBaseType,
+    constructor(private _device: Device, 
+        coinName: string, 
+        coinType: CoinBaseType, 
         chainOrPropertyNumber?: number,
         coinInfo?: BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel) {
         if (_device == null)
@@ -113,6 +116,10 @@ export abstract class BaseWallet {
                 this._commands = new RippleCommands(coinName);
                 break;
 
+            case CoinBaseType.Stellar:
+                this._commands = new StellarCommands(coinName);
+                break;
+
             case CoinBaseType.NEM:
                 this._commands = new NemCommands(coinName);
                 break;
@@ -126,7 +133,7 @@ export abstract class BaseWallet {
     /**
      * Get CoinInfo
      */
-    public GetCoinInfo(): BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel {
+    public GetCoinInfo(): BitcoinBaseCoinInfoModel | EthereumBaseCoinInfoModel | Erc20BaseCoinInfoModel | OmniCoinInfoModel | RippleCoinInfoModel | StellarCoinInfoModel {
         return this._coinInfo;
     }
 
@@ -175,13 +182,13 @@ export abstract class BaseWallet {
      * @param tx transaction to be signed by device
      */
     public async SignTransaction<T extends SignedTx | EthereumSignedTx | EosSignedTx | LiskSignedTx | TezosSignedTx | BinanceSignTx | CardanoSignedTx | RippleSignedTx | NEMSignedTx>
-        (tx: BitcoinTx | EthereumTx | RippleTransaction | NEMSignTxMessage): Promise<T>
+        (tx: BitcoinTx | EthereumTx | RippleTransaction | NEMSignTxMessage | StellarSignTransactionRequest): Promise<T>
     {
         return await this._commands.SignTransaction(this._device, tx) as T;
     }
 
     /**
-     * Sign Message
+     * Sign Message 
      * @param path BIP32 Path to sign the message
      * @param message Message to be signed
      * @param coinName Optional, Only for Bitcoin based coins
@@ -197,7 +204,7 @@ export abstract class BaseWallet {
      * @param message Signed message
      * @param signature Signature
      * @param coinName Optional, Only for Bitcoin based coins
-     * @returns
+     * @returns 
      */
     public async VerifyMessage(address: string, message: string, signature: string, coinName?: string): Promise<Success> {
         const messageBytes = Util.StringToUint8Array(message);

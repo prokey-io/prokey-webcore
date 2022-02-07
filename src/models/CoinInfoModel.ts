@@ -1,7 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +28,8 @@ export type GeneralCoinInfoModel = BitcoinBaseCoinInfoModel |
     RippleCoinInfoModel |
     OmniCoinInfoModel |
     MiscCoinInfoModel |
-    NemCoinInfoModel;
+    NemCoinInfoModel |
+    StellarCoinInfoModel;
 
 export interface BaseCoinInfoModel {
     name: string,
@@ -47,8 +48,8 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     blocktime: number,
     //cashAddrPrefix?: string,
     label: string, // this is human readable format, could be different from "name"
-
-
+    
+    
     dust_limit: number,
     force_bip143: boolean,
     fork_id?: number,
@@ -58,7 +59,7 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     minfee_kb: number,
     segwit: boolean,
     // signed_message_header: in Network
-
+    
     //xPubMagic: number,
     //xPubMagicSegwitNative?: number,
     //xPubMagicSegwit?: number,
@@ -71,7 +72,7 @@ export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {
     blocks?: number,
     decimals: number,
     on_device: string,
-
+    
     tx_url: string,
     timestamp: boolean,
     priority: number,
@@ -137,4 +138,9 @@ export interface NemCoinInfoModel extends BaseCoinInfoModel {
   on_device: string,
   tx_url: string,
   priority: number,
+}
+
+export interface StellarCoinInfoModel extends BaseCoinInfoModel {
+  on_device: string,
+  tx_url: string,
 }
