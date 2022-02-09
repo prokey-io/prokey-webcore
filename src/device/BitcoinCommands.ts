@@ -199,9 +199,15 @@ export class BitcoinCommands implements ICoinCommands {
             address_n = path;
         }
 
+        //! Get the script type
+        //! Default or BIP44 => SPENDADDRESS
+        //! BIP49 => SPENDP2SHWITNESS
+        let scriptType = PathUtil.GetScriptType(address_n);
+
         let param = {
             address_n: address_n,
             show_display: showDisplay,
+            script_type: scriptType,
         }
 
         return await device.SendMessage<ProkeyResponses.PublicKey>('GetPublicKey', param, 'PublicKey');
