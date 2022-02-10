@@ -300,7 +300,7 @@ export class StellarWallet extends BaseWallet {
 
   public GetCoinPath(accountNumber: number): AddressModel {
     return  PathUtil.GetBipPath(
-      CoinBaseType.Ripple,
+      CoinBaseType.Stellar,
       accountNumber,
       super.GetCoinInfo()
     );
