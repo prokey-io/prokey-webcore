@@ -134,7 +134,6 @@ export interface RippleCoinInfoModel extends BaseCoinInfoModel {
 }
 
 export interface NemCoinInfoModel extends BaseCoinInfoModel {
-  slip44: number;
   on_device: string,
   tx_url: string,
   priority: number,

@@ -93,7 +93,7 @@ export class CoinInfo {
                 c = ProkeyCoinInfoModel.ripple;
                 break;
             case CoinBaseType.NEM:
-                c = ProkeyCoinInfoModel.nem;
+                c = ProkeyCoinInfoModel.NEM;
                 break;
         }
 
@@ -237,7 +237,7 @@ export class CoinInfo {
         });
 
         //! For all Nem base coins
-        ProkeyCoinInfoModel.nem.forEach(nem => {
+        ProkeyCoinInfoModel.NEM.forEach(nem => {
             //! Check the version
             if(compareVersions(firmwareVersion, nem.support.optimum) >= 0) {
                 list.push({

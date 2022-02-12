@@ -35756,10 +35756,10 @@
       "min_balance": 20000000
     }
   ],
-  "nem": [
+  "NEM": [
     {
       "name": "Nem",
-      "shortcut": "Nem",
+      "shortcut": "XEM",
       "slip44": 43,
       "decimals": 6,
       "priority": 7,
