@@ -35758,7 +35758,7 @@
   ],
   "NEM": [
     {
-      "name": "Nem",
+      "name": "NEM",
       "shortcut": "XEM",
       "slip44": 43,
       "decimals": 6,
@@ -35774,7 +35774,7 @@
       ]
     },
     {
-      "name": "Nem Testnet",
+      "name": "NEM Testnet",
       "shortcut": "tXEM",
       "slip44": 43,
       "decimals": 6,

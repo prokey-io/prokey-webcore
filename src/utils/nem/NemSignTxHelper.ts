@@ -14,7 +14,7 @@ import {
   NEMImportanceTransaction, NEMMosaicCreationTransaction, NEMProvisionNamespaceTransaction, NEMSupplyChangeTransaction,
   NEMTransaction,
   NEMTransferTransaction
-} from "./NemWalletModels";
+} from "../../wallet/nem/NemWalletModels";
 
 export const NEM_MAINNET = 0x68;
 export const NEM_TESTNET = 0x98;

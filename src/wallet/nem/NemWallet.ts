@@ -1,19 +1,19 @@
-import {BaseWallet} from "./BaseWallet";
-import {NemBlockchain} from "../blockchain/servers/prokey/src/nem/NemBlockchain";
+import {BaseWallet} from "../BaseWallet";
+import {NemBlockchain} from "../../blockchain/servers/prokey/src/nem/NemBlockchain";
 import {
   NemAccount,
   NemAccountInfo,
   NemSubmitTransaction,
   NemTransactionResponse, SubmitTransactionResponse
-} from "../blockchain/servers/prokey/src/nem/NemModels";
-import {CoinBaseType} from "../coins/CoinInfo";
-import {Device} from "../device/Device";
-import {NemCoinInfoModel} from "../models/CoinInfoModel";
-import {AddressModel, NEMAddress, NEMSignedTx, NEMSignTxMessage} from "../models/Prokey";
-import {createTx} from "../utils/nem/NemSignTxHelper";
-import {NEMTransferTransaction} from "../utils/nem/NemWalletModels";
-import {ByteArrayToHexString} from "../utils/utils";
-import * as PathUtil from "../utils/pathUtils";
+} from "../../blockchain/servers/prokey/src/nem/NemModels";
+import {CoinBaseType} from "../../coins/CoinInfo";
+import {Device} from "../../device/Device";
+import {NemCoinInfoModel} from "../../models/CoinInfoModel";
+import {AddressModel, NEMAddress, NEMSignedTx, NEMSignTxMessage} from "../../models/Prokey";
+import {createTx} from "../../utils/nem/NemSignTxHelper";
+import {NEMTransferTransaction} from "./NemWalletModels";
+import {ByteArrayToHexString} from "../../utils/utils";
+import * as PathUtil from "../../utils/pathUtils";
 
 var WAValidator = require('multicoin-address-validator');
 
