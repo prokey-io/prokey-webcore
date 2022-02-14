@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -310,6 +310,12 @@ export type SignTxInfo = {
 };
 
 // NEM types
+export interface NEMGetAddress {
+  address_n: Array<number>,      // BIP-32 path to derive the key from master node
+  network: number,               // Network ID (0x68 = Mainnet, 0x98 = Testnet, 0x60 = Mijin)
+  show_display: boolean          // Optionally show on display before sending the result
+}
+
 export type NEMAddress = {
     address: string,
 }
@@ -324,8 +330,8 @@ export type NEMTransactionCommon = {
     network: number,
     timestamp: number,
     fee: number,
-    deadline: number,
-    signer: string,
+    deadline?: number,
+    signer?: string,
 }
 
 export type NEMMosaic = {
@@ -335,18 +341,18 @@ export type NEMMosaic = {
 }
 
 export type NEMTransfer = {
-    mosaics: Array<NEMMosaic>,
-    public_key: string,
+    mosaics?: Array<NEMMosaic>,
+    public_key?: string,
     recipient: string,
     amount: number,
-    payload: string,
+    payload?: string,
 }
 
 export type NEMProvisionNamespace = {
     namespace: string,
     sink: string,
     fee: number,
-    parent: string,
+    parent?: string,
 }
 
 export type NEMMosaicLevyType = {

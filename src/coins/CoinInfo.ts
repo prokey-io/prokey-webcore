@@ -18,13 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BitcoinBaseCoinInfoModel,
-    EthereumBaseCoinInfoModel,
-    Erc20BaseCoinInfoModel,
-    MiscCoinInfoModel,
-    OmniCoinInfoModel,
-    RippleCoinInfoModel,
- } from "../models/CoinInfoModel";
+import {
+  BitcoinBaseCoinInfoModel,
+  EthereumBaseCoinInfoModel,
+  Erc20BaseCoinInfoModel,
+  MiscCoinInfoModel,
+  OmniCoinInfoModel,
+  RippleCoinInfoModel,
+  NemCoinInfoModel,
+} from "../models/CoinInfoModel";
 
  import * as EthereumNetworks from "../utils/ethereum-networks";
 
@@ -90,6 +92,9 @@ export class CoinInfo {
             case CoinBaseType.Ripple:
                 c = ProkeyCoinInfoModel.ripple;
                 break;
+            case CoinBaseType.NEM:
+                c = ProkeyCoinInfoModel.NEM;
+                break;
         }
 
         let f = coinName.toLowerCase();
@@ -131,6 +136,11 @@ export class CoinInfo {
 
                 ci.id = `ripple_${ci.shortcut}`;
                 break;
+            case CoinBaseType.NEM:
+                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+
+                ci.id = `nem_${ci.shortcut}`;
+                break;
             default:
                 ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
@@ -156,14 +166,16 @@ export class CoinInfo {
                                                                         Erc20BaseCoinInfoModel |
                                                                         MiscCoinInfoModel |
                                                                         OmniCoinInfoModel |
-                                                                        RippleCoinInfoModel> {
+                                                                        RippleCoinInfoModel |
+                                                                        NemCoinInfoModel> {
 
         let list = new Array<BitcoinBaseCoinInfoModel |
                                 EthereumBaseCoinInfoModel |
                                 Erc20BaseCoinInfoModel |
                                 MiscCoinInfoModel |
                                 OmniCoinInfoModel |
-                                RippleCoinInfoModel>();
+                                RippleCoinInfoModel |
+                                NemCoinInfoModel>();
 
         //! For all bitcoin base coins
         ProkeyCoinInfoModel.bitcoin.forEach(coin => {
@@ -220,6 +232,18 @@ export class CoinInfo {
                     ...ripple,
                     coinBaseType: CoinBaseType.Ripple,
                     id: `ripple_${ripple.shortcut}`,
+                })
+            }
+        });
+
+        //! For all Nem base coins
+        ProkeyCoinInfoModel.NEM.forEach(nem => {
+            //! Check the version
+            if(compareVersions(firmwareVersion, nem.support.optimum) >= 0) {
+                list.push({
+                    ...nem,
+                    coinBaseType: CoinBaseType.NEM,
+                    id: `nem_${nem.shortcut}`,
                 })
             }
         });
