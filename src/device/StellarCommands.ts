@@ -36,6 +36,7 @@ export class StellarCommands implements ICoinCommands {
     if (device == null || path == null) {
       return Promise.reject({ success: false, errorCode: GeneralErrors.INVALID_PARAM });
     }
+
     let address_n: Array<number>;
     try {
       address_n = this.GetAddressArray(path);
@@ -83,6 +84,7 @@ export class StellarCommands implements ICoinCommands {
     if (device == null || path == null) {
       return Promise.reject({ success: false, errorCode: GeneralErrors.INVALID_PARAM });
     }
+
     let address_n: Array<number>;
     try {
       address_n = this.GetAddressArray(path);
@@ -90,6 +92,7 @@ export class StellarCommands implements ICoinCommands {
     catch (e) {
       return Promise.reject({ success: false, errorCode: GeneralErrors.PATH_NOT_VALID });
     }
+
     let param = {
       address_n: address_n,
       show_display: showOnProkey,
@@ -163,6 +166,7 @@ export class StellarCommands implements ICoinCommands {
 
       throw e;
     }
+
     let firstOperationRequest = await device.SendMessage<StellarTxOpRequest>('StellarSignTx', transactionForSign.signTxMessage, 'StellarTxOpRequest');
     MyConsole.Info("operation request", firstOperationRequest);
 
@@ -198,6 +202,7 @@ export class StellarCommands implements ICoinCommands {
    */
   private static async prepareTransactionForBroadcast(transactionForSign: StellarSignTransactionRequest, signResponse: StellarSignedTx) {
     let transactionModel = transactionForSign.transactionModel;
+    
     let stringSignature = ByteArrayToHexString(signResponse.signature);
     let decodedPublicKey = StrKey.encodeEd25519PublicKey(Buffer.from(signResponse.public_key));
     transactionModel.addSignature(
