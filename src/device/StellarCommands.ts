@@ -7,7 +7,8 @@ import {
   PublicKey,
   StellarAddress,
   StellarSignedTx,
-  StellarSignTransactionRequest, StellarTxOpRequest,
+  StellarSignTransactionRequest,
+  StellarTxOpRequest,
   Success
 } from "../models/Prokey";
 import {GeneralErrors, GeneralResponse} from "../models/GeneralResponse";
@@ -16,7 +17,6 @@ import * as ProkeyResponses from "../models/Prokey";
 import {MyConsole} from "../utils/console";
 import {StrKey} from "stellar-base";
 import * as Utility from "../utils/utils";
-import { ByteArrayToHexString } from "../utils/utils"
 
 export class StellarCommands implements ICoinCommands {
   private readonly _coinInfo: StellarCoinInfoModel;
@@ -149,12 +149,6 @@ export class StellarCommands implements ICoinCommands {
    * @constructor
    */
   public async SignTransaction(device: Device, transactionForSign: StellarSignTransactionRequest): Promise<string> {
-    var OnFailure = (reason: any) => {
-      device.RemoveOnFailureCallBack(OnFailure);
-
-      throw new Error(`Signing transaction failed: ${reason.message}`);
-    };
-
     MyConsole.Info("StellarSignTx", transactionForSign);
 
     if (!transactionForSign) {
@@ -203,7 +197,7 @@ export class StellarCommands implements ICoinCommands {
   private static async prepareTransactionForBroadcast(transactionForSign: StellarSignTransactionRequest, signResponse: StellarSignedTx) {
     let transactionModel = transactionForSign.transactionModel;
     
-    let stringSignature = ByteArrayToHexString(signResponse.signature);
+    let stringSignature = Utility.ByteArrayToHexString(signResponse.signature);
     let decodedPublicKey = StrKey.encodeEd25519PublicKey(Buffer.from(signResponse.public_key));
     transactionModel.addSignature(
       decodedPublicKey,

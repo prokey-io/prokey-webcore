@@ -15,24 +15,24 @@
 */
 
 export interface StellarFee {
-  "last_ledger": string,
-  "last_ledger_base_fee": string,
-  "ledger_capacity_usage": string,
-  "min_accepted_fee": string,
-  "mode_accepted_fee": string,
-  "p10_accepted_fee": string,
-  "p20_accepted_fee": string,
-  "p30_accepted_fee": string,
-  "p40_accepted_fee": string,
-  "p50_accepted_fee": string,
-  "p60_accepted_fee": string,
-  "p70_accepted_fee": string,
-  "p80_accepted_fee": string,
-  "p90_accepted_fee": string,
-  "p95_accepted_fee": string,
-  "p99_accepted_fee": string,
-  "fee_charged": FeeState,
-  "max_fee": FeeState
+  last_ledger: string,
+  last_ledger_base_fee: string,
+  ledger_capacity_usage: string,
+  min_accepted_fee: string,
+  mode_accepted_fee: string,
+  p10_accepted_fee: string,
+  p20_accepted_fee: string,
+  p30_accepted_fee: string,
+  p40_accepted_fee: string,
+  p50_accepted_fee: string,
+  p60_accepted_fee: string,
+  p70_accepted_fee: string,
+  p80_accepted_fee: string,
+  p90_accepted_fee: string,
+  p95_accepted_fee: string,
+  p99_accepted_fee: string,
+  fee_charged: FeeState,
+  max_fee: FeeState
 }
 
 export interface StellarAccountInfo {
@@ -51,84 +51,84 @@ export interface StellarAccountInfo {
 }
 
 export interface StellarTransactionResponse {
-  "transactions": StellarTransaction[],
-  "nextPageCursor": string,
-  "prevPageCursor": string
+  transactions: StellarTransaction[],
+  nextPageCursor: string,
+  prevPageCursor: string
 }
 
 export interface StellarTransaction {
-  "hash": string,
-  "ledger": number,
-  "created_at": string,
-  "source_account": string,
-  "fee_account": string,
-  "successful": boolean,
-  "paging_token": string,
-  "source_account_sequence": number,
-  "fee_charged": number,
-  "max_fee": number,
-  "operation_count": number,
-  "envelope_xdr": string,
-  "result_xdr": string,
-  "result_meta_xdr": string,
-  "signatures": string[],
-  "fee_bump_transaction": FeeBumpTransaction,
-  "inner_transaction": InnerTransaction,
-  "memo_type": string,
-  "memo": string,
-  "memo_bytes": string
+  hash: string,
+  ledger: number,
+  created_at: string,
+  source_account: string,
+  fee_account: string,
+  successful: boolean,
+  paging_token: string,
+  source_account_sequence: number,
+  fee_charged: number,
+  max_fee: number,
+  operation_count: number,
+  envelope_xdr: string,
+  result_xdr: string,
+  result_meta_xdr: string,
+  signatures: string[],
+  fee_bump_transaction: FeeBumpTransaction,
+  inner_transaction: InnerTransaction,
+  memo_type: string,
+  memo: string,
+  memo_bytes: string
 }
 
 export interface StellarTransactionOperationResponse {
-  "operations": StellarTransactionOperation[],
-  "nextPageCursor": string,
-  "prevPageCursor": string
+  operations: StellarTransactionOperation[],
+  nextPageCursor: string,
+  prevPageCursor: string
 }
 
 export interface StellarTransactionOperation {
-  "id": number,
-  "source_account": string,
-  "paging_token": string,
-  "type": string,
-  "type_i": number,
-  "created_at": string,
-  "transaction_hash": string,
-  "transaction_successful": boolean
-  "asset_type": string,
-  "from": string,
-  "to": string,
-  "amount": string,
-  "name": string,
-  "value": string,
-  "funder": string,
-  "account": string,
-  "starting_balance": string
+  id: number,
+  source_account: string,
+  paging_token: string,
+  type: string,
+  type_i: number,
+  created_at: string,
+  transaction_hash: string,
+  transaction_successful: boolean
+  asset_type: string,
+  from: string,
+  to: string,
+  amount: string,
+  name: string,
+  value: string,
+  funder: string,
+  account: string,
+  starting_balance: string
 }
 
 interface FeeState {
-  "max": string;
-  "min": string;
-  "mode": string;
-  "p10": string;
-  "p20": string;
-  "p30": string;
-  "p40": string;
-  "p50": string;
-  "p60": string;
-  "p70": string;
-  "p80": string;
-  "p90": string;
-  "p95": string;
-  "p99": string;
+  max: string;
+  min: string;
+  mode: string;
+  p10: string;
+  p20: string;
+  p30: string;
+  p40: string;
+  p50: string;
+  p60: string;
+  p70: string;
+  p80: string;
+  p90: string;
+  p95: string;
+  p99: string;
 }
 
 export interface FeeBumpTransaction {
-  "hash": string,
+  hash: string,
   signatures: string[]
 }
 
 export interface InnerTransaction {
-  "hash": string,
+  hash: string,
   signatures: string,
   max_fee: number
 }

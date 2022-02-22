@@ -35809,8 +35809,8 @@
     },
     {
       "name": "Stellar Testnet",
-      "shortcut": "tXlm",
-      "slip44": 148,
+      "shortcut": "tXLM",
+      "slip44": 1,
       "decimals": 0,
       "priority": 100,
       "on_device": "Stellar Testnet",
