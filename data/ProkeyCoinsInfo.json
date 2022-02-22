@@ -35789,5 +35789,39 @@
         "https://wallet.prokey.io"
       ]
     }
+  ],
+  "stellar": [
+    {
+      "name": "Stellar",
+      "shortcut": "XLM",
+      "slip44": 148,
+      "decimals": 0,
+      "priority": 9,
+      "on_device": "Stellar",
+      "test": false,
+      "support": {
+        "optimum": "1.8.0"
+      },
+      "tx_url": "https://stellarchain.io/tx/{hash}",
+      "wallets": [
+        "https://wallet.prokey.io"
+      ]
+    },
+    {
+      "name": "Stellar Testnet",
+      "shortcut": "tXLM",
+      "slip44": 1,
+      "decimals": 0,
+      "priority": 100,
+      "on_device": "Stellar Testnet",
+      "test": true,
+      "support": {
+        "optimum": "1.8.0"
+      },
+      "tx_url": "http://testnet.stellarchain.io/transactions/{hash}",
+      "wallets": [
+        "https://wallet.prokey.io"
+      ]
+    }
   ]
 }

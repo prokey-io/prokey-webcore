@@ -25,7 +25,10 @@
         "rxjs": "~6.2.0",
         "typescript-http-client": "^0.10.1",
         "websocket": "^1.0.34",
-        "crypto-js": "3.1.9-1"
+        "crypto-js": "3.1.9-1",
+        "websocket": "^1.0.34",
+        "sodium-native": "^3.2.1",
+        "stellar-base": "^6.0.1"
     },
     "scripts": {
         "build": "tsc",
