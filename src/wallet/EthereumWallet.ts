@@ -245,9 +245,15 @@ export class EthereumWallet extends BaseWallet {
 
             nonce: nonce.toString(16),
             gasLimit: this._gasLimit.toString(16),
-            //gasPrice: gasPrice.toString(16),
-            maxFeePerGas: "0x1D91CA3600",
-            maxPriorityFeePerGas:"0x59682f00",
+            
+            gasPrice: gasPrice.toString(16),
+            // JUST FOR TESTING EIP1559, NEED TO CHECK DEVICE VERSION IF IT SUPPORTS EIP1559
+            //*********************************/
+            //TODO: Get this parameters
+            //maxFeePerGas: "0x1D91CA3600",
+            //maxPriorityFeePerGas:"0x59682f00",
+            //*********************************/
+
             chainId: coinInfo.chain_id,
         };
 
