@@ -170,6 +170,14 @@ export class EthereumCommands implements ICoinCommands {
         if(!ethTx)
             throw new Error("Ethereum::SignTransaction->parameter ethTx cannot be null");
 
+        if(ethTx.gasPrice == undefined && (ethTx.maxFeePerGas == undefined || ethTx.maxPriorityFeePerGas == undefined)) {
+            throw new Error("Neither gasPrice, maxFeePerGas or maxPriorityFeePerGas provided");
+        }
+
+        if(ethTx.gasPrice != undefined && (ethTx.maxFeePerGas != undefined || ethTx.maxPriorityFeePerGas != undefined)) {
+            throw new Error("Cannot mix Legacy and EIP1559 transaction parameters");
+        }
+
         // reject if already in signing
         if(this._isSigning)
             return Promise.reject("Ethereum::SignTransaction->Already in signig");
@@ -195,10 +203,12 @@ export class EthereumCommands implements ICoinCommands {
                     { name: 'to', type: 'string', obligatory: true },
                     { name: 'value', type: 'string', obligatory: true },
                     { name: 'gasLimit', type: 'string', obligatory: true },
-                    { name: 'gasPrice', type: 'string', obligatory: true },
                     { name: 'nonce', type: 'string', obligatory: true },
+                    { name: 'chainId', type: 'number', obligatory: true },
+                    { name: 'gasPrice', type: 'string'},
+                    { name: 'maxFeePerGas', type: 'string'},
+                    { name: 'maxPriorityFeePerGas', type: 'string'},
                     { name: 'data', type: 'string' },
-                    { name: 'chainId', type: 'number' },
                     { name: 'txType', type: 'number' },
                 ]);
 
@@ -280,11 +290,23 @@ export class EthereumCommands implements ICoinCommands {
         let message: EthTxToProkey = {
             address_n: ethTx.address_n,
             nonce:  Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.nonce)),
-            gas_price: Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.gasPrice)),
             gas_limit: Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.gasLimit)),
             to: ethTx.to,
             value: Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.value)),
-        };
+        }
+
+        if(ethTx.gasPrice != undefined) {
+            message = {
+                ...message,
+                gas_price: Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.gasPrice)),
+            };
+        } else {
+            message = {
+                ...message,
+                max_gas_fee: Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.maxFeePerGas)),
+                max_priority_fee: Util.HexStringToByteArray(Util.StripLeadingZeroes(ethTx.maxPriorityFeePerGas)),
+            }
+        }
 
         if (length !== 0) {
             message = {
@@ -310,7 +332,8 @@ export class EthereumCommands implements ICoinCommands {
 
         try
         {
-            let res = await device.SendMessage<ProkeyResponses.EthereumTxRequest>( 'EthereumSignTx', message, 'EthereumTxRequest' );
+            let msgType = (ethTx.gasPrice != undefined) ? 'EthereumSignTx' : 'EthereumSignTxEIP1559';
+            let res = await device.SendMessage<ProkeyResponses.EthereumTxRequest>( msgType, message, 'EthereumTxRequest' );
 
             return await this.TxReqHandler(
                 device,
@@ -335,7 +358,7 @@ export class EthereumCommands implements ICoinCommands {
         chain_id?: number): Promise<GeneralResponse> {
 
         if (!request.data_length) {
-            let v: number | undefined = request.signature_v;
+            let v = request.signature_v;
             const r = request.signature_r;
             const s = request.signature_s;
             if (v == null || r == null || s == null) {
@@ -346,29 +369,16 @@ export class EthereumCommands implements ICoinCommands {
                 this._isSigning = false;
                 return reject(e);
             }
-    
-            // recompute "v" value
-            if (v && chain_id && v <= 1) {
-                v += 2 * chain_id + 35;
-            }
 
             //! Remove Failure callback
             device.RemoveOnFailureCallBack(this._failedSignHandler);
 
-            if(v) {
-                resolve(
-                    {
-                        v: '0x' + v.toString(16),
-                        r: '0x' + Util.ByteArrayToHexString(r),
-                        s: '0x' + Util.ByteArrayToHexString(s),
-                    })
-            } else {
-                resolve(
-                    {
-                        r: '0x' + r,
-                        s: '0x' + s,
-                    })
-            };
+            resolve(
+                {
+                    v: '0x' + v.toString(16),
+                    r: '0x' + Util.ByteArrayToHexString(r),
+                    s: '0x' + Util.ByteArrayToHexString(s),
+                })
 
             // can accept new siging command
             this._isSigning = false;
