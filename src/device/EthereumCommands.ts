@@ -71,7 +71,13 @@ export class EthereumCommands implements ICoinCommands {
             show_display: showDisplay,
         }
 
-        return await device.SendMessage<ProkeyResponses.EthereumAddress>('EthereumGetAddress', param, 'EthereumAddress');
+        let address = await device.SendMessage<ProkeyResponses.EthereumAddress>('EthereumGetAddress', param, 'EthereumAddress');
+        //! Add 0x prefix to be backward compatible
+        if(address.address.startsWith("0x") == false) {
+            address.address = "0x" + address.address;
+        }
+
+        return address;
     }
     
     /**
