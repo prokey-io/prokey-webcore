@@ -33,12 +33,12 @@ export interface CommonEthereumTxModel  {
 
 export interface LegacyEthereumTxModel extends CommonEthereumTxModel {
     gasPrice: string,
-    maxPriorityFeePerGas: typeof undefined,
-    maxFeePerGas: typeof undefined,
+    maxPriorityFeePerGas?: typeof undefined,
+    maxFeePerGas?: typeof undefined,
 }
 
 export interface Eip1559EthereumTxModel extends CommonEthereumTxModel {
-    gasPrice: typeof undefined,
+    gasPrice?: typeof undefined,
     maxPriorityFeePerGas: string,
     maxFeePerGas: string,
 }
