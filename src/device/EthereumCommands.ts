@@ -192,6 +192,8 @@ export class EthereumCommands implements ICoinCommands {
             // This var is using to reject new request until this one is begin resolved or rejected
             this._isSigning = true;
 
+            const isEIP1559 = ethTx.maxFeePerGas && ethTx.maxPriorityFeePerGas;
+
             this._failedSignHandler = (reason: any) => {
                 // "this" can be null if the user after signing a transaction, change the coin 
                 if(this != undefined)
@@ -204,6 +206,8 @@ export class EthereumCommands implements ICoinCommands {
 
             // Validate the parameters
             try {
+
+                //! Validate common parameters
                 validateParams(ethTx, [
                     { name: 'address_n', type: 'array', obligatory: true },
                     { name: 'to', type: 'string', obligatory: true },
@@ -211,12 +215,23 @@ export class EthereumCommands implements ICoinCommands {
                     { name: 'gasLimit', type: 'string', obligatory: true },
                     { name: 'nonce', type: 'string', obligatory: true },
                     { name: 'chainId', type: 'number', obligatory: true },
-                    { name: 'gasPrice', type: 'string'},
-                    { name: 'maxFeePerGas', type: 'string'},
-                    { name: 'maxPriorityFeePerGas', type: 'string'},
                     { name: 'data', type: 'string' },
                     { name: 'txType', type: 'number' },
                 ]);
+
+                // Validate EIP1559 parameters
+                if(isEIP1559){
+                    validateParams(ethTx, [
+                        { name: 'maxFeePerGas', type: 'string', obligatory: true},
+                        { name: 'maxPriorityFeePerGas', type: 'string', obligatory: true},
+                    ]);
+                }
+                // Validate legacy transaction parameters 
+                else {
+                    validateParams(ethTx, [
+                        { name: 'gasPrice', type: 'string', obligatory: true},
+                    ]);
+                }
 
                 // strip '0x' from values
                 Object.keys(ethTx).map(key => {
