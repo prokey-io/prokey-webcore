@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,11 +39,11 @@ import { MyConsole } from '../utils/console'
 var WAValidator = require('multicoin-address-validator');
 
 /**
- * If you wish to discover and use the bitcoin wallet, you need to use this class. 
+ * If you wish to discover and use the bitcoin wallet, you need to use this class.
  * This class can be used for all bitcoin based coins.
  */
 export class BitcoinWallet extends BaseWallet {
-    private _bitcoinWallet!: WalletModel.BitcoinWalletModel 
+    private _bitcoinWallet!: WalletModel.BitcoinWalletModel
     private _blockchain: BitcoinBlockChain;
 
 
@@ -57,7 +57,7 @@ export class BitcoinWallet extends BaseWallet {
     _TX_DEFAULT_OUTPUT_SIZE = 32;
 
     // TX Details
-    // Version(4) + Marker(1) + Flag(1) + InputCout(usually 1B) + OutputCount(usually 1B) + LockTime(4)        
+    // Version(4) + Marker(1) + Flag(1) + InputCout(usually 1B) + OutputCount(usually 1B) + LockTime(4)
     _TX_DEFAULT_OVERHEAD_SIZE = 12;
 
     /**
@@ -76,7 +76,7 @@ export class BitcoinWallet extends BaseWallet {
      * Start searching blockchain to discovery(find) the wallet
      * @param accountFindCallBack is an optional callback function, this function will be called when an account discovered
      * @param allAccounts true means discover all account, false means discover only the first account
-     * @returns BitcoinWallet with all accounts 
+     * @returns BitcoinWallet with all accounts
      */
     public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.BitcoinAccountInfo) => void, allAccounts = false): Promise<WalletModel.BitcoinWalletModel>{
         this._bitcoinWallet = {
@@ -134,7 +134,7 @@ export class BitcoinWallet extends BaseWallet {
     }
 
     /**
-     * Get blockchain 
+     * Get blockchain
      */
     public GetBlockChain(): BitcoinBlockChain {
         return this._blockchain;
@@ -145,7 +145,7 @@ export class BitcoinWallet extends BaseWallet {
      * @param accountNumber Account Number
      * @param accountInfo account info which were discovered by AccountDiscovert
      */
-    async DiscoverChanges(accountNumber: number, 
+    async DiscoverChanges(accountNumber: number,
         accountInfo: WalletModel.BitcoinAccountInfo)
     {
         var finished: boolean = false;
@@ -168,7 +168,7 @@ export class BitcoinWallet extends BaseWallet {
             // Getting addresses from Prokey
             let addresses = await super.GetAddresses<AddressModel>(justPaths);
 
-            // Creating request parameter 
+            // Creating request parameter
             let reqAddInfo: Array<GenericWalletModel.RequestAddressInfo> = addresses.map(a => {
                 return {
                     address: a.address,
@@ -209,7 +209,7 @@ export class BitcoinWallet extends BaseWallet {
 
         let startIndex = 0;
 
-        do {  
+        do {
 
             let justPaths : Array<Array<number>> = [];
 
@@ -261,7 +261,7 @@ export class BitcoinWallet extends BaseWallet {
                 if(accountInfo.lastUnusedAddress != null && af.exist == true){
                     accountInfo.lastUnusedAddress = undefined;
                 }
-                
+
                 // If there is any transaction for addresses, we have to search for next (20) addresses again
                 // This process will be finished when there is no transaction
                 if(af.exist){
@@ -313,7 +313,7 @@ export class BitcoinWallet extends BaseWallet {
         // For every transaction received from the blockchain
         // These transaction can be either 'send' or 'receive'
         // If any of account addresses appeares on any outputs, this is a 'receive' tx
-        // On the other hand, if any of account addresses appeares on any inputs, this is 'send' tx 
+        // On the other hand, if any of account addresses appeares on any inputs, this is 'send' tx
         listOfTransactions.forEach(tx => {
             let totalReceived = 0;
             let totalSent = 0;
@@ -352,7 +352,7 @@ export class BitcoinWallet extends BaseWallet {
                             isFromOwnWallet = true;
                             break;
                         }
-                        
+
                         if(account.changeAddresses.find(changeAddress => changeAddress.address == tx.inputs[k].address)){
                             isFromOwnWallet = true;
                             break;
@@ -360,7 +360,7 @@ export class BitcoinWallet extends BaseWallet {
                     }
 
                     let status : 'RECEIVED' | 'RECEIVED_FROM_OWN' | 'OMNI_RECEIVED' | 'OMNI_CHANGE' = 'RECEIVED';
-                    
+
                     if(isOpReturn) {
                         if(tx.outputs[i].valueNumber == 546) {
                             status = 'OMNI_RECEIVED';
@@ -411,7 +411,7 @@ export class BitcoinWallet extends BaseWallet {
                 if(addressInInputs == undefined) {
                     addressInInputs = account.changeAddresses.find(ca => ca.address == tx.inputs[i].address);
                 }
-                
+
                 if(addressInInputs != undefined) {
 
                     //! If there is any OP_RETURN output
@@ -419,7 +419,7 @@ export class BitcoinWallet extends BaseWallet {
                     //! If there is any Dust value in outputs
                     let isDust = false;
 
-                    //! Check if there is a OP_RETURN 
+                    //! Check if there is a OP_RETURN
                     for(let k = 0; k<tx.outputs.length; k++) {
                         if(tx.outputs[k].script && tx.outputs[k].script.includes("OP_RETURN")) {
                             isOpReturn = true;
@@ -525,7 +525,7 @@ export class BitcoinWallet extends BaseWallet {
         } else if( selectedFee == 'priority' || selectedFee == 'high' || selectedFee == 'fast' || selectedFee == 'max') {
             txFee = +fees.priority;
         }
-        
+
         let totalSend = 0;
         receivers.forEach(element => {
             totalSend += element.value;
@@ -566,46 +566,46 @@ export class BitcoinWallet extends BaseWallet {
 
         //! Input addresses
         let utxoBal = 0;
-        
+
         // Check if we can handle this transaction only with one Input
         if (sortedUtoxs[0][0].amount >= totalSend + txFee)
         {
             let i = 1;
             for (; i < sortedUtoxs.length; i++) {
-                if (sortedUtoxs[i][0].amount < totalSend + txFee)               
+                if (sortedUtoxs[i][0].amount < totalSend + txFee)
                     break;
             }
             // i is the best utxo for input
             let utxo = sortedUtoxs[i - 1];
-            if (utxo[1] as number[]) {            
+            if (utxo[1] as number[]) {
                 tx.inputs.push({
-                    address_n: (utxo[1] as number[]), 
-                    prev_hash: utxo[0].hash, 
+                    address_n: (utxo[1] as number[]),
+                    prev_hash: utxo[0].hash,
                     prev_index: utxo[0].index,
                     amount: utxo[0].amount.toString()
-                });            
+                });
                 utxoBal = utxo[0].amount;
             }
         }
         else
         {
-            // We need multi input to handle this transaction            
+            // We need multi input to handle this transaction
             for (let i = 0; i < sortedUtoxs.length; i++) {
                 let utxo = sortedUtoxs[i];
-                if (utxo[1] as number[]) {            
-                    tx.inputs.push({address_n: (utxo[1] as number[]), 
-                        prev_hash: utxo[0].hash, 
+                if (utxo[1] as number[]) {
+                    tx.inputs.push({address_n: (utxo[1] as number[]),
+                        prev_hash: utxo[0].hash,
                         prev_index: utxo[0].index,
                         amount: utxo[0].amount.toString()
-                    });            
+                    });
                     utxoBal += utxo[0].amount;
-                }    
+                }
                 if (utxoBal >= totalSend + txFee)
                     break;
             }
         }
 
-        //! Load previous transactions 
+        //! Load previous transactions
         await this.LoadPrevTx(tx, coinInfo.timestamp);
 
         //! Set the TX's outputs
@@ -632,7 +632,7 @@ export class BitcoinWallet extends BaseWallet {
         }
 
         //! Add change - fee
-        let change = utxoBal - totalSend - txFee;        
+        let change = utxoBal - totalSend - txFee;
 
         let changePaths = PathUtil.GetBipPath(
             CoinBaseType.BitcoinBase,   // Coin Type
@@ -645,7 +645,7 @@ export class BitcoinWallet extends BaseWallet {
         //! No change if the change is less than dust
         if(coinInfo.dust_limit != null)
         {
-            if(change >= coinInfo.dust_limit) { 
+            if(change >= coinInfo.dust_limit) {
                 tx.outputs.push({
                     address_n: changePaths.path,
                     amount: change.toFixed(0),
@@ -734,7 +734,7 @@ export class BitcoinWallet extends BaseWallet {
      * Estimate the length of a transaction
      * @param receivers List of receivers (outputs)
      * @param acc The account number you wish to send from
-     * @param txFees The current fee rated 
+     * @param txFees The current fee rated
      */
     public CalculateTxLen(receivers: Array<BitcoinOutputModel>, acc: WalletModel.BitcoinAccountInfo, txFees: WalletModel.BitcoinFee): number {
         if(this._bitcoinWallet.accounts == null){
@@ -745,11 +745,11 @@ export class BitcoinWallet extends BaseWallet {
             s = 10 + 148×n + 34×t, ±n
 
             where n is the number of inputs and t is the number of outputs. The input contribution accounts for outpoint (36 bytes) script length (1 byte),
-            script (107 bytes), and sequence (4 bytes). The output contribution accounts for the value field (8 bytes), script length (1 byte), 
+            script (107 bytes), and sequence (4 bytes). The output contribution accounts for the value field (8 bytes), script length (1 byte),
             and script (25 bytes).
 
-            For example, a one-input, one-output transaction would require on average 193 bytes (10 + 148 + 35). 
-            A more realistic one-input, two-output transaction that allowed the collection of change would require on average 226 bytes (10 + 148 + 2×34). 
+            For example, a one-input, one-output transaction would require on average 193 bytes (10 + 148 + 35).
+            A more realistic one-input, two-output transaction that allowed the collection of change would require on average 226 bytes (10 + 148 + 2×34).
             A six-input, six-output CoinJoin transaction would require on average 1,102 bytes (10 + 6×148 + 6×34), and so on.
         */
         //! We should calculate the size of this transaction to calculate the actual fee
@@ -790,24 +790,24 @@ export class BitcoinWallet extends BaseWallet {
         {
             let i = 1;
             for (; i < sortedUtoxs.length; i++) {
-                if (sortedUtoxs[i][0].amount < totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))               
+                if (sortedUtoxs[i][0].amount < totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
                     break;
             }
             // i is the best utxo for input
             let utxo = sortedUtoxs[i - 1];
-            if (utxo[1] as number[]) {            
+            if (utxo[1] as number[]) {
                 txLen += this._TX_DEFAULT_INPUT_SIZE;
             }
         }
         else
         {
-           // We need multi input to handle this transaction            
+           // We need multi input to handle this transaction
            for (let i = 0; i < sortedUtoxs.length; i++) {
                let utxo = sortedUtoxs[i];
-               if (utxo[1] as number[]) {            
+               if (utxo[1] as number[]) {
                    txLen += this._TX_DEFAULT_INPUT_SIZE;
                    utxoBal += utxo[0].amount;
-               }    
+               }
 
                if (utxoBal >= totalSend + (txFees.economy * txLen))
                    break;
@@ -838,7 +838,7 @@ export class BitcoinWallet extends BaseWallet {
         if(!WAValidator.findCurrency(symbol)){
             return false;
         }
-        
+
         if(coinInfo.test != undefined && coinInfo.test == true) {
             if(WAValidator.validate(address, symbol, 'testnet')) {
                 return true;
@@ -848,13 +848,13 @@ export class BitcoinWallet extends BaseWallet {
                 return true;
             }
         }
-        
+
         return false;
     }
 
     /**
      * Get List of sorted UTXO account
-     * @param acc account to get UTXO from  
+     * @param acc account to get UTXO from
      */
     private CreateSortedUtxoList(acc: WalletModel.BitcoinAccountInfo): Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>{
         //! Create a utxos list
@@ -862,7 +862,7 @@ export class BitcoinWallet extends BaseWallet {
        acc.addresses.forEach(element => {
            let path = (element.addressModel == undefined) ? undefined : element.addressModel.path;
            if (element.exist && element.txInfo != undefined && element.txInfo.utxOs)
-               element.txInfo.utxOs.forEach(utxo => {                    
+               element.txInfo.utxOs.forEach(utxo => {
                    utxos.push([utxo, path]);
                });
        });
@@ -876,7 +876,7 @@ export class BitcoinWallet extends BaseWallet {
        });
 
        let sortedUtoxs = utxos.sort( (a,b) => {
-           if (a[0].amount > b[0].amount) 
+           if (a[0].amount > b[0].amount)
                return -1;
            else if( a[0].amount == b[0].amount)
                return 0;
@@ -889,7 +889,7 @@ export class BitcoinWallet extends BaseWallet {
 
     /**
      * Loading previous transaction of each input(s).
-     * @param tx Bitcoin transaction 
+     * @param tx Bitcoin transaction
      */
     private async LoadPrevTx(tx: BitcoinTx, timestamp: boolean) {
         if(tx.inputs == undefined || tx.inputs.length == 0){
@@ -903,7 +903,7 @@ export class BitcoinWallet extends BaseWallet {
         {
             let txHashIds = "";
             let perRequest = (n > 10) ? 10 : n;
-            
+
             for(let j=0; j<perRequest; j++)
             {
                 txHashIds += "," + tx.inputs[i++].prev_hash;

@@ -30,7 +30,8 @@
       "p2pkh_address_version": 0,
       "p2sh_address_version": 5,
       "cashaddr_prefix": null,
-      "timestamp": false
+      "timestamp": false,
+      "node": "https://btc1.prokey.org/api/"
     },
     {
       "blocktime": 600,
@@ -62,7 +63,8 @@
       "p2pkh_address_version": 111,
       "p2sh_address_version": 196,
       "cashaddr_prefix": null,
-      "timestamp": false
+      "timestamp": false,
+      "node": "https://btctest.prokey.org/api/"
     },
     {
       "blocktime": 600,
@@ -190,7 +192,8 @@
       "p2pkh_address_version": 30,
       "p2sh_address_version": 22,
       "cashaddr_prefix": null,
-      "timestamp": false
+      "timestamp": false,
+      "node": "https://doge1.prokey.org/api/"
     },
     {
       "blocktime": 150,

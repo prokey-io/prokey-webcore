@@ -41,6 +41,7 @@ export interface BaseCoinInfoModel {
     //! Dynamic properties, Not in json file
     coinBaseType: CoinBaseType,
     id: string,
+    node?: string,
 }
 
 export interface BitcoinBaseCoinInfoModel extends BaseCoinInfoModel {

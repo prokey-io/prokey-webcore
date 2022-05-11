@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,13 +29,21 @@ import { Request,
 import { ProkeySendTransactionResponse } from '../models/ProkeyGenericModel';
 import { RequestAddressInfo } from '../../../../../models/GenericWalletModel';
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
-import { BitcoinFee } from "../../../../../models/BitcoinWalletModel";
+import {
+  BitcoinFee, BitcoinTransactionInput, BitcoinTransactionOutput,
+  BitcoinUtxo
+} from "../../../../../models/BitcoinWalletModel";
 import { CoinBaseType, CoinInfo } from "../../../../../coins/CoinInfo";
 import { BitcoinBaseCoinInfoModel } from "../../../../../models/CoinInfoModel";
+import {BlockBookConnector} from "../blockbook/BlockBookConnector";
+import {TransactionInfoModel} from "../blockbook/models/responses/bitcoin/TransactionInfoModel";
+import {AddressInfoModel} from "../blockbook/models/responses/bitcoin/AddressInfoModel";
+import {TransactionDetailInfoModel} from "../blockbook/models/responses/bitcoin/TransactionDetailInfoModel";
 
 
 export class BitcoinBlockChain extends ProkeyBaseBlockChain {
-    _coinName: string;
+    private readonly _blockBookConnector: BlockBookConnector;
+    private readonly _coinInfo: BitcoinBaseCoinInfoModel;
     _lastFeeFetchTime: Date = new Date();
     _lastFee: BitcoinFee = <BitcoinFee>{};
 
@@ -43,8 +51,11 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
     constructor(coinName: string)
     {
         super();
-        this._coinName = coinName;
-
+        this._coinInfo = CoinInfo.Get<BitcoinBaseCoinInfoModel>( coinName, CoinBaseType.BitcoinBase);
+        if (!this._coinInfo.node) {
+          throw new Error('node address is missing');
+        }
+        this._blockBookConnector = new BlockBookConnector(this._coinInfo.node);
         //! Initial time to yesterday
         this._lastFeeFetchTime.setDate(this._lastFeeFetchTime.getDate() - 1);
     }
@@ -69,68 +80,94 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
 
             // address/coin_name/addresses
             try {
-                let addresses: string = "";
-                reqAddresses.forEach(req => {
-                    addresses += "," + req.address;
-                });
-                addresses = addresses.substring(1);
-
-                var prokeyRes: Array<WalletModel.BitcoinBlockchainAddress> = await this.PostToServer<Array<WalletModel.BitcoinBlockchainAddress>>(`address/${this._coinName}/${addresses}`, null);
-
-                if(prokeyRes){
-                    let n = 0;
-                    prokeyRes.forEach(fullAddress => {
-                        let a: WalletModel.BitcoinAddressInfo = {
-                            address: reqAddresses[n].address,
-                            addressModel: reqAddresses[n].addressModel,
-                            balance: fullAddress.totalReceive - fullAddress.totalSent,
-                            exist: fullAddress.totalReceive > 0,
-                            txInfo: fullAddress,
-                        };
-
-                        response.push(a);
-                        
-                        n++;
-                    });  
-                    resolve(response);        
-                    return;            
-                } else {
-                    reject("Get bulk address from server failed");
-                    return;
+                for (const reqAddress of reqAddresses) {
+                    let addressResponse = await this._blockBookConnector.GetAddress<AddressInfoModel>(reqAddress.address);
+                    if (addressResponse) {
+                        response.push({
+                            address: reqAddress.address,
+                            addressModel: reqAddress.addressModel,
+                            balance: +addressResponse.totalReceived - +addressResponse.totalSent,
+                            exist: +addressResponse.totalReceived > 0,
+                            txInfo: {
+                              totalReceive: +addressResponse.totalReceived,
+                              totalSent: +addressResponse.totalSent,
+                              utxOs: new Array<BitcoinUtxo>(),
+                              transactionIds: addressResponse.txids,
+                              transactions: null
+                            },
+                        });
+                    } else {
+                      reject("Get address from server failed");
+                      return;
+                    }
                 }
+                resolve(response);
             } catch (ex) {
                 console.log(ex);
                 reject(ex);
-                return;
             }
+            return;
         });
     }
 
     /**
-     * 
-     * @param hash transaction hash or id seperate each hash or id by comma
-     * @returns Bitcoin transaction info 
+     *
+     * @param hashes transaction hash or id seperate each hash or id by comma
+     * @returns Bitcoin transaction info
      */
-    public async GetTransactions(hash: string): Promise<Array<WalletModel.BitcoinTxInfo>> {
+    public async GetTransactions(hashes: string): Promise<Array<WalletModel.BitcoinTxInfo>> {
         return new Promise<Array<WalletModel.BitcoinTxInfo>>(async (resolve,reject)=>{
             try {
-                let res = await this.CustomGet<Array<WalletModel.BitcoinTxInfo>>(`Transaction/${this._coinName}/${hash}`);
-
-                res.forEach(tx => {
-                    tx.inputs.forEach(inp => {
-                        inp.valueNumber = +inp.value;
-                    });
-
-                    tx.outputs.forEach(out => {
-                        out.valueNumber = +out.value;
+                let txHashes: Array<string> = hashes.split(',');
+                let bitcoinTxsInfo = new Array<WalletModel.BitcoinTxInfo>();
+                let txCounter = 0;
+                for (const txHash of txHashes) {
+                    let transactionRes = await this._blockBookConnector.GetTransaction<TransactionInfoModel>(txHash);
+                    let transactionDetailRes = await this._blockBookConnector.GetTransactionDetail<TransactionDetailInfoModel>(txHash);
+                    bitcoinTxsInfo.push({
+                        index: txCounter,
+                        hash: transactionRes.blockHash,
+                        size: transactionDetailRes.size,
+                        timeStamp: transactionRes.blockTime,
+                        blockNumber: transactionRes.blockHeight,
+                        isCoinBase: transactionRes.vin.length === 0,
+                        inputs: transactionRes.vin.map<BitcoinTransactionInput>(vin => {
+                            return {
+                              index: vin.n,
+                              spentTxHash: vin.txid,
+                              spentOutputIndex: vin.vout,
+                              script: "",
+                              scriptHex: vin.hex,
+                              type: "",
+                              address: vin.addresses[0],
+                              value: vin.value,
+                              sequence: vin.sequence,
+                              valueNumber: +vin.value,
+                            };
+                        }),
+                        outputs: transactionRes.vout.map<BitcoinTransactionOutput>(vout => {
+                            return {
+                                index: vout.n,
+                                spendTxHash: "",
+                                script: "",
+                                scriptHex: vout.hex,
+                                type: "",
+                                address: vout.addresses[0],
+                                value: vout.value,
+                                isSpent: vout.spent,
+                                valueNumber: +vout.value,
+                            }
+                        }),
+                        version: transactionRes.version,
+                        lockTime: transactionDetailRes.locktime,
                     })
-                });
+                }
 
-                resolve(res);
+                resolve(bitcoinTxsInfo);
             }
             catch(ex) {
                 reject(ex);
-            } 
+            }
         });
     }
 
@@ -199,11 +236,36 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
      * @returns ProkeyResBitcoinFee
      */
     public async GetTxFeeFromServer(): Promise<BtcFees> {
-        return this.CustomGet<BtcFees>('Transaction/fee/' + this._coinName );
+        let economicFee = await this._blockBookConnector.GetBitcoinBaseFee(6);
+        let normalFee = await this._blockBookConnector.GetBitcoinBaseFee(3);
+        let primaryFee = await this._blockBookConnector.GetBitcoinBaseFee(1);
+        return {
+            fees: [
+                {feerate: +primaryFee.result, blocks: 1},
+                {feerate: +normalFee.result, blocks: 2},
+                {feerate: +economicFee.result, blocks: 6}
+            ],
+            ecoFees: [
+                {feerate: +primaryFee.result, blocks: 1},
+                {feerate: +normalFee.result, blocks: 2},
+                {feerate: +economicFee.result, blocks: 6}
+            ]
+        };
     }
 
     public async BroadCastTransaction(data: string): Promise<ProkeySendTransactionResponse> {
-        return this.CustomGet<ProkeySendTransactionResponse>(`Transaction/send/${this._coinName}/${data}`);
+        let sendTransactionModel = await this._blockBookConnector.BroadcastTransaction(data);
+        if (sendTransactionModel.result) {
+            return {
+                success: true,
+                payload: sendTransactionModel.result,
+            }
+        }
+        return {
+            success: false,
+            payload: "",
+            errorMessage: sendTransactionModel.error.message
+        }
     }
 
     /**
@@ -212,14 +274,14 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
      */
     public async GetTxFee(): Promise<BitcoinFee> {
 
-        //! fetch/update the fee rate every 1 minutes 
+        //! fetch/update the fee rate every 1 minutes
         const secondsPassedFromLastCall = (new Date().getTime() - this._lastFeeFetchTime.getTime()) / 1000;
         if(this._lastFee != null && secondsPassedFromLastCall < 60 ){
             return this._lastFee;
         }
-        
+
         var fee = <BitcoinFee>{};
-        if (this._coinName === 'BTC')
+        if (this._coinInfo.shortcut === 'BTC')
         {
             try {
 
@@ -228,12 +290,12 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
 
                 const request = new Request("https://bitcoinfees.earn.com/api/v1/fees/list", {method: 'GET'});
 
-                var r = await client.execute<any>(request);    
+                var r = await client.execute<any>(request);
                 r.fees.forEach(element => {
-                    if ((element.maxMinutes == 360 && fee.economy == null) || 
+                    if ((element.maxMinutes == 360 && fee.economy == null) ||
                         (element.minMinutes < 180 && fee.economy == null)) {
-                        fee.economy = element.minFee;                        
-                    } else if ((element.maxMinutes == 180 && fee.normal == null) || 
+                        fee.economy = element.minFee;
+                    } else if ((element.maxMinutes == 180 && fee.normal == null) ||
                                (element.minMinutes < 90 && fee.normal == null)) {
                         fee.normal = element.minFee;
                     } else if ((element.maxMinutes == 60 && fee.high == null) ||
@@ -266,7 +328,7 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
         {
             // We need to use the fee from coin info
             // satoshi/kB -> satoshi/Byte
-            fee.high = fee.normal = fee.economy = CoinInfo.Get<BitcoinBaseCoinInfoModel>( this._coinName, CoinBaseType.BitcoinBase).minfee_kb / 1000;
+            fee.high = fee.normal = fee.economy = this._coinInfo.minfee_kb / 1000;
         }
 
         return fee;
