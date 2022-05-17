@@ -138,3 +138,7 @@ export interface NemCoinInfoModel extends BaseCoinInfoModel {
   tx_url: string,
   priority: number,
 }
+
+export interface CardanoCoinInfoModel extends BaseCoinInfoModel {
+    
+}
