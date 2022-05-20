@@ -399,6 +399,10 @@ export class Device {
     private OnReceiveDataFromBridge(msgPayload: IMessagePayload): void {
         const res = this.ParsMessage(msgPayload);
         if (res.success == false) {
+            // Reject the current command because message parsing failed
+            if(this._sendMessageReject) {
+                this._sendMessageReject(res.errorMessage);
+            }
             return;
         }
 
