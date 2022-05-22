@@ -336,8 +336,13 @@ export class Device {
                 return;
             }
 
+            // resolve will be called when device sends the corresponding response to the message
             this._sendMessageResolve = resolve;
+
+            // reject will be called when device sends failure or unexpected response
             this._sendMessageReject = reject;
+
+            // 
             this._sendMessageExpectedResponseType = expectedResType;
 
             await this.SendMessageByType(messageTypeName, param);
@@ -394,6 +399,10 @@ export class Device {
     private OnReceiveDataFromBridge(msgPayload: IMessagePayload): void {
         const res = this.ParsMessage(msgPayload);
         if (res.success == false) {
+            // Reject the current command because message parsing failed
+            if(this._sendMessageReject) {
+                this._sendMessageReject(res.errorMessage);
+            }
             return;
         }
 
@@ -402,6 +411,10 @@ export class Device {
             console.log("Failure", res);
             if(this._eventEmitters.emit('OnFailure', res.payload) == false){
                 MyConsole.Warning('DeviceCommands::OnReceiveDataFromBridge->OnFailure has no listener');
+            }
+            // Reject the current command because of failure
+            if(this._sendMessageReject) {
+                this._sendMessageReject(res.payload);
             }
         } 
         else if (res.type === 'ButtonRequest') 
