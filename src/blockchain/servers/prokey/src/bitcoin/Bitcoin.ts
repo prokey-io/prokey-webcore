@@ -333,8 +333,4 @@ export class BitcoinBlockChain extends ProkeyBaseBlockChain {
 
         return fee;
     }
-
-    private async CustomGet<T>(toServer: string): Promise<T> {
-        return await this.GetFromServer<T>(toServer, json => json.replace(new RegExp('"value":([0-9]+),',"g"),'"value":"$1",'));
-    }
 }

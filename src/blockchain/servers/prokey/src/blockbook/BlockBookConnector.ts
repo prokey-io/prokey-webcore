@@ -39,13 +39,13 @@ export class BlockBookConnector {
 
     const request = new Request(this._url + toServer, {method: 'GET'});
 
-    let json = await client.execute<string>(request);
+    let json = await client.execute<T>(request);
 
-    if (changeJson) {
-      json = changeJson(json);
-    }
+    // if (changeJson) {
+    //   json = changeJson(json);
+    // }
 
-    return JSON.parse(json) as T;
+    return json;
   }
 
   /**
