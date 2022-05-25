@@ -1273,6 +1273,32 @@ message EthereumSignTx {
 }
 
 /**
+ * Request: Ask device to sign EIP1559 transaction
+ * Note: the first at most 1024 bytes of data MUST be transmitted as part of this message.
+ * @start
+ * @next EthereumTxRequest
+ * @next Failure
+ */
+message EthereumSignTxEIP1559 {
+    repeated uint32 address_n = 1;                       // BIP-32 path to derive the key from master node
+    required bytes nonce = 2;                            // <=256 bit unsigned big endian
+    required bytes max_gas_fee = 3;                      // <=256 bit unsigned big endian (in wei)
+    required bytes max_priority_fee = 4;                 // <=256 bit unsigned big endian (in wei)
+    required bytes gas_limit = 5;                        // <=256 bit unsigned big endian
+    optional string to = 6 [default=''];                 // recipient address
+    required bytes value = 7;                            // <=256 bit unsigned big endian (in wei)
+    optional bytes data_initial_chunk = 8 [default=''];  // The initial data chunk (<= 1024 bytes)
+    required uint32 data_length = 9;                     // Length of transaction payload
+    required uint64 chain_id = 10;                       // Chain Id for EIP 155
+    repeated EthereumAccessList access_list = 11;        // Access List
+
+    message EthereumAccessList {
+        required string address = 1;
+        repeated bytes storage_keys = 2;
+    }
+}
+
+/**
  * Response: Device asks for more data from transaction payload, or returns the signature.
  * If data_length is set, device awaits that many more bytes of payload.
  * Otherwise, the signature_* fields contain the computed transaction signature. All three fields will be present.
@@ -3135,6 +3161,7 @@ enum MessageType {
     MessageType_EthereumGetAddress = 56 [(wire_in) = true];
     MessageType_EthereumAddress = 57 [(wire_out) = true];
     MessageType_EthereumSignTx = 58 [(wire_in) = true];
+    MessageType_EthereumSignTxEIP1559 = 452 [(wire_in) = true];
     MessageType_EthereumTxRequest = 59 [(wire_out) = true];
     MessageType_EthereumTxAck = 60 [(wire_in) = true];
     MessageType_EthereumSignMessage = 64 [(wire_in) = true];

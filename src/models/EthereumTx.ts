@@ -1,6 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
+ * Copyright (C) 2022 Hadi Robati hadi@prokey.io
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type EthereumTx = {
+export interface CommonEthereumTxModel  {
     address_n: Array<number>,
     to: string,
     value: string,
-    gasPrice: string,
     gasLimit: string,
     nonce: string,
     data?: string,
@@ -29,13 +29,30 @@ export type EthereumTx = {
     v?: string,
     r?: string,
     s?: string,
+};
+
+export interface LegacyEthereumTxModel extends CommonEthereumTxModel {
+    gasPrice: string,
+    maxPriorityFeePerGas?: typeof undefined,
+    maxFeePerGas?: typeof undefined,
 }
 
+export interface Eip1559EthereumTxModel extends CommonEthereumTxModel {
+    gasPrice?: typeof undefined,
+    maxPriorityFeePerGas: string,
+    maxFeePerGas: string,
+}
+
+export type EthereumTx = LegacyEthereumTxModel | Eip1559EthereumTxModel;
+
+//! Models to be sent to device
 export type EthTxToProkey = {
     address_n: Array<number>,
     to: string,
     value: Uint8Array,
-    gas_price: Uint8Array,
+    gas_price?: Uint8Array,
+    max_gas_fee?: Uint8Array,
+    max_priority_fee?: Uint8Array,
     gas_limit: Uint8Array,
     nonce: Uint8Array,
     data?: string,
@@ -43,5 +60,4 @@ export type EthTxToProkey = {
     tx_type?: number,
     data_length?: number,
     data_initial_chunk?: Uint8Array,
-    
 }
