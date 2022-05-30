@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +19,7 @@
 */
 
 import { AddressModel } from "./Prokey";
+import {BaseAccountInfoModel} from "./GeneralModels";
 
 /**
  * This is the result of account discovery
@@ -30,9 +31,7 @@ export interface OmniWalletModel {
     accounts?: Array<OmniAccountInfo>,
 }
 
-export interface OmniAccountInfo {
-    balance: number,
-    accountIndex: number,
+export interface OmniAccountInfo extends BaseAccountInfoModel {
     addressModel?: AddressModel,
     trKeys?: Array<number>
 }

@@ -1,7 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@
 */
 
 import { AddressModel } from "./Prokey";
+import {BaseAccountInfoModel} from "./GeneralModels";
 
 
 export interface EthereumAddressInfo {
@@ -40,12 +41,10 @@ export interface EthereumWalletModel {
 /**
  * Each wallet contains a list of accounts
  * Most of the times there is just one account
- * 
+ *
  * Result of account discovery is total account balance and list of Addresses with all info
  */
-export interface EthereumAccountInfo {
-    balance: number,
-    accountIndex: number,
+export interface EthereumAccountInfo extends BaseAccountInfoModel {
     nonce?: number,
     addressModel?: AddressModel,
     transactions?: Array<EthereumTransaction>,
@@ -61,7 +60,7 @@ export interface EthereumTransaction {
     gasPrice?: number,
     block?: number,
     nonce?: number,
-  
+
     //! ERC20
     logIndex?: number,
   }
