@@ -1,7 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@
 */
 
 import { AddressModel } from "./Prokey";
+import {BaseAccountInfoModel} from "./GeneralModels";
 
 /**
  * For account discovery, BitcoinAccountAddressReq should be used as starting point
@@ -27,7 +28,7 @@ export interface BitcoinDiscoveryWalletReq {
     path?: Array<number> | string,
     publicKey?: string,
     pubkeyIndex?: number,
-    isGetUtxo?: boolean,   
+    isGetUtxo?: boolean,
 }
 
 /**
@@ -43,12 +44,10 @@ export interface BitcoinWalletModel {
 /**
  * Each wallet contains a list of accounts
  * Most of the times there are just one account
- * 
+ *
  * Result of account discovery is total account balance and list of Addresses with all info
  */
-export interface BitcoinAccountInfo {
-    balance: number,
-    accountIndex: number,
+export interface BitcoinAccountInfo extends BaseAccountInfoModel{
     isDiscoveryFinished: boolean,
     addresses: Array<BitcoinAddressInfo>,
     changeAddresses: Array<BitcoinAddressInfo>,

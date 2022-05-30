@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,14 +34,16 @@ import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
 import * as EthereumNetworks from "../utils/ethereum-networks";
 import BigNumber from 'bignumber.js';
+import {BaseWalletModel} from "../models/GeneralModels";
+import {EthereumAccountInfo} from "../models/EthereumWalletModel";
 var WAValidator = require('multicoin-address-validator');
 
 /**
- * If you wish to discover and use your ethereum wallet, you need to use this class. 
+ * If you wish to discover and use your ethereum wallet, you need to use this class.
  * This class can be used for all ethereum based coins and all ERC20.
  */
 export class EthereumWallet extends BaseWallet {
-    _ethereumWallet!: WalletModel.EthereumWalletModel;
+    _ethereumWallet!: BaseWalletModel<EthereumAccountInfo>;
     _gasLimit: number = 21000;
     _ethBlockChain: EthereumBlockChain;
     _isErc20 = false;
@@ -73,16 +75,16 @@ export class EthereumWallet extends BaseWallet {
     }
 
     /**
-     * Start searching blockchain to discovery(find) the wallet 
+     * Start searching blockchain to discovery(find) the wallet
      * @param accountFindCallBack is an optional callback function, this function will be called when an account discovered
      * @returns Ethereum Wallet Model
      */
-    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.EthereumAccountInfo) => void, allAccounts = false): Promise<WalletModel.EthereumWalletModel> {
+    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.EthereumAccountInfo) => void, allAccounts = false): Promise<BaseWalletModel<EthereumAccountInfo>> {
         this._ethereumWallet = {
             totalBalance: 0,
         }
 
-        return new Promise<WalletModel.EthereumWalletModel>(async (resolve, reject) => {
+        return new Promise<BaseWalletModel<EthereumAccountInfo>>(async (resolve, reject) => {
             let an = 0;
             try {
 
@@ -101,7 +103,7 @@ export class EthereumWallet extends BaseWallet {
                         accountFindCallBack(account);
                     }
 
-                    // update the total wallet balance 
+                    // update the total wallet balance
                     this._ethereumWallet.totalBalance += account.balance;
 
                     // If there is no transaction, the discovery finished
@@ -270,7 +272,7 @@ export class EthereumWallet extends BaseWallet {
     }
 
     /**
-     * This function will prepare raw RLP encoded transaction to be sent 
+     * This function will prepare raw RLP encoded transaction to be sent
      * @param transaction Signed Transaction
      * @param signedValues Signature values, R,S and V
      */
@@ -307,9 +309,9 @@ export class EthereumWallet extends BaseWallet {
 
     /**
      * To get a list of transaction to show to end user on the UI
-     * @param accountNumber 
-     * @param startIndex 
-     * @param numberOfTransactions 
+     * @param accountNumber
+     * @param startIndex
+     * @param numberOfTransactions
      */
     public async GetTransactionViewList(accountNumber: number = 0, startIndex: number = 0, numberOfTransactions: number): Promise<Array<WalletModel.EthereumTransactionView>> {
         if (this._ethereumWallet.accounts == null) {
