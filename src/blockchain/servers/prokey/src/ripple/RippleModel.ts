@@ -1,7 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,15 +18,15 @@
 
 import { AddressModel } from "../../../../../models/Prokey";
 
-export interface RippleAccountInfo
+export interface RippleAccount
 {
     Account: string,
     AccountTxnID?: string,
     Balance?: string,
-    Domain?: null,
-    EmailHash?: null,
-    MessageKey?: null,
-    RegularKey?: null,
+    Domain?: string,
+    EmailHash?: string,
+    MessageKey?: string,
+    RegularKey?: string,
     OwnerCount: number,
     PreviousTxnID: string,
     PreviousTxnLgrSeq: number,
@@ -62,7 +62,7 @@ export interface RippleTransactionDataInfo
     validated: boolean
 }
 
-export interface RippleDrop 
+export interface RippleDrop
 {
     base_fee: string,
     median_fee: string,
@@ -70,7 +70,7 @@ export interface RippleDrop
     open_ledger_fee: string
 }
 
-export interface RippleFee 
+export interface RippleFee
 {
     current_ledger_size: string,
     current_queue_size: string,

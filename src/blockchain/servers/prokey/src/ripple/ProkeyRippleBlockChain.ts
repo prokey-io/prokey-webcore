@@ -1,7 +1,7 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) Prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
 */
 
 import { ProkeyBaseBlockChain } from "../ProkeyBaseBlockChain";
-import { RippleAccountInfo, RippleFee, RippleTransactionDataInfo } from "./RippleModel";
+import { RippleAccount, RippleFee, RippleTransactionDataInfo } from "./RippleModel";
 import {RequestAddressInfo} from "../../../../../models/GenericWalletModel";
 import * as Utils from '../../../../../utils/utils';
 
@@ -36,10 +36,10 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
      * @param reqAddress Address
      * @returns Ripple account info
      */
-    public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<RippleAccountInfo | null>
-    {        
+    public async GetAddressInfo(reqAddress: RequestAddressInfo): Promise<RippleAccount | null>
+    {
         try {
-            return await this.GetFromServer<RippleAccountInfo>(`address/${this._coinName}/${reqAddress.address}`);
+            return await this.GetFromServer<RippleAccount>(`address/${this._coinName}/${reqAddress.address}`);
         } catch (error) {
             return null;
         }
@@ -72,7 +72,7 @@ export class ProkeyRippleBlockchain extends ProkeyBaseBlockChain {
     /**
      * Broadcasting the transaction
      * @param data Signed data to be broadcasted to network
-     * @returns 
+     * @returns
      */
     public async BroadCastTransaction(data: string): Promise<any> {
         let data_any = data as any;
