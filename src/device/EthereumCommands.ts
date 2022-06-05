@@ -411,8 +411,10 @@ export class EthereumCommands implements ICoinCommands {
 
         const [first, rest] = Util.SplitString(request.data_length * 2, data);
 
+        const dataChunkInHexBytes = Util.HexStringToByteArray(first);
+
         try{
-            let res = await device.SendMessage<ProkeyResponses.EthereumTxRequest>( 'EthereumTxAck', { data_chunk: first }, 'EthereumTxRequest' );
+            let res = await device.SendMessage<ProkeyResponses.EthereumTxRequest>( 'EthereumTxAck', { data_chunk: dataChunkInHexBytes }, 'EthereumTxRequest' );
             return await this.TxReqHandler(
                 device,
                 res,
