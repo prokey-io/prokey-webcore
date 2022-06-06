@@ -24,8 +24,7 @@ import { CoinBaseType } from '../coins/CoinInfo';
 import { Device } from '../device/Device'
 import * as PathUtil from '../utils/pathUtils';
 import { EthereumBaseCoinInfoModel, Erc20BaseCoinInfoModel } from '../models/CoinInfoModel';
-import { EthereumTx, LegacyEthereumTxModel } from '../models/EthereumTx';
-import { RlpEncoding } from "../utils/rlp-encoding"
+import { EthereumTx } from '../models/EthereumTx';
 import * as ProkeyResponses from '../models/Prokey';
 import { EthereumBlockChain } from '../blockchain/servers/prokey/src/ethereum/Ethereum';
 import { GeneralResponse } from '../models/GeneralResponse';
@@ -34,6 +33,7 @@ import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
 import * as EthereumNetworks from "../utils/ethereum-networks";
 import BigNumber from 'bignumber.js';
+import * as EthereumSerializer from "../utils/ethereumTxSerialize"
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -246,12 +246,12 @@ export class EthereumWallet extends BaseWallet {
             nonce: nonce.toString(16),
             gasLimit: this._gasLimit.toString(16),
             
-            gasPrice: gasPrice.toString(16),
+            //gasPrice: gasPrice.toString(16),
             // JUST FOR TESTING EIP1559, NEED TO CHECK DEVICE VERSION IF IT SUPPORTS EIP1559
             //*********************************/
             //TODO: Get this parameters
-            //maxFeePerGas: "0x1D91CA3600",
-            //maxPriorityFeePerGas:"0x59682f00",
+            maxFeePerGas: "0x1D91CA3600",
+            maxPriorityFeePerGas:"0x59682f00",
             //*********************************/
 
             chainId: coinInfo.chain_id,
@@ -283,13 +283,7 @@ export class EthereumWallet extends BaseWallet {
             throw new Error("SignedValues can not be null");
         }
 
-        let rlpTx = "";
-        // Encoding transaction
-        if(transaction.gasPrice != null) {
-            rlpTx = this.legacyTxRlpEncode(transaction, signedValues);
-        } else {
-            rlpTx = this.eip1559TxRlpEncode(transaction, signedValues);
-        }
+        const rlpTx = EthereumSerializer.SerializeEthereumTx(transaction, signedValues);
 
         console.log(rlpTx);
 
@@ -410,50 +404,7 @@ export class EthereumWallet extends BaseWallet {
         return gasPrice * this._gasLimit;
     }
 
-    private legacyTxRlpEncode(tx: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
-        let nonce = (tx.nonce == '0' || tx.nonce == '00') ? '' : tx.nonce;
-        let value = (tx.value == '0' || tx.value == '00') ? '' : tx.value;
-        const { r, s, v } = signedValues;
-        let rlp: RlpEncoding = new RlpEncoding();
-
-        const rawTx = [
-            '0x' + nonce,
-            '0x' + (tx.gasPrice || ''),
-            '0x' + (tx.gasLimit || ''),
-            '0x' + tx.to.toLowerCase() || '',
-            '0x' + value,
-            '0x' + (tx.data || '')
-        ];
-
-        
-        const toEncode = [...rawTx, ...[v, r, s]];
-        return '0x' + rlp.encode(toEncode).toString('hex');
-    }
-
-    private eip1559TxRlpEncode(tx: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
-        let nonce = (tx.nonce == '0' || tx.nonce == '00') ? '' : tx.nonce;
-        let value = (tx.value == '0' || tx.value == '00') ? '' : tx.value;
-        let v = (signedValues.v == '0x0' || signedValues.v == '0x00') ? '' : signedValues.v;
-        
-        let rlp: RlpEncoding = new RlpEncoding();
-
-        console.log(signedValues);
-
-        const rawTx = [
-            '0x' + (tx.chainId || ''),
-            '0x' + nonce,
-            '0x' + tx.maxPriorityFeePerGas,
-            '0x' + tx.maxFeePerGas,
-            '0x' + (tx.gasLimit || ''),
-            '0x' + tx.to.toLowerCase() || '',
-            '0x' + value,
-            '0x' + (tx.data || ''),
-            []
-        ];
-
-        const toEncode = [...rawTx, ...[v, signedValues.r, signedValues.s]];
-        return '0x02' + rlp.encode(toEncode).toString('hex');
-    }
+    
 
     /**
      * Get address info of ETH address, For signing an ERC20 transaction, The last nonce number of ETH address is needed.
