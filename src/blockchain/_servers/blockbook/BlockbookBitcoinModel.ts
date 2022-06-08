@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) 2022 Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,49 +19,25 @@
 */
 
 /**
- * For account discovery, BitcoinAccountAddressReq should be used as starting point
- * @next BitcoinWalletModel
- */
-export interface BitcoinDiscoveryWalletReq {
-    address: string,
-    path?: Array<number> | string,
-    publicKey?: string,
-    pubkeyIndex?: number,
-    isGetUtxo?: boolean,   
-}
-
-/**
- * This is the result of account discovery
- * Result of account discovery is a Wallet with total balance and list of AccountInfo
- * @end
- */
-export interface BitcoinWalletModel {
-    totalBalance: number,
-    accounts?: Array<BitcoinAccountInfo>,
-}
-
-/**
  * This is a bitcoin account model that can be gotten by Public Key
  */
- export interface BitcoinAccountInfo {
-    // account index
-    accountIndex?: number,
+export interface BitcoinAccountInfoModel {
     // current page, starting from 1
-    page?: number, 
+    page?: number; 
     // total number of pages
-    totalPages?: number,
+    totalPages?: number;
     // number of items on page
-    itemsOnPage?: number,
+    itemsOnPage?: number;
     // the requested address(address/xpub)
-    address: string,
+    address: string;
     // total current balance per satoshi
-    balance: string,
+    balance: string;
     // total received
-    totalReceived: string,
+    totalReceived: string;
     // total sent
-    totalSent: string,
+    totalSent: string;
     // the balance which is not confirmed yet
-    unconfirmedBalance: string,
+    unconfirmedBalance: string;
     // number of unconfirmed transactions
     unconfirmedTxs: number;
     // total number of transactions
@@ -278,32 +254,25 @@ export interface BitcoinTransactionOutputDetailModel {
         //    - nulldata when the script is unknown or OP_RETURN
         type: string
     }
-  }
-
-export interface BitcoinFee {
-    economy: number,
-    normal: number,
-    high: number,
 }
 
-export interface BitcoinTransactionView {
-    hash: string,
-    blockNumber: number,
-    date: string,
-    received?: Array<BitcoinReceivedView>,
-    sent?: Array<BitcoinSentView>,
-    fee?: number
-    isOmni: boolean,
+/**
+ * Bitcoin utxo (unspent transaction) model
+ */
+export interface BitcoinUtxoModel {
+    // transaction id
+    txid: string,
+    // prev. output index
+    vout: number,
+    // prev. output value
+    value: string,
+    // block height
+    height: number,
+    // number of confirmations (lastBlockNumber - blockHeight)
+    confirmations: number,
+    // address (if req by xpub)
+    address?: string,
+    // path to the address (if req by xpub)
+    path?: string
 }
 
-export interface BitcoinReceivedView {
-    value: number,
-    address: string,
-    status: 'RECEIVED' |'RECEIVED_FROM_OWN' | 'OMNI_RECEIVED' | 'OMNI_CHANGE',
-}
-
-export interface BitcoinSentView {
-    value: number,
-    address: string,
-    status: 'SENT' | 'SENT_TO_OWN' | 'OMNI_CHANGE' | 'OMNI_SENT',
-}

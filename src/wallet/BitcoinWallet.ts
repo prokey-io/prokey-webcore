@@ -25,7 +25,6 @@ import { BitcoinBaseCoinInfoModel } from '../models/CoinInfoModel';
 import { Device } from '../device/Device'
 import * as PathUtil from '../utils/pathUtils';
 import { BitcoinOutputModel, BitcoinTx } from '../models/BitcoinTx';
-import { BitcoinBlockChain } from '../blockchain/servers/prokey/src/bitcoin/Bitcoin';
 import { BitcoinFeeSelectionModel } from '../models/FeeSelectionModel';
 import {
     RefTransaction,
@@ -33,9 +32,13 @@ import {
     TransactionOutput,
     EnumOutputScriptType,
     AddressModel,
+    PublicKey,
 } from '../models/Prokey';
 import { BaseWallet } from './BaseWallet';
 import { MyConsole } from '../utils/console'
+import { BlockchainServerModel, BlockchainProviders } from '../blockchain/BlockchainProviders';
+import { BitcoinBlockchain } from '../blockchain/BitcoinBlockchain';
+import { BitcoinAccountInfo } from '../models/BitcoinWalletModel';
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -44,7 +47,9 @@ var WAValidator = require('multicoin-address-validator');
  */
 export class BitcoinWallet extends BaseWallet {
     private _bitcoinWallet!: WalletModel.BitcoinWalletModel 
-    private _blockchain: BitcoinBlockChain;
+    private _bitcoinBlockchain: BitcoinBlockchain;
+    private _servers: BlockchainServerModel[];
+
 
 
     // -----------------  Segwit TX -----------------------
@@ -68,8 +73,8 @@ export class BitcoinWallet extends BaseWallet {
     constructor(device: Device, coinName: string) {
         super(device, coinName, CoinBaseType.BitcoinBase);
 
-        // Initial Bitcoin Blockchain
-        this._blockchain = new BitcoinBlockChain(super.GetCoinInfo().shortcut);
+        this._servers = BlockchainProviders.Get(super.GetCoinInfo());
+        this._bitcoinBlockchain = new BitcoinBlockchain(this._servers);
     }
 
     /**
@@ -93,23 +98,31 @@ export class BitcoinWallet extends BaseWallet {
 
                 do {
                     // Get account info from blockchain
-                    let account = await this.AccountDiscovery(accountNumber);
+                    let account: WalletModel.BitcoinAccountInfo;
+                    
+                    if(this._servers.some(s => s.isSupportXpub == true))
+                        account = await this.AccountDiscoveryByPublicKey(accountNumber);
+                    else
+                        account = await this.AccountDiscoveryByAddresses(accountNumber);
+                    
+                    // set account index
+                    account.accountIndex = accountNumber;
 
                     // Add balance
-                    this._bitcoinWallet.totalBalance += account.balance;
+                    this._bitcoinWallet.totalBalance += +account.balance;
 
                     // pust to list of wallet accounts
-                    if(this._bitcoinWallet.accounts)
+                    if(this._bitcoinWallet.accounts) {
                         this._bitcoinWallet.accounts.push(account);
+                    }
 
                     // Calling callback to update the UI
                     if(accountFindCallBack) {
                         accountFindCallBack(account);
                     }
 
-                    // If addresses is more than 20, it means there was at least a transaction in last account
-                    // So need to go for next account
-                    if(allAccounts && account.addresses.length > 20) {
+                    // if there is any transaction, this wallet could have another account
+                    if(allAccounts && account.txs > 0) {
                         accountNumber++;
                         isFinished = false;
                     } else {
@@ -136,8 +149,8 @@ export class BitcoinWallet extends BaseWallet {
     /**
      * Get blockchain 
      */
-    public GetBlockChain(): BitcoinBlockChain {
-        return this._blockchain;
+    public GetBlockChain(): BitcoinBlockchain {
+        return this._bitcoinBlockchain;
     }
 
     /**
@@ -145,60 +158,88 @@ export class BitcoinWallet extends BaseWallet {
      * @param accountNumber Account Number
      * @param accountInfo account info which were discovered by AccountDiscovert
      */
-    async DiscoverChanges(accountNumber: number, 
-        accountInfo: WalletModel.BitcoinAccountInfo)
-    {
-        var finished: boolean = false;
-        var startIndex: number = 0;
+    // async DiscoverChanges(accountNumber: number, 
+    //     accountInfo: WalletModel.BitcoinAccountInfo)
+    // {
+    //     var finished: boolean = false;
+    //     var startIndex: number = 0;
 
-        do {
-            // Makinging a list of paths
-            let justPaths : Array<Array<number>> = [];
-            for(let i=0; i<20; i++) {
-                let path = PathUtil.GetBipPath(
-                    CoinBaseType.BitcoinBase,   // Coin Type
-                    accountNumber,              // Account Number
-                    super.GetCoinInfo(),                   // CoinInfo
-                    true,                       // Change addresses
-                    startIndex + i,             // address index
-                );
-                justPaths.push(path.path);
-            }
+    //     do {
+    //         // Makinging a list of paths
+    //         let justPaths : Array<Array<number>> = [];
+    //         for(let i=0; i<20; i++) {
+    //             let path = PathUtil.GetBipPath(
+    //                 CoinBaseType.BitcoinBase,   // Coin Type
+    //                 accountNumber,              // Account Number
+    //                 super.GetCoinInfo(),                   // CoinInfo
+    //                 true,                       // Change addresses
+    //                 startIndex + i,             // address index
+    //             );
+    //             justPaths.push(path.path);
+    //         }
 
-            // Getting addresses from Prokey
-            let addresses = await super.GetAddresses<AddressModel>(justPaths);
+    //         // Getting addresses from Prokey
+    //         let addresses = await super.GetAddresses<AddressModel>(justPaths);
 
-            // Creating request parameter 
-            let reqAddInfo: Array<GenericWalletModel.RequestAddressInfo> = addresses.map(a => {
-                return {
-                    address: a.address,
-                    addressModel: a,
-                }
-            });
+    //         // Creating request parameter 
+    //         let reqAddInfo: Array<GenericWalletModel.RequestAddressInfo> = addresses.map(a => {
+    //             return {
+    //                 address: a.address,
+    //                 addressModel: a,
+    //             }
+    //         });
 
-            // Getting addresses' info from Blockchain
-            var addInfo = await this._blockchain.GetAddressInfo(reqAddInfo);
+    //         // Getting addresses' info from Blockchain
+    //         var addInfo = await this._blockchain.GetAddressInfo(reqAddInfo);
 
-            addInfo.forEach(af => {
-                accountInfo.balance += af.balance;
-                accountInfo.changeAddresses.push(af);
-                // If there is any transaction for addresses, we have to search for next (20) addresses again
-                // This process will be finished when there is no transaction
-                if(!af.exist) {
-                    finished = true;
-                }
-            });
+    //         addInfo.forEach(af => {
+    //             accountInfo.balance += af.balance;
+    //             accountInfo.changeAddresses.push(af);
+    //             // If there is any transaction for addresses, we have to search for next (20) addresses again
+    //             // This process will be finished when there is no transaction
+    //             if(!af.exist) {
+    //                 finished = true;
+    //             }
+    //         });
 
-            startIndex+=20;
+    //         startIndex+=20;
 
-        } while(!finished);
+    //     } while(!finished);
+    // }
+
+    /**
+     * 
+     * @param accountNumber 
+     * @returns 
+     */
+    public async AccountDiscoveryByPublicKey(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
+        // account path
+        const path = PathUtil.GetBipPath(
+            CoinBaseType.BitcoinBase,   // Coin Type
+            accountNumber,              // Account Number
+            super.GetCoinInfo(),        // CoinInfo
+        );
+
+        // Get publickey from device
+        const publicKey: PublicKey = await super.GetPublicKey(path.path, false);
+
+        // Get account info from blockchain
+        const accInfo: BitcoinAccountInfo = await this._bitcoinBlockchain.GetAccountInfoByPublicKey(publicKey.xpub);
+
+        MyConsole.Info("BitcoinWallet::AccountDiscoveryByPublicKey->Account info:", accInfo);
+
+        return accInfo;
+    }
+
+    public async AccountDiscoveryByAddresses(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
+        return <WalletModel.BitcoinAccountInfo>{};
     }
 
     /**
-     * Account Discovery
+     * Account Discovery by addresses
      * @param accountNumber account number to be discovered
      */
-    public async AccountDiscovery(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
+    /*public async AccountDiscovery(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
         let accountInfo: WalletModel.BitcoinAccountInfo = {
             accountIndex: accountNumber,
             balance: 0,
@@ -279,7 +320,7 @@ export class BitcoinWallet extends BaseWallet {
         } while(!accountInfo.isDiscoveryFinished);
 
         return accountInfo;
-    }
+    }*/
 
     /**
      * This function will return a list of transaction of the account, this function is useful for UI
@@ -302,11 +343,76 @@ export class BitcoinWallet extends BaseWallet {
         const account = this._bitcoinWallet.accounts[accountNumber];
 
         // Retrive transaction list from server
-        let listOfTransactions = await this._blockchain.GetLatestTransactions(account.addresses, numberOfTransactions, startIndex);
+        //let listOfTransactions = await this._blockchain.GetLatestTransactions(account.addresses, numberOfTransactions, startIndex);
 
         let txViewList = new Array<WalletModel.BitcoinTransactionView>();
 
-        if(listOfTransactions == undefined || listOfTransactions.length == 0){
+        // if(account.transactions && account.tokens){
+        //     // For every transaction received from the blockchain
+        //     // These transaction can be either 'send' or 'receive'
+        //     account.transactions.forEach(tx => {
+        //         let received = Array<WalletModel.BitcoinReceivedView>(); 
+        //         let sent = new Array<WalletModel.BitcoinSentView>();
+        //         let isOpReturn = tx.vout.some(o => o.isAddress == false && o.hex && o.hex.substring(0,2) == "6a");
+        //         let isFromOwnWallet = false;
+        //         for(let i=0; i<tx.vin.length; i++){
+        //             if(account.tokens?.find(token => tx.vin[i].isAddress == true && tx.vin[i].addresses[0] == token.name))
+        //             {
+        //                 isFromOwnWallet = true;
+        //                 break;
+        //             }
+        //         }
+
+        //         for(let i=0;i<tx.vout.length; i++) {
+        //             account.tokens?.forEach(add => {
+        //                 if(add.name == tx.vout[i].addresses[0]){
+        //                     received.push({
+        //                         address: add.name,
+        //                         value: +tx.vout[i].value,
+        //                         status: 'RECEIVED'
+        //                     })
+        //                 }
+        //             });
+        //         }
+
+        //         for(let i=0;i<tx.vin.length; i++) {
+        //             account.tokens?.forEach(add => {
+        //                 if(add.name == tx.vin[i].addresses[0]){
+        //                     sent.push({
+        //                         address: add.name,
+        //                         value: +tx.vin[i].value,
+        //                         status: 'SENT'
+        //                     })
+        //                 }
+        //             });
+        //         }
+
+        //         if(received.length > 0){
+        //             txViewList.push({
+        //                 hash: tx.txid,
+        //                 blockNumber: tx.blockHeight,
+        //                 date: new Date(tx.blockTime * 1000).toDateString(),
+        //                 received: received,
+        //                 isOmni: false,
+        //             });
+        //         }
+
+        //         if(sent.length > 0){
+        //             txViewList.push({
+        //                 hash: tx.txid,
+        //                 blockNumber: tx.blockHeight,
+        //                 sent: sent,
+        //                 date: new Date(tx.blockTime * 1000).toDateString(),
+        //                 fee: +tx.fees,
+        //                 isOmni: false,
+        //             })
+        //         }
+        //     })
+        // }
+
+        // return txViewList;
+
+        if(account.transactions == undefined || account.transactions.length == 0){
             return txViewList;
         }
 
@@ -314,7 +420,7 @@ export class BitcoinWallet extends BaseWallet {
         // These transaction can be either 'send' or 'receive'
         // If any of account addresses appeares on any outputs, this is a 'receive' tx
         // On the other hand, if any of account addresses appeares on any inputs, this is 'send' tx 
-        listOfTransactions.forEach(tx => {
+        account.transactions.forEach(tx => {
             let totalReceived = 0;
             let totalSent = 0;
 
@@ -322,8 +428,8 @@ export class BitcoinWallet extends BaseWallet {
 
             let isOmni = false;
             // Check if any of the wallet addresses is available in TX outputs which means the address received fund.
-            for(let i=0;i<tx.outputs.length; i++) {
-                totalReceived += tx.outputs[i].valueNumber;
+            for(let i=0;i<tx.vout.length; i++) {
+                totalReceived += +tx.vout[i].value;
 
                 // To ignore the warning: this._bitcoinWallet.Accounts is possibly undefined
                 if(this._bitcoinWallet.accounts == undefined)
@@ -332,28 +438,23 @@ export class BitcoinWallet extends BaseWallet {
                 // Check if any of the wallet addresses is in output list of transaction
                 // Theoretically, Transaction's output can be contained more than one wallet address
                 // So, for each address, we may need to add a receive record
-                const addressInOutputs = account.addresses.find(element => element.address == tx.outputs[i].address);
+                const addressInOutputs = account.tokens?.find(element => tx.vout[i].isAddress && element.name == tx.vout[i].addresses[0]);
 
                 if(addressInOutputs != undefined) {
                     let isFromOwnWallet = false;
                     let isOpReturn = false;
 
                     //! Check if it's OMNI
-                    for(let j = 0; j<tx.outputs.length; j++) {
-                        if(tx.outputs[j].script && tx.outputs[j].script.includes("OP_RETURN")) {
+                    for(let j = 0; j<tx.vout.length; j++) {
+                        if(tx.vout[j].isAddress == false && tx.vout[j].hex?.substring(0,2) == "6a") {
                             isOpReturn = true;
                             break;
                         }
                     }
 
                     // If this is from OWN wallet addresses?
-                    for(let k=0; k<tx.inputs.length; k++) {
-                        if(account.addresses.find(walletAddress => walletAddress.address == tx.inputs[k].address)) {
-                            isFromOwnWallet = true;
-                            break;
-                        }
-                        
-                        if(account.changeAddresses.find(changeAddress => changeAddress.address == tx.inputs[k].address)){
+                    for(let k=0; k<tx.vin.length; k++) {
+                        if(account.tokens?.find(walletAddress => tx.vin[k].isAddress && walletAddress.name == tx.vin[k].addresses[0])) {
                             isFromOwnWallet = true;
                             break;
                         }
@@ -362,7 +463,7 @@ export class BitcoinWallet extends BaseWallet {
                     let status : 'RECEIVED' | 'RECEIVED_FROM_OWN' | 'OMNI_RECEIVED' | 'OMNI_CHANGE' = 'RECEIVED';
                     
                     if(isOpReturn) {
-                        if(tx.outputs[i].valueNumber == 546) {
+                        if(tx.vout[i].value == "546") {
                             status = 'OMNI_RECEIVED';
                             isOmni = true;
                         } else if(isFromOwnWallet) {
@@ -375,9 +476,9 @@ export class BitcoinWallet extends BaseWallet {
 
 
                     received.push({
-                       address: addressInOutputs.address,
+                       address: addressInOutputs.name,
                        status:  status,
-                       value: tx.outputs[i].valueNumber,
+                       value: +tx.vout[i].value,
                     });
                 }
             }
@@ -385,32 +486,29 @@ export class BitcoinWallet extends BaseWallet {
             // Add received transactions if any
             if(received.length > 0){
                 txViewList.push({
-                    hash: tx.hash,
-                    blockNumber: tx.blockNumber,
-                    date: new Date(tx.timeStamp * 1000).toDateString(),
+                    hash: tx.txid,
+                    blockNumber: tx.blockHeight,
+                    date: new Date(tx.blockTime * 1000).toDateString(),
                     received: received,
                     isOmni: isOmni,
                 });
             }
 
-            for(let i=0; i < tx.inputs.length; i++) {
-                totalSent += tx.inputs[i].valueNumber;
+            for(let i=0; i < tx.vin.length; i++) {
+                totalSent += +tx.vin[i].value;
             }
 
             let sent = new Array<WalletModel.BitcoinSentView>();
 
             // Check if any of the wallet addresses is available in TX inputs which means the address sent fund.
-            for(let i=0; i < tx.inputs.length; i++) {
+            for(let i=0; i < tx.vin.length; i++) {
 
                 // To ignore the warning: this._bitcoinWallet.Accounts is possibly undefined
                 if(this._bitcoinWallet.accounts == undefined)
                     break;
 
                 // Find if there is any wallet address in this transaction's input
-                let addressInInputs = account.addresses.find(aa => aa.address == tx.inputs[i].address);
-                if(addressInInputs == undefined) {
-                    addressInInputs = account.changeAddresses.find(ca => ca.address == tx.inputs[i].address);
-                }
+                let addressInInputs = account.tokens?.find(aa => tx.vin[i].isAddress && aa.name == tx.vin[i].addresses[0]);
                 
                 if(addressInInputs != undefined) {
 
@@ -420,12 +518,12 @@ export class BitcoinWallet extends BaseWallet {
                     let isDust = false;
 
                     //! Check if there is a OP_RETURN 
-                    for(let k = 0; k<tx.outputs.length; k++) {
-                        if(tx.outputs[k].script && tx.outputs[k].script.includes("OP_RETURN")) {
+                    for(let k = 0; k<tx.vout.length; k++) {
+                        if(tx.vout[k].isAddress == false && tx.vout[k].hex?.substring(0,2) == "6a") {
                             isOpReturn = true;
                         }
 
-                        if(tx.outputs[k].valueNumber == 546) {
+                        if(tx.vout[k].value == "546") {
                             isDust = true;
                         }
                     }
@@ -435,32 +533,33 @@ export class BitcoinWallet extends BaseWallet {
                     }
 
                     // To check how much we sent, we need to check the outputs
-                    for( let j=0; j < tx.outputs.length; j++ ) {
+                    for( let j=0; j < tx.vout.length; j++ ) {
                         // If this output is a Change(because the value is returned to our wallet again), ignore it.
-                        if(account.changeAddresses.find(aa => aa.address == tx.outputs[j].address)) {
-                            continue;
-                        }
+                        //TODO: Don't show change address
+                        // if(account.changeAddresses.find(aa => aa.address == tx.vout[j].address)) {
+                        //     continue;
+                        // }
 
                         // To own address, Possibly OMNI
-                        if(account.addresses.find(aa => aa.address == tx.outputs[j].address)){
+                        if(account.tokens?.find(aa => tx.vout[j].isAddress && aa.name == tx.vout[j].addresses[0])){
                             sent.push({
-                                address: tx.outputs[j].address,
-                                value: tx.outputs[j].valueNumber,
-                                status: (isDust && isOpReturn) ? ((tx.outputs[j].valueNumber == 546) ? 'OMNI_SENT' : 'OMNI_CHANGE') : 'SENT_TO_OWN',
+                                address: tx.vout[j].addresses[0],
+                                value: +tx.vout[j].value,
+                                status: (isDust && isOpReturn) ? ((tx.vout[j].value == "546") ? 'OMNI_SENT' : 'OMNI_CHANGE') : 'SENT_TO_OWN',
                             });
 
                             continue;
                         }
 
                         //! Ignore OP_RETURN VALUE 0 TX
-                        if(isOpReturn && tx.outputs[j].valueNumber == 0) {
+                        if(isOpReturn && tx.vout[j].value == "0") {
                             continue;
                         }
 
                         sent.push({
-                            address: tx.outputs[j].address,
-                            status: (isOpReturn && tx.outputs[j].valueNumber == 546) ? 'OMNI_SENT' : 'SENT',
-                            value: tx.outputs[j].valueNumber,
+                            address: tx.vout[j].addresses[0],
+                            status: (isOpReturn && tx.vout[j].value == "546") ? 'OMNI_SENT' : 'SENT',
+                            value: +tx.vout[j].value,
                         });
                     }
 
@@ -471,10 +570,10 @@ export class BitcoinWallet extends BaseWallet {
 
             if(sent.length > 0){
                 txViewList.push({
-                    hash: tx.hash,
-                    blockNumber: tx.blockNumber,
+                    hash: tx.txid,
+                    blockNumber: tx.blockHeight,
                     sent: sent,
-                    date: new Date(tx.timeStamp * 1000).toDateString(),
+                    date: new Date(tx.blockHeight * 1000).toDateString(),
                     fee: totalSent - totalReceived,
                     isOmni: isOmni,
                 })
@@ -538,7 +637,7 @@ export class BitcoinWallet extends BaseWallet {
         }
 
         //! sufficient balance?
-        if((totalSend+txFee) > acc.balance){
+        if((totalSend+txFee) > +acc.balance){
             throw new Error("No sufficient balance in your account");
         }
 
@@ -550,120 +649,122 @@ export class BitcoinWallet extends BaseWallet {
             options: {},
         }
 
-        if(isOverWintered) {
-            tx.options.overwintered = true;
-            tx.options.version = 4;
-            tx.options.version_group_id = 0x892f2085;
-            if(coinInfo.shortcut == "ZEC"){
-                tx.options.branch_id = 3925833126;
-            }
-        }
-
-        //! Create list of account UTXO
-        let sortedUtoxs = this.CreateSortedUtxoList(acc);
-
-        MyConsole.Info("BitcoinWallet::GenerateTransaction->sortedUtoxs:", sortedUtoxs);
-
-        //! Input addresses
-        let utxoBal = 0;
-        
-        // Check if we can handle this transaction only with one Input
-        if (sortedUtoxs[0][0].amount >= totalSend + txFee)
-        {
-            let i = 1;
-            for (; i < sortedUtoxs.length; i++) {
-                if (sortedUtoxs[i][0].amount < totalSend + txFee)               
-                    break;
-            }
-            // i is the best utxo for input
-            let utxo = sortedUtoxs[i - 1];
-            if (utxo[1] as number[]) {            
-                tx.inputs.push({
-                    address_n: (utxo[1] as number[]), 
-                    prev_hash: utxo[0].hash, 
-                    prev_index: utxo[0].index,
-                    amount: utxo[0].amount.toString()
-                });            
-                utxoBal = utxo[0].amount;
-            }
-        }
-        else
-        {
-            // We need multi input to handle this transaction            
-            for (let i = 0; i < sortedUtoxs.length; i++) {
-                let utxo = sortedUtoxs[i];
-                if (utxo[1] as number[]) {            
-                    tx.inputs.push({address_n: (utxo[1] as number[]), 
-                        prev_hash: utxo[0].hash, 
-                        prev_index: utxo[0].index,
-                        amount: utxo[0].amount.toString()
-                    });            
-                    utxoBal += utxo[0].amount;
-                }    
-                if (utxoBal >= totalSend + txFee)
-                    break;
-            }
-        }
-
-        //! Load previous transactions 
-        await this.LoadPrevTx(tx, coinInfo.timestamp);
-
-        //! Set the TX's outputs
-        receivers.forEach(o => {
-            let output: TransactionOutput = {
-                address: o.Address,
-                script_type: EnumOutputScriptType.PAYTOADDRESS,
-                amount: o.value.toFixed(0),
-            }
-
-            tx.outputs.push(output);
-        });
-
-        //! Getting change address
-        let changeIndex = 0;
-        for (let i = 0; i < acc.changeAddresses.length; i++)
-        {
-            if (!acc.changeAddresses[i].exist)
-            {
-                changeIndex = i;
-                break;
-            }
-            changeIndex = i + 1;
-        }
-
-        //! Add change - fee
-        let change = utxoBal - totalSend - txFee;        
-
-        let changePaths = PathUtil.GetBipPath(
-            CoinBaseType.BitcoinBase,   // Coin Type
-            fromAccount,              // Account Number
-            coinInfo,                   // CoinInfo
-            true,                       // Change addresses
-            changeIndex,             // address index
-        );
-
-        //! No change if the change is less than dust
-        if(coinInfo.dust_limit != null)
-        {
-            if(change >= coinInfo.dust_limit) { 
-                tx.outputs.push({
-                    address_n: changePaths.path,
-                    amount: change.toFixed(0),
-                    script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
-                });
-            }
-        }
-        else if (change > 0) {
-            tx.outputs.push({
-                address_n: changePaths.path,
-                amount: change.toFixed(0),
-                script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
-            });
-        }
-
-        MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
-
         return tx;
+
+        // if(isOverWintered) {
+        //     tx.options.overwintered = true;
+        //     tx.options.version = 4;
+        //     tx.options.version_group_id = 0x892f2085;
+        //     if(coinInfo.shortcut == "ZEC"){
+        //         tx.options.branch_id = 3925833126;
+        //     }
+        // }
+
+        // //! Create list of account UTXO
+        // let sortedUtoxs = this.CreateSortedUtxoList(acc);
+
+        // MyConsole.Info("BitcoinWallet::GenerateTransaction->sortedUtoxs:", sortedUtoxs);
+
+        // //! Input addresses
+        // let utxoBal = 0;
+        
+        // // Check if we can handle this transaction only with one Input
+        // if (sortedUtoxs[0][0].amount >= totalSend + txFee)
+        // {
+        //     let i = 1;
+        //     for (; i < sortedUtoxs.length; i++) {
+        //         if (sortedUtoxs[i][0].amount < totalSend + txFee)               
+        //             break;
+        //     }
+        //     // i is the best utxo for input
+        //     let utxo = sortedUtoxs[i - 1];
+        //     if (utxo[1] as number[]) {            
+        //         tx.inputs.push({
+        //             address_n: (utxo[1] as number[]), 
+        //             prev_hash: utxo[0].hash, 
+        //             prev_index: utxo[0].index,
+        //             amount: utxo[0].amount.toString()
+        //         });            
+        //         utxoBal = utxo[0].amount;
+        //     }
+        // }
+        // else
+        // {
+        //     // We need multi input to handle this transaction            
+        //     for (let i = 0; i < sortedUtoxs.length; i++) {
+        //         let utxo = sortedUtoxs[i];
+        //         if (utxo[1] as number[]) {            
+        //             tx.inputs.push({address_n: (utxo[1] as number[]), 
+        //                 prev_hash: utxo[0].hash, 
+        //                 prev_index: utxo[0].index,
+        //                 amount: utxo[0].amount.toString()
+        //             });            
+        //             utxoBal += utxo[0].amount;
+        //         }    
+        //         if (utxoBal >= totalSend + txFee)
+        //             break;
+        //     }
+        // }
+
+        // //! Load previous transactions 
+        // await this.LoadPrevTx(tx, coinInfo.timestamp);
+
+        // //! Set the TX's outputs
+        // receivers.forEach(o => {
+        //     let output: TransactionOutput = {
+        //         address: o.Address,
+        //         script_type: EnumOutputScriptType.PAYTOADDRESS,
+        //         amount: o.value.toFixed(0),
+        //     }
+
+        //     tx.outputs.push(output);
+        // });
+
+        // //! Getting change address
+        // let changeIndex = 0;
+        // /*for (let i = 0; i < acc.changeAddresses.length; i++)
+        // {
+        //     if (!acc.changeAddresses[i].exist)
+        //     {
+        //         changeIndex = i;
+        //         break;
+        //     }
+        //     changeIndex = i + 1;
+        // }*/
+
+        // //! Add change - fee
+        // let change = utxoBal - totalSend - txFee;        
+
+        // let changePaths = PathUtil.GetBipPath(
+        //     CoinBaseType.BitcoinBase,   // Coin Type
+        //     fromAccount,              // Account Number
+        //     coinInfo,                   // CoinInfo
+        //     true,                       // Change addresses
+        //     changeIndex,             // address index
+        // );
+
+        // //! No change if the change is less than dust
+        // if(coinInfo.dust_limit != null)
+        // {
+        //     if(change >= coinInfo.dust_limit) { 
+        //         tx.outputs.push({
+        //             address_n: changePaths.path,
+        //             amount: change.toFixed(0),
+        //             script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+        //         });
+        //     }
+        // }
+        // else if (change > 0) {
+        //     tx.outputs.push({
+        //         address_n: changePaths.path,
+        //         amount: change.toFixed(0),
+        //         script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+        //     });
+        // }
+
+        // MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
+
+        // return tx;
     }
 
     /**
@@ -671,7 +772,7 @@ export class BitcoinWallet extends BaseWallet {
      * @param txData Signed Transaction to be sent to the network
      */
     public async SendTransaction(txData: string){
-        return this._blockchain.BroadCastTransaction(txData);
+        return this._bitcoinBlockchain.BroadCastTransaction(txData);
     }
 
     /**
@@ -712,7 +813,7 @@ export class BitcoinWallet extends BaseWallet {
         let acc = this._bitcoinWallet.accounts[fromAccount];
 
         // Get the current fees from blockchain
-        let txFees = await this._blockchain.GetTxFee();
+        let txFees = await this._bitcoinBlockchain.GetTxFee();
 
         // Calculate transaction length
         let txLen = this.CalculateTxLen(receivers, acc, txFees);
@@ -769,7 +870,7 @@ export class BitcoinWallet extends BaseWallet {
         txLen += this._TX_DEFAULT_OUTPUT_SIZE;
 
         //! Create list of account UTXO
-        let sortedUtoxs = this.CreateSortedUtxoList(acc);
+        let sortedUtoxs = []//this.CreateSortedUtxoList(acc);
         if(sortedUtoxs.length == 0) {
             MyConsole.Info("No UTXO");
             //! Bitcoin based transactions has 1 input at least
@@ -786,33 +887,33 @@ export class BitcoinWallet extends BaseWallet {
         });
 
         // Check if we can handle this transaction only with one Input
-        if (sortedUtoxs[0][0].amount >= totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
-        {
-            let i = 1;
-            for (; i < sortedUtoxs.length; i++) {
-                if (sortedUtoxs[i][0].amount < totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))               
-                    break;
-            }
-            // i is the best utxo for input
-            let utxo = sortedUtoxs[i - 1];
-            if (utxo[1] as number[]) {            
-                txLen += this._TX_DEFAULT_INPUT_SIZE;
-            }
-        }
-        else
-        {
-           // We need multi input to handle this transaction            
-           for (let i = 0; i < sortedUtoxs.length; i++) {
-               let utxo = sortedUtoxs[i];
-               if (utxo[1] as number[]) {            
-                   txLen += this._TX_DEFAULT_INPUT_SIZE;
-                   utxoBal += utxo[0].amount;
-               }    
+        // if (sortedUtoxs[0][0].amount >= totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
+        // {
+        //     let i = 1;
+        //     for (; i < sortedUtoxs.length; i++) {
+        //         if (sortedUtoxs[i][0].amount < totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))               
+        //             break;
+        //     }
+        //     // i is the best utxo for input
+        //     let utxo = sortedUtoxs[i - 1];
+        //     if (utxo[1] as number[]) {            
+        //         txLen += this._TX_DEFAULT_INPUT_SIZE;
+        //     }
+        // }
+        // else
+        // {
+        //    // We need multi input to handle this transaction            
+        //    for (let i = 0; i < sortedUtoxs.length; i++) {
+        //        let utxo = sortedUtoxs[i];
+        //        if (utxo[1] as number[]) {            
+        //            txLen += this._TX_DEFAULT_INPUT_SIZE;
+        //            utxoBal += utxo[0].amount;
+        //        }    
 
-               if (utxoBal >= totalSend + (txFees.economy * txLen))
-                   break;
-           }
-        }
+        //        if (utxoBal >= totalSend + (txFees.economy * txLen))
+        //            break;
+        //    }
+        // }
 
         return txLen;
     }
@@ -856,7 +957,7 @@ export class BitcoinWallet extends BaseWallet {
      * Get List of sorted UTXO account
      * @param acc account to get UTXO from  
      */
-    private CreateSortedUtxoList(acc: WalletModel.BitcoinAccountInfo): Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>{
+    /*private CreateSortedUtxoList(acc: WalletModel.BitcoinAccountInfo): Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>{
         //! Create a utxos list
        var utxos = new Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>();
        acc.addresses.forEach(element => {
@@ -885,74 +986,74 @@ export class BitcoinWallet extends BaseWallet {
        });
 
        return sortedUtoxs;
-    }
+    }*/
 
     /**
      * Loading previous transaction of each input(s).
      * @param tx Bitcoin transaction 
      */
-    private async LoadPrevTx(tx: BitcoinTx, timestamp: boolean) {
-        if(tx.inputs == undefined || tx.inputs.length == 0){
-            throw new Error("Transaction inputs cannot be null or empty")
-        }
+    // private async LoadPrevTx(tx: BitcoinTx, timestamp: boolean) {
+    //     if(tx.inputs == undefined || tx.inputs.length == 0){
+    //         throw new Error("Transaction inputs cannot be null or empty")
+    //     }
 
-        tx.refTxs = new Array<RefTransaction>();
-        let n = tx.inputs.length;
-        let i = 0;
-        while(n > 0)
-        {
-            let txHashIds = "";
-            let perRequest = (n > 10) ? 10 : n;
+    //     tx.refTxs = new Array<RefTransaction>();
+    //     let n = tx.inputs.length;
+    //     let i = 0;
+    //     while(n > 0)
+    //     {
+    //         let txHashIds = "";
+    //         let perRequest = (n > 10) ? 10 : n;
             
-            for(let j=0; j<perRequest; j++)
-            {
-                txHashIds += "," + tx.inputs[i++].prev_hash;
-                n--;
-            }
+    //         for(let j=0; j<perRequest; j++)
+    //         {
+    //             txHashIds += "," + tx.inputs[i++].prev_hash;
+    //             n--;
+    //         }
 
-            //! Removing the first ','
-            txHashIds = txHashIds.substring(1);
+    //         //! Removing the first ','
+    //         txHashIds = txHashIds.substring(1);
 
-            let prevTxs = await this._blockchain.GetTransactions(txHashIds);
+    //         let prevTxs = await this._blockchain.GetTransactions(txHashIds);
 
-            if(prevTxs == null || prevTxs.length != perRequest) {
-                throw new Error("PrevTx are not set correctly")
-            }
+    //         if(prevTxs == null || prevTxs.length != perRequest) {
+    //             throw new Error("PrevTx are not set correctly")
+    //         }
 
-            prevTxs.forEach(prev => {
-                let ref: RefTransaction = {
-                    hash: prev.hash,
-                    version: prev.version,
-                    lock_time: prev.lockTime,
-                    bin_outputs: [],
-                    inputs: [],
-                }
+    //         prevTxs.forEach(prev => {
+    //             let ref: RefTransaction = {
+    //                 hash: prev.hash,
+    //                 version: prev.version,
+    //                 lock_time: prev.lockTime,
+    //                 bin_outputs: [],
+    //                 inputs: [],
+    //             }
 
-                if(timestamp == true){
-                    ref.timestamp = prev.timeStamp;
-                }
+    //             if(timestamp == true){
+    //                 ref.timestamp = prev.timeStamp;
+    //             }
 
-                prev.inputs.forEach( inp => {
-                    ref.inputs.push({
-                        prev_hash: inp.spentTxHash,
-                        prev_index: inp.spentOutputIndex,
-                        sequence: inp.sequence,
-                        script_sig: inp.scriptHex,
-                    });
-                });
+    //             prev.inputs.forEach( inp => {
+    //                 ref.inputs.push({
+    //                     prev_hash: inp.spentTxHash,
+    //                     prev_index: inp.spentOutputIndex,
+    //                     sequence: inp.sequence,
+    //                     script_sig: inp.scriptHex,
+    //                 });
+    //             });
 
-                prev.outputs.forEach( out => {
-                    ref.bin_outputs.push({
-                        amount: out.value,
-                        script_pubkey: out.scriptHex,
-                    })
-                });
+    //             prev.outputs.forEach( out => {
+    //                 ref.bin_outputs.push({
+    //                     amount: out.value,
+    //                     script_pubkey: out.scriptHex,
+    //                 })
+    //             });
 
-                if(tx.refTxs){
-                    tx.refTxs.push(ref);
-                }
-            });
-        }
-    }
+    //             if(tx.refTxs){
+    //                 tx.refTxs.push(ref);
+    //             }
+    //         });
+    //     }
+    // }
 }
 
