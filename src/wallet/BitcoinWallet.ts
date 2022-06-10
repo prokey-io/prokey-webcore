@@ -38,7 +38,6 @@ import { BaseWallet } from './BaseWallet';
 import { MyConsole } from '../utils/console'
 import { BlockchainServerModel, BlockchainProviders } from '../blockchain/BlockchainProviders';
 import { BitcoinBlockchain } from '../blockchain/BitcoinBlockchain';
-import { BitcoinAccountInfo } from '../models/BitcoinWalletModel';
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -224,7 +223,7 @@ export class BitcoinWallet extends BaseWallet {
         const publicKey: PublicKey = await super.GetPublicKey(path.path, false);
 
         // Get account info from blockchain
-        const accInfo: BitcoinAccountInfo = await this._bitcoinBlockchain.GetAccountInfoByPublicKey(publicKey.xpub);
+        const accInfo = await this._bitcoinBlockchain.GetAccountInfoByPublicKey(publicKey.xpub);
 
         MyConsole.Info("BitcoinWallet::AccountDiscoveryByPublicKey->Account info:", accInfo);
 
@@ -347,72 +346,12 @@ export class BitcoinWallet extends BaseWallet {
 
         let txViewList = new Array<WalletModel.BitcoinTransactionView>();
 
-        // if(account.transactions && account.tokens){
-        //     // For every transaction received from the blockchain
-        //     // These transaction can be either 'send' or 'receive'
-        //     account.transactions.forEach(tx => {
-        //         let received = Array<WalletModel.BitcoinReceivedView>(); 
-        //         let sent = new Array<WalletModel.BitcoinSentView>();
-        //         let isOpReturn = tx.vout.some(o => o.isAddress == false && o.hex && o.hex.substring(0,2) == "6a");
-        //         let isFromOwnWallet = false;
-        //         for(let i=0; i<tx.vin.length; i++){
-        //             if(account.tokens?.find(token => tx.vin[i].isAddress == true && tx.vin[i].addresses[0] == token.name))
-        //             {
-        //                 isFromOwnWallet = true;
-        //                 break;
-        //             }
-        //         }
+        //TODO: if account.transactions == undefined, we can get transaction using API
+        if(account.transactions == undefined){
+            return txViewList;
+        }
 
-        //         for(let i=0;i<tx.vout.length; i++) {
-        //             account.tokens?.forEach(add => {
-        //                 if(add.name == tx.vout[i].addresses[0]){
-        //                     received.push({
-        //                         address: add.name,
-        //                         value: +tx.vout[i].value,
-        //                         status: 'RECEIVED'
-        //                     })
-        //                 }
-        //             });
-        //         }
-
-        //         for(let i=0;i<tx.vin.length; i++) {
-        //             account.tokens?.forEach(add => {
-        //                 if(add.name == tx.vin[i].addresses[0]){
-        //                     sent.push({
-        //                         address: add.name,
-        //                         value: +tx.vin[i].value,
-        //                         status: 'SENT'
-        //                     })
-        //                 }
-        //             });
-        //         }
-
-        //         if(received.length > 0){
-        //             txViewList.push({
-        //                 hash: tx.txid,
-        //                 blockNumber: tx.blockHeight,
-        //                 date: new Date(tx.blockTime * 1000).toDateString(),
-        //                 received: received,
-        //                 isOmni: false,
-        //             });
-        //         }
-
-        //         if(sent.length > 0){
-        //             txViewList.push({
-        //                 hash: tx.txid,
-        //                 blockNumber: tx.blockHeight,
-        //                 sent: sent,
-        //                 date: new Date(tx.blockTime * 1000).toDateString(),
-        //                 fee: +tx.fees,
-        //                 isOmni: false,
-        //             })
-        //         }
-        //     })
-        // }
-
-        // return txViewList;
-
-        if(account.transactions == undefined || account.transactions.length == 0){
+        if(account.transactions.length == 0) {
             return txViewList;
         }
 
@@ -421,30 +360,26 @@ export class BitcoinWallet extends BaseWallet {
         // If any of account addresses appeares on any outputs, this is a 'receive' tx
         // On the other hand, if any of account addresses appeares on any inputs, this is 'send' tx 
         account.transactions.forEach(tx => {
-            let totalReceived = 0;
-            let totalSent = 0;
-
             let received = Array<WalletModel.BitcoinReceivedView>();
 
             let isOmni = false;
             // Check if any of the wallet addresses is available in TX outputs which means the address received fund.
             for(let i=0;i<tx.vout.length; i++) {
-                totalReceived += +tx.vout[i].value;
-
-                // To ignore the warning: this._bitcoinWallet.Accounts is possibly undefined
-                if(this._bitcoinWallet.accounts == undefined)
-                    break;
+                // ignore this output if it's change
+                if(account.changeAddresses?.find(ca => tx.vout[i].isAddress && ca.address == tx.vout[i].addresses[0])){
+                    continue;
+                }
 
                 // Check if any of the wallet addresses is in output list of transaction
                 // Theoretically, Transaction's output can be contained more than one wallet address
                 // So, for each address, we may need to add a receive record
                 const addressInOutputs = account.tokens?.find(element => tx.vout[i].isAddress && element.name == tx.vout[i].addresses[0]);
 
-                if(addressInOutputs != undefined) {
+                if(addressInOutputs) {
                     let isFromOwnWallet = false;
                     let isOpReturn = false;
 
-                    //! Check if it's OMNI
+                    //! Check if it's OMNI/OP_RETURN transaction
                     for(let j = 0; j<tx.vout.length; j++) {
                         if(tx.vout[j].isAddress == false && tx.vout[j].hex?.substring(0,2) == "6a") {
                             isOpReturn = true;
@@ -452,7 +387,7 @@ export class BitcoinWallet extends BaseWallet {
                         }
                     }
 
-                    // If this is from OWN wallet addresses?
+                    // If this is from OWN wallet? You can send BTC to your another address
                     for(let k=0; k<tx.vin.length; k++) {
                         if(account.tokens?.find(walletAddress => tx.vin[k].isAddress && walletAddress.name == tx.vin[k].addresses[0])) {
                             isFromOwnWallet = true;
@@ -463,6 +398,7 @@ export class BitcoinWallet extends BaseWallet {
                     let status : 'RECEIVED' | 'RECEIVED_FROM_OWN' | 'OMNI_RECEIVED' | 'OMNI_CHANGE' = 'RECEIVED';
                     
                     if(isOpReturn) {
+                        // is it dust
                         if(tx.vout[i].value == "546") {
                             status = 'OMNI_RECEIVED';
                             isOmni = true;
@@ -492,10 +428,6 @@ export class BitcoinWallet extends BaseWallet {
                     received: received,
                     isOmni: isOmni,
                 });
-            }
-
-            for(let i=0; i < tx.vin.length; i++) {
-                totalSent += +tx.vin[i].value;
             }
 
             let sent = new Array<WalletModel.BitcoinSentView>();
@@ -535,10 +467,9 @@ export class BitcoinWallet extends BaseWallet {
                     // To check how much we sent, we need to check the outputs
                     for( let j=0; j < tx.vout.length; j++ ) {
                         // If this output is a Change(because the value is returned to our wallet again), ignore it.
-                        //TODO: Don't show change address
-                        // if(account.changeAddresses.find(aa => aa.address == tx.vout[j].address)) {
-                        //     continue;
-                        // }
+                        if(account.changeAddresses?.find(aa => tx.vout[j].isAddress && aa.address == tx.vout[j].addresses[0])) {
+                             continue;
+                        }
 
                         // To own address, Possibly OMNI
                         if(account.tokens?.find(aa => tx.vout[j].isAddress && aa.name == tx.vout[j].addresses[0])){
@@ -573,8 +504,8 @@ export class BitcoinWallet extends BaseWallet {
                     hash: tx.txid,
                     blockNumber: tx.blockHeight,
                     sent: sent,
-                    date: new Date(tx.blockHeight * 1000).toDateString(),
-                    fee: totalSent - totalReceived,
+                    date: new Date(tx.blockTime * 1000).toDateString(),
+                    fee: +tx.fees,
                     isOmni: isOmni,
                 })
             }

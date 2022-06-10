@@ -26,6 +26,9 @@ import { BlockbookServer } from './_servers/blockbook/BlockbookServer';
 import { BlockbookDetails, BlockbookRequestDetails, BlockbookTokens } from './_servers/blockbook/BlockbookRequestModels';
 import { MyConsole } from '../utils/console';
 import { BlockbookTransactionResult } from './_servers/blockbook/BlockbookCommonModel';
+import { BitcoinAccountInfoModel } from './_servers/blockbook/BlockbookBitcoinModel';
+import { AddressModel } from '../models/Prokey';
+import * as PathUtil from '../utils/pathUtils';
 
 export class BitcoinBlockchain extends BlockchainBase {
     
@@ -34,8 +37,28 @@ export class BitcoinBlockchain extends BlockchainBase {
         super(servers);
     }
 
-    public GetAddressInfo(reqAdd: RequestAddressInfo) {
+    public async GetAddressInfo(reqAdd: AddressModel): Promise<WalletModel.BitcoinAddressInfoModel> {
+        this._ensureThereIsAServer();
+        for(let i=0; i<this._servers.length; i++) {
+            if(this._servers[i].apiType == "blockbook") {
+                const req = new BlockbookRequestDetails();
+                req.details = BlockbookDetails.Txs;
 
+                try {
+                    let addInfo: WalletModel.BitcoinAddressInfoModel = await BlockbookServer.GetAddressInfo(this._servers[i], reqAdd.address);
+                    
+                    //! Add address model
+                    addInfo.addressModel = reqAdd;
+
+                    return addInfo;
+                }
+                catch(e){
+                    MyConsole.Exception("BitcoinBlockchain::GetAddressInfo->",e);
+                }
+            }
+        }
+
+        throw new Error("BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request");
     }
 
     public async GetAccountInfoByPublicKey(publicKey: string): Promise<WalletModel.BitcoinAccountInfo> {
@@ -51,9 +74,31 @@ export class BitcoinBlockchain extends BlockchainBase {
                 req.tokens = BlockbookTokens.Used;
 
                 // in case of any error, try the next server
-                try
-                {
-                    return await BlockbookServer.GetAccount(this._servers[i], publicKey, req);
+                try {
+                    let accInfo: WalletModel.BitcoinAccountInfo = await BlockbookServer.GetAccount(this._servers[i], publicKey, req);
+                    
+                    // pars token data
+                    if(accInfo.tokens && accInfo.tokens.length > 0) {
+                        accInfo.addresses = [];
+                        accInfo.changeAddresses = [];
+                        accInfo.tokens.filter(t => t.type == "XPUBAddress").forEach(t => {
+                            let path = PathUtil.getHDPath(t.path);
+                            if(PathUtil.IsChangePath(path)){
+                                accInfo.changeAddresses?.push({
+                                    address: t.name,
+                                    path: path
+                                });
+                            } else {
+                                accInfo.addresses?.push({
+                                    address: t.name,
+                                    path: path,
+                                })
+                            }
+                        });
+                    }
+
+                    return accInfo;
+
                 }
                 catch(e){
                     MyConsole.Exception("BitcoinBlockchain::GetAccountInfoByPublicKey->",e);

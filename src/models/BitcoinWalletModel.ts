@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AddressModel } from "./Prokey";
+
 /**
  * For account discovery, BitcoinAccountAddressReq should be used as starting point
  * @next BitcoinWalletModel
@@ -43,9 +45,7 @@ export interface BitcoinWalletModel {
 /**
  * This is a bitcoin account model that can be gotten by Public Key
  */
- export interface BitcoinAccountInfo {
-    // account index
-    accountIndex?: number,
+export interface BitcoinAccountInfo {
     // current page, starting from 1
     page?: number, 
     // total number of pages
@@ -74,6 +74,15 @@ export interface BitcoinWalletModel {
     usedTokens: number;
     // list of tokens
     tokens?: BitcoinTokenModel[];
+    //--------------------------
+    // Additional information
+    //--------------------------
+    // account index
+    accountIndex?: number,
+    // list of addresses
+    addresses?: AddressModel[];
+    // list of change addresses
+    changeAddresses?: AddressModel[];
 }
 
 /**
@@ -198,6 +207,10 @@ export interface BitcoinAddressInfoModel {
     txids?: string[]
     // list of transactions
     transactions?: BitcoinTransactionInfoModel[];
+    //--------------------------
+    // Additional information
+    //--------------------------
+    addressModel?: AddressModel;
 }
 
 /**

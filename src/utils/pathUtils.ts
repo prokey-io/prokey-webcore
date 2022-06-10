@@ -78,6 +78,16 @@ export function IsSegwitPath(path: Array<number> | any): boolean  {
     return Array.isArray(path) && path[0] === toHardened(49);
 };
 
+export function IsChangePath(path: Array<number>): boolean {
+    if(path.length < 5)
+        return false;
+
+    if(path[3] == 0)
+        return false;
+    
+    return true;
+}
+
 export const validatePath = (path: string | Array<number>, length: number = 0, base: boolean = false): Array<number> => {
     let valid: Array<number> = [];
     if (typeof path === 'string') {
