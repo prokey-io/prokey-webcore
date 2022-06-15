@@ -22,3 +22,9 @@ export interface RequestAddressInfo {
     address: string,                        // Address to get info
     addressModel?: AddressModel,
 }
+
+export interface GenericSentTransactionResult {
+    isSuccess: boolean,
+    txid?: string;
+    error?: string,
+}

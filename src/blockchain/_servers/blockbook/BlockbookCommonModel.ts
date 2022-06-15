@@ -25,10 +25,7 @@ export interface BlockbookTransactionResult {
     // transaction hash
     result?: string,
     // error
-    error?: { 
-        // message
-        message: string
-    }
+    error?: string,
 }
 
 export interface BlockbookFeeModel {

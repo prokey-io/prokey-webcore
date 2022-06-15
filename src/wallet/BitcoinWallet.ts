@@ -82,7 +82,7 @@ export class BitcoinWallet extends BaseWallet {
      * @param allAccounts true means discover all account, false means discover only the first account
      * @returns BitcoinWallet with all accounts 
      */
-    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.BitcoinAccountInfo) => void, allAccounts = false): Promise<WalletModel.BitcoinWalletModel>{
+    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.BitcoinAccountInfo) => void, allAccounts = true): Promise<WalletModel.BitcoinWalletModel>{
         this._bitcoinWallet = {
             totalBalance: 0,
         }
@@ -103,6 +103,11 @@ export class BitcoinWallet extends BaseWallet {
                         account = await this.AccountDiscoveryByPublicKey(accountNumber);
                     else
                         account = await this.AccountDiscoveryByAddresses(accountNumber);
+
+                    // Don't add empty account to list of accounts
+                    if(accountNumber > 0 && account.txs == 0) {
+                        return resolve(this._bitcoinWallet);
+                    }
                     
                     // set account index
                     account.accountIndex = accountNumber;
@@ -152,66 +157,7 @@ export class BitcoinWallet extends BaseWallet {
         return this._bitcoinBlockchain;
     }
 
-    /**
-     * Discovery change addresses
-     * @param accountNumber Account Number
-     * @param accountInfo account info which were discovered by AccountDiscovert
-     */
-    // async DiscoverChanges(accountNumber: number, 
-    //     accountInfo: WalletModel.BitcoinAccountInfo)
-    // {
-    //     var finished: boolean = false;
-    //     var startIndex: number = 0;
-
-    //     do {
-    //         // Makinging a list of paths
-    //         let justPaths : Array<Array<number>> = [];
-    //         for(let i=0; i<20; i++) {
-    //             let path = PathUtil.GetBipPath(
-    //                 CoinBaseType.BitcoinBase,   // Coin Type
-    //                 accountNumber,              // Account Number
-    //                 super.GetCoinInfo(),                   // CoinInfo
-    //                 true,                       // Change addresses
-    //                 startIndex + i,             // address index
-    //             );
-    //             justPaths.push(path.path);
-    //         }
-
-    //         // Getting addresses from Prokey
-    //         let addresses = await super.GetAddresses<AddressModel>(justPaths);
-
-    //         // Creating request parameter 
-    //         let reqAddInfo: Array<GenericWalletModel.RequestAddressInfo> = addresses.map(a => {
-    //             return {
-    //                 address: a.address,
-    //                 addressModel: a,
-    //             }
-    //         });
-
-    //         // Getting addresses' info from Blockchain
-    //         var addInfo = await this._blockchain.GetAddressInfo(reqAddInfo);
-
-    //         addInfo.forEach(af => {
-    //             accountInfo.balance += af.balance;
-    //             accountInfo.changeAddresses.push(af);
-    //             // If there is any transaction for addresses, we have to search for next (20) addresses again
-    //             // This process will be finished when there is no transaction
-    //             if(!af.exist) {
-    //                 finished = true;
-    //             }
-    //         });
-
-    //         startIndex+=20;
-
-    //     } while(!finished);
-    // }
-
-    /**
-     * 
-     * @param accountNumber 
-     * @returns 
-     */
-    public async AccountDiscoveryByPublicKey(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
+    public async GetAccountPublicKey(accountNumber: number): Promise<AddressModel> {
         // account path
         const path = PathUtil.GetBipPath(
             CoinBaseType.BitcoinBase,   // Coin Type
@@ -222,8 +168,41 @@ export class BitcoinWallet extends BaseWallet {
         // Get publickey from device
         const publicKey: PublicKey = await super.GetPublicKey(path.path, false);
 
+        return {
+            address: publicKey.xpub,
+            path: path.path,
+        }
+    }
+
+    /**
+     * 
+     * @param accountNumber 
+     * @returns 
+     */
+    public async AccountDiscoveryByPublicKey(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
+        // Get account public ket
+        const publicKey = await this.GetAccountPublicKey(accountNumber);
+
         // Get account info from blockchain
-        const accInfo = await this._bitcoinBlockchain.GetAccountInfoByPublicKey(publicKey.xpub);
+        const accInfo = await this._bitcoinBlockchain.GetAccountInfoByPublicKey(publicKey.address);
+
+        // Save the account public and its path
+        accInfo.publicKey = publicKey;
+
+        // Set last unused address
+        if(accInfo.addresses && accInfo.addresses.length > 0) {
+            let lastAddressPath = accInfo.addresses[accInfo.addresses.length - 1].path;
+            if(lastAddressPath.length == 5)
+            {
+                // next address
+                lastAddressPath[4]++;
+                const add = await this.GetAddress(lastAddressPath, false);
+                accInfo.lastUnusedAddress = {
+                    address: add.address,
+                    path: lastAddressPath,
+                }
+            }
+        }
 
         MyConsole.Info("BitcoinWallet::AccountDiscoveryByPublicKey->Account info:", accInfo);
 
@@ -233,93 +212,6 @@ export class BitcoinWallet extends BaseWallet {
     public async AccountDiscoveryByAddresses(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
         return <WalletModel.BitcoinAccountInfo>{};
     }
-
-    /**
-     * Account Discovery by addresses
-     * @param accountNumber account number to be discovered
-     */
-    /*public async AccountDiscovery(accountNumber: number = 0): Promise<WalletModel.BitcoinAccountInfo> {
-        let accountInfo: WalletModel.BitcoinAccountInfo = {
-            accountIndex: accountNumber,
-            balance: 0,
-            isDiscoveryFinished: true,
-            addresses: new Array<WalletModel.BitcoinAddressInfo>(),
-            changeAddresses: new Array<WalletModel.BitcoinAddressInfo>(),
-        }
-
-        let startIndex = 0;
-
-        do {  
-
-            let justPaths : Array<Array<number>> = [];
-
-            // Makinging a list of paths
-            for(let i=0; i<20; i++) {
-                let path = PathUtil.GetBipPath(
-                    CoinBaseType.BitcoinBase,   // Coin Type
-                    accountNumber,              // Account Number
-                    super.GetCoinInfo(),                   // CoinInfo
-                    false,                      // External chain address
-                    startIndex + i,             // address index
-                );
-                justPaths.push(path.path);
-            }
-
-            // Getting addresses from Prokey
-            let addresses = await super.GetAddresses<AddressModel>(justPaths);
-
-            // Creating request parameter
-            let blockchainReqAddInfo: Array<GenericWalletModel.RequestAddressInfo> = new Array<GenericWalletModel.RequestAddressInfo>();
-            addresses.forEach(element => {
-                blockchainReqAddInfo.push(
-                    {
-                        address: element.address,
-                        addressModel: element,
-                    });
-            });
-
-            // Getting addresses' info
-            var addInfo = await this._blockchain.GetAddressInfo(blockchainReqAddInfo);
-
-            MyConsole.Info("AddInfo:", addInfo);
-
-            // We assume that account discovery is finished
-            accountInfo.isDiscoveryFinished = true;
-
-            addInfo.forEach(af => {
-                accountInfo.balance += af.balance;
-                accountInfo.addresses.push(af);
-
-                // Set the last used address
-                if(accountInfo.lastUnusedAddress == undefined && af.exist == false)
-                {
-                    accountInfo.lastUnusedAddress = af.addressModel;
-                }
-
-                // If last unused address already set but we found an exist address after that, It might be not the LAST unused address
-                // LastUnusedAddress will be update on next adresses
-                if(accountInfo.lastUnusedAddress != null && af.exist == true){
-                    accountInfo.lastUnusedAddress = undefined;
-                }
-                
-                // If there is any transaction for addresses, we have to search for next (20) addresses again
-                // This process will be finished when there is no transaction
-                if(af.exist){
-                    accountInfo.isDiscoveryFinished = false;
-                }
-            });
-
-            if (!accountInfo.isDiscoveryFinished && startIndex == 0)
-            {
-                // check for change addresses
-                await this.DiscoverChanges(accountNumber, accountInfo);
-            }
-            startIndex+=20;
-
-        } while(!accountInfo.isDiscoveryFinished);
-
-        return accountInfo;
-    }*/
 
     /**
      * This function will return a list of transaction of the account, this function is useful for UI
@@ -572,6 +464,13 @@ export class BitcoinWallet extends BaseWallet {
             throw new Error("No sufficient balance in your account");
         }
 
+        // update UTXO
+        await this.UpdateAccountUtxos(acc);
+
+        if(!acc.sortedUtxos || acc.sortedUtxos.length == 0) {
+            throw new Error("UTXO list is empty or undefined");
+        }
+
         //! Transaction instance
         let tx: BitcoinTx = {
             coinName: coinInfo.on_device,
@@ -579,131 +478,176 @@ export class BitcoinWallet extends BaseWallet {
             outputs: new Array<TransactionOutput>(),
             options: {},
         }
+        
+        if(isOverWintered) {
+            tx.options.overwintered = true;
+            tx.options.version = 4;
+            tx.options.version_group_id = 0x892f2085;
+            if(coinInfo.shortcut == "ZEC"){
+                tx.options.branch_id = 3925833126;
+            }
+        }
+
+        MyConsole.Info("BitcoinWallet::GenerateTransaction->sortedUtoxs:", acc.sortedUtxos);
+
+        //! Input addresses
+        let utxoBal = 0;
+        
+        // Check if we can handle this transaction only with one Input
+        if (+acc.sortedUtxos[0].value >= totalSend + txFee)
+        {
+            // if there is only one utxo
+            if(acc.sortedUtxos.length == 1) {
+                let utxo = acc.sortedUtxos[0];
+                if(utxo.path == null) {
+                    throw new Error("BitcoinWallet::GenerateTransaction->UTXO without path");
+                }
+
+                tx.inputs.push({
+                    address_n: PathUtil.getHDPath(utxo.path),
+                    prev_hash: utxo.txid,
+                    prev_index: utxo.vout,
+                    amount: utxo.value,
+                })
+            } else {
+                // Search for the best match
+                let i = 1;
+                for (; i < acc.sortedUtxos.length; i++) {
+                    if (+acc.sortedUtxos[i].value < totalSend + txFee)               
+                        break;
+                }
+                // i is the best utxo for input
+                let utxo = acc.sortedUtxos[i - 1];
+                if(utxo.path == null) {
+                    throw new Error("BitcoinWallet::GenerateTransaction->UTXO without path");
+                }  
+                // add this utxo to inputs
+                tx.inputs.push({
+                    address_n: PathUtil.getHDPath(utxo.path), 
+                    prev_hash: utxo.txid, 
+                    prev_index: utxo.vout,
+                    amount: utxo.value
+                });            
+                utxoBal = +utxo.value;
+            }
+        }
+        else
+        {
+            // We need multi inputs to handle this transaction            
+            for (let i = 0; i < acc.sortedUtxos.length; i++) {
+                let utxo = acc.sortedUtxos[i];
+                if(utxo.path == null) {
+                    throw new Error("BitcoinWallet::GenerateTransaction->UTXO without path");
+                }    
+                // add this utxo to inputs       
+                tx.inputs.push({
+                    address_n: PathUtil.getHDPath(utxo.path), 
+                    prev_hash: utxo.txid, 
+                    prev_index: utxo.vout,
+                    amount: utxo.value
+                });            
+                utxoBal += +utxo.value;
+                if (utxoBal >= totalSend + txFee)
+                    break;
+            }
+        }
+
+        //! Load previous transactions 
+        await this.LoadPrevTx(acc, tx);
+
+        //! Set the TX's outputs
+        receivers.forEach(o => {
+            let output: TransactionOutput = {
+                address: o.Address,
+                script_type: EnumOutputScriptType.PAYTOADDRESS,
+                amount: o.value.toFixed(0),
+            }
+
+            tx.outputs.push(output);
+        });
+
+        //! Getting change address
+        let changeIndex = 0;
+        if(acc.changeAddresses && acc.changeAddresses.length > 0) {
+            const pathOfLastChangeAddress = acc.changeAddresses[acc.changeAddresses.length-1].path;
+            changeIndex = pathOfLastChangeAddress[4] + 1;
+        }
+
+        //! Add change - fee
+        let change = utxoBal - totalSend - txFee;        
+
+        let changePaths = PathUtil.GetBipPath(
+            CoinBaseType.BitcoinBase,   // Coin Type
+            fromAccount,              // Account Number
+            coinInfo,                   // CoinInfo
+            true,                       // Change addresses
+            changeIndex,             // address index
+        );
+
+        //! No change if the change is less than dust
+        if(coinInfo.dust_limit != null)
+        {
+            if(change >= coinInfo.dust_limit) { 
+                tx.outputs.push({
+                    address_n: changePaths.path,
+                    amount: change.toFixed(0),
+                    script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+                });
+            }
+        }
+        else if (change > 0) {
+            tx.outputs.push({
+                address_n: changePaths.path,
+                amount: change.toFixed(0),
+                script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
+            });
+        }
+
+        MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
 
         return tx;
-
-        // if(isOverWintered) {
-        //     tx.options.overwintered = true;
-        //     tx.options.version = 4;
-        //     tx.options.version_group_id = 0x892f2085;
-        //     if(coinInfo.shortcut == "ZEC"){
-        //         tx.options.branch_id = 3925833126;
-        //     }
-        // }
-
-        // //! Create list of account UTXO
-        // let sortedUtoxs = this.CreateSortedUtxoList(acc);
-
-        // MyConsole.Info("BitcoinWallet::GenerateTransaction->sortedUtoxs:", sortedUtoxs);
-
-        // //! Input addresses
-        // let utxoBal = 0;
-        
-        // // Check if we can handle this transaction only with one Input
-        // if (sortedUtoxs[0][0].amount >= totalSend + txFee)
-        // {
-        //     let i = 1;
-        //     for (; i < sortedUtoxs.length; i++) {
-        //         if (sortedUtoxs[i][0].amount < totalSend + txFee)               
-        //             break;
-        //     }
-        //     // i is the best utxo for input
-        //     let utxo = sortedUtoxs[i - 1];
-        //     if (utxo[1] as number[]) {            
-        //         tx.inputs.push({
-        //             address_n: (utxo[1] as number[]), 
-        //             prev_hash: utxo[0].hash, 
-        //             prev_index: utxo[0].index,
-        //             amount: utxo[0].amount.toString()
-        //         });            
-        //         utxoBal = utxo[0].amount;
-        //     }
-        // }
-        // else
-        // {
-        //     // We need multi input to handle this transaction            
-        //     for (let i = 0; i < sortedUtoxs.length; i++) {
-        //         let utxo = sortedUtoxs[i];
-        //         if (utxo[1] as number[]) {            
-        //             tx.inputs.push({address_n: (utxo[1] as number[]), 
-        //                 prev_hash: utxo[0].hash, 
-        //                 prev_index: utxo[0].index,
-        //                 amount: utxo[0].amount.toString()
-        //             });            
-        //             utxoBal += utxo[0].amount;
-        //         }    
-        //         if (utxoBal >= totalSend + txFee)
-        //             break;
-        //     }
-        // }
-
-        // //! Load previous transactions 
-        // await this.LoadPrevTx(tx, coinInfo.timestamp);
-
-        // //! Set the TX's outputs
-        // receivers.forEach(o => {
-        //     let output: TransactionOutput = {
-        //         address: o.Address,
-        //         script_type: EnumOutputScriptType.PAYTOADDRESS,
-        //         amount: o.value.toFixed(0),
-        //     }
-
-        //     tx.outputs.push(output);
-        // });
-
-        // //! Getting change address
-        // let changeIndex = 0;
-        // /*for (let i = 0; i < acc.changeAddresses.length; i++)
-        // {
-        //     if (!acc.changeAddresses[i].exist)
-        //     {
-        //         changeIndex = i;
-        //         break;
-        //     }
-        //     changeIndex = i + 1;
-        // }*/
-
-        // //! Add change - fee
-        // let change = utxoBal - totalSend - txFee;        
-
-        // let changePaths = PathUtil.GetBipPath(
-        //     CoinBaseType.BitcoinBase,   // Coin Type
-        //     fromAccount,              // Account Number
-        //     coinInfo,                   // CoinInfo
-        //     true,                       // Change addresses
-        //     changeIndex,             // address index
-        // );
-
-        // //! No change if the change is less than dust
-        // if(coinInfo.dust_limit != null)
-        // {
-        //     if(change >= coinInfo.dust_limit) { 
-        //         tx.outputs.push({
-        //             address_n: changePaths.path,
-        //             amount: change.toFixed(0),
-        //             script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
-        //         });
-        //     }
-        // }
-        // else if (change > 0) {
-        //     tx.outputs.push({
-        //         address_n: changePaths.path,
-        //         amount: change.toFixed(0),
-        //         script_type: (coinInfo.segwit) ? EnumOutputScriptType.PAYTOP2SHWITNESS : EnumOutputScriptType.PAYTOADDRESS,
-        //     });
-        // }
-
-        // MyConsole.Info("BitcoinWallet::GenerateTransaction->Generated transaction to be signed", tx);
-
-        // return tx;
     }
 
     /**
      * Send/Broadcast a signed transaction
      * @param txData Signed Transaction to be sent to the network
      */
-    public async SendTransaction(txData: string){
-        return this._bitcoinBlockchain.BroadCastTransaction(txData);
+    public async SendTransaction(txData: string): Promise<GenericWalletModel.GenericSentTransactionResult>{
+        return await this._bitcoinBlockchain.BroadCastTransaction(txData);
+    }
+
+    public async UpdateAccountUtxos(acc: WalletModel.BitcoinAccountInfo) {
+        let utxos: WalletModel.BitcoinUtxoModel[] = [];
+        if(this._servers.some(s => s.isSupportXpub == true)) {
+            // Get public key
+            let publicKey: AddressModel;
+            if(acc.publicKey) {
+                publicKey = acc.publicKey;
+            } else { 
+                publicKey = await this.GetAccountPublicKey(acc.accountIndex ?? 0);
+            }
+
+            // get all utxos
+            utxos = await this._bitcoinBlockchain.GetAccountUtxoByPublicKey(publicKey.address)
+        }
+        //TODO: Get UTXO by address
+        else {
+
+        }
+
+        acc.sortedUtxos = utxos.sort((a,b) => {
+            const aValue = +a.value;
+            const bValue = +b.value;
+            if(aValue > bValue) {
+                return -1;
+            } 
+            else if(aValue == bValue) {
+                return 0;
+            } 
+            else {
+                return 1;
+            }
+        });
     }
 
     /**
@@ -747,7 +691,7 @@ export class BitcoinWallet extends BaseWallet {
         let txFees = await this._bitcoinBlockchain.GetTxFee();
 
         // Calculate transaction length
-        let txLen = this.CalculateTxLen(receivers, acc, txFees);
+        let txLen = await this.CalculateTxLen(receivers, acc, txFees);
 
         let fees: BitcoinFeeSelectionModel = {
             economy: (txLen * txFees.economy).toString(),
@@ -768,7 +712,7 @@ export class BitcoinWallet extends BaseWallet {
      * @param acc The account number you wish to send from
      * @param txFees The current fee rated 
      */
-    public CalculateTxLen(receivers: Array<BitcoinOutputModel>, acc: WalletModel.BitcoinAccountInfo, txFees: WalletModel.BitcoinFee): number {
+    public async CalculateTxLen(receivers: Array<BitcoinOutputModel>, acc: WalletModel.BitcoinAccountInfo, txFees: WalletModel.BitcoinFee): Promise<number> {
         if(this._bitcoinWallet.accounts == null){
             throw new Error('There is no account in wallet, Do Wallet Discovery First');
         }
@@ -801,14 +745,17 @@ export class BitcoinWallet extends BaseWallet {
         txLen += this._TX_DEFAULT_OUTPUT_SIZE;
 
         //! Create list of account UTXO
-        let sortedUtoxs = []//this.CreateSortedUtxoList(acc);
-        if(sortedUtoxs.length == 0) {
+        if(acc.sortedUtxos == null) {
+            await this.UpdateAccountUtxos(acc);
+        }
+
+        if(acc.sortedUtxos == null || acc.sortedUtxos.length == 0) {
             MyConsole.Info("No UTXO");
             //! Bitcoin based transactions has 1 input at least
             return txLen + this._TX_DEFAULT_INPUT_SIZE;
         }
 
-        MyConsole.Info("Sorted UTXO", sortedUtoxs);
+        MyConsole.Info("Sorted UTXO", acc.sortedUtxos);
 
         //! Input addresses
         let utxoBal = 0;
@@ -818,33 +765,21 @@ export class BitcoinWallet extends BaseWallet {
         });
 
         // Check if we can handle this transaction only with one Input
-        // if (sortedUtoxs[0][0].amount >= totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
-        // {
-        //     let i = 1;
-        //     for (; i < sortedUtoxs.length; i++) {
-        //         if (sortedUtoxs[i][0].amount < totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))               
-        //             break;
-        //     }
-        //     // i is the best utxo for input
-        //     let utxo = sortedUtoxs[i - 1];
-        //     if (utxo[1] as number[]) {            
-        //         txLen += this._TX_DEFAULT_INPUT_SIZE;
-        //     }
-        // }
-        // else
-        // {
-        //    // We need multi input to handle this transaction            
-        //    for (let i = 0; i < sortedUtoxs.length; i++) {
-        //        let utxo = sortedUtoxs[i];
-        //        if (utxo[1] as number[]) {            
-        //            txLen += this._TX_DEFAULT_INPUT_SIZE;
-        //            utxoBal += utxo[0].amount;
-        //        }    
+        if (+acc.sortedUtxos[0].value >= totalSend + (txFees.economy * (txLen + this._TX_DEFAULT_INPUT_SIZE)))
+        {         
+            txLen += this._TX_DEFAULT_INPUT_SIZE;
+        }
+        else
+        {
+           // We need multi input to handle this transaction            
+           for (let i = 0; i < acc.sortedUtxos.length; i++) {          
+                txLen += this._TX_DEFAULT_INPUT_SIZE;
+                utxoBal += +acc.sortedUtxos[i].value;
 
-        //        if (utxoBal >= totalSend + (txFees.economy * txLen))
-        //            break;
-        //    }
-        // }
+               if (utxoBal >= totalSend + (txFees.economy * txLen))
+                   break;
+           }
+        }
 
         return txLen;
     }
@@ -884,107 +819,69 @@ export class BitcoinWallet extends BaseWallet {
         return false;
     }
 
-    /**
-     * Get List of sorted UTXO account
-     * @param acc account to get UTXO from  
-     */
-    /*private CreateSortedUtxoList(acc: WalletModel.BitcoinAccountInfo): Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>{
-        //! Create a utxos list
-       var utxos = new Array<[WalletModel.BitcoinUtxo, Array<number> | string | undefined]>();
-       acc.addresses.forEach(element => {
-           let path = (element.addressModel == undefined) ? undefined : element.addressModel.path;
-           if (element.exist && element.txInfo != undefined && element.txInfo.utxOs)
-               element.txInfo.utxOs.forEach(utxo => {                    
-                   utxos.push([utxo, path]);
-               });
-       });
+    private _getAccount
 
-       acc.changeAddresses.forEach(element => {
-           let path = (element.addressModel == undefined) ? undefined : element.addressModel.path;
-           if (element.exist && element.txInfo != undefined && element.txInfo.utxOs)
-               element.txInfo.utxOs.forEach(utxo => {
-                   utxos.push([utxo, path]);
-               });
-       });
-
-       let sortedUtoxs = utxos.sort( (a,b) => {
-           if (a[0].amount > b[0].amount) 
-               return -1;
-           else if( a[0].amount == b[0].amount)
-               return 0;
-           else
-               return 1;
-       });
-
-       return sortedUtoxs;
-    }*/
 
     /**
      * Loading previous transaction of each input(s).
      * @param tx Bitcoin transaction 
      */
-    // private async LoadPrevTx(tx: BitcoinTx, timestamp: boolean) {
-    //     if(tx.inputs == undefined || tx.inputs.length == 0){
-    //         throw new Error("Transaction inputs cannot be null or empty")
-    //     }
+    private async LoadPrevTx(acc: WalletModel.BitcoinAccountInfo, tx: BitcoinTx) {
+        if(tx.inputs == undefined || tx.inputs.length == 0){
+            throw new Error("BitcoinWallet::LoadPrevTx->Transaction inputs cannot be null or empty");
+        }
 
-    //     tx.refTxs = new Array<RefTransaction>();
-    //     let n = tx.inputs.length;
-    //     let i = 0;
-    //     while(n > 0)
-    //     {
-    //         let txHashIds = "";
-    //         let perRequest = (n > 10) ? 10 : n;
+        if(acc.transactions == null || acc.transactions.length == 0) {
+            throw new Error("BitcoinWallet::LoadPrevTx->PrevTx are not set correctly")
+        }
+
+        tx.refTxs = new Array<RefTransaction>();
+        tx.inputs.forEach(txInput => {
             
-    //         for(let j=0; j<perRequest; j++)
-    //         {
-    //             txHashIds += "," + tx.inputs[i++].prev_hash;
-    //             n--;
-    //         }
+            let prev = acc.transactions?.find(t => t.txid == txInput.prev_hash);
+            if(prev == null) {
+                throw new Error("BitcoinWallet::LoadPrevTx->No transaction found for this UTXO")
+            }
 
-    //         //! Removing the first ','
-    //         txHashIds = txHashIds.substring(1);
+            let ref: RefTransaction = {
+                hash: prev.txid,
+                version: prev.version,
+                lock_time: prev.lockTime ?? 0,
+                bin_outputs: [],
+                inputs: [],
+            }
 
-    //         let prevTxs = await this._blockchain.GetTransactions(txHashIds);
+            prev.vin.forEach( inp => {
+                if(inp.txid == null) {
+                    throw new Error("BitcoinWallet::LoadPrevTx->PrevTransation id is null");
+                }
 
-    //         if(prevTxs == null || prevTxs.length != perRequest) {
-    //             throw new Error("PrevTx are not set correctly")
-    //         }
+                if(inp.hex == null) {
+                    throw new Error("BitcoinWallet::LoadPrevTx->PrevTransation hex is null");
+                }
 
-    //         prevTxs.forEach(prev => {
-    //             let ref: RefTransaction = {
-    //                 hash: prev.hash,
-    //                 version: prev.version,
-    //                 lock_time: prev.lockTime,
-    //                 bin_outputs: [],
-    //                 inputs: [],
-    //             }
+                ref.inputs.push({
+                    prev_hash: inp.txid,
+                    prev_index: inp.vout ?? 0,
+                    sequence: inp.sequence,
+                    script_sig: inp.hex,
+                });
+            });
 
-    //             if(timestamp == true){
-    //                 ref.timestamp = prev.timeStamp;
-    //             }
+            prev.vout.forEach( out => {
+                if(out.hex == null) {
+                    throw new Error("BitcoinWallet::LoadPrevTx->PrevTransation hex is null");
+                }
+                ref.bin_outputs.push({
+                    amount: out.value,
+                    script_pubkey: out.hex,
+                })
+            });
 
-    //             prev.inputs.forEach( inp => {
-    //                 ref.inputs.push({
-    //                     prev_hash: inp.spentTxHash,
-    //                     prev_index: inp.spentOutputIndex,
-    //                     sequence: inp.sequence,
-    //                     script_sig: inp.scriptHex,
-    //                 });
-    //             });
-
-    //             prev.outputs.forEach( out => {
-    //                 ref.bin_outputs.push({
-    //                     amount: out.value,
-    //                     script_pubkey: out.scriptHex,
-    //                 })
-    //             });
-
-    //             if(tx.refTxs){
-    //                 tx.refTxs.push(ref);
-    //             }
-    //         });
-    //     }
-    // }
+            if(tx.refTxs){
+                tx.refTxs.push(ref);
+            }
+        });
+    }
 }
 

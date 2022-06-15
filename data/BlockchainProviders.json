@@ -1,0 +1,116 @@
+{
+    "servers": [
+        {
+            "apiType": "blockbook",
+            "name": "prokey-blockbook",
+            "baseUrl": "https://{a}.prokey.org/api/v2",
+            "isSupportXpub": true
+        },
+        {
+            "apiType": "chaino",
+            "name": "prokey",
+            "baseUrl": "https://blocks.prokey.org"
+        },
+        {
+            "apiType": "ripple",
+            "name": "ripple",
+            "baseUrl": "https://ripple.prokey.app/api"
+        },
+        {
+            "apiType": "stellar",
+            "name": "stellar",
+            "baseUrl": "https://stellar.prokey.app/api"
+        },
+        {
+            "apiType": "nem",
+            "name": "nem",
+            "baseUrl": "https://nem.prokey.app/api"
+        }
+    ],
+    "coins": [
+        {
+            "type": 0,
+            "name": "bitcoin",
+            "shortcut": "BTC",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"btc1"
+                },
+                {
+                    "name":"prokey"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "testnet",
+            "shortcut": "TEST",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"btctest"
+                },
+                {
+                    "name":"prokey"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "litecoin",
+            "shortcut": "LTC",
+            "servers": [
+                {
+                    "name": "blockbook",
+                    "urlAffix":"ltc"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "ethereum",
+            "shortcut": "ETH",
+            "chainId": 1,
+            "servers": [
+                {
+                    "name": "blockbook",
+                    "urlAffix":"eth"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "ropsten",
+            "shortcut": "rETH",
+            "chainId": 3,
+            "servers": [
+                {
+                    "name": "blockbook",
+                    "urlAffix":"reth"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "name": "all_erc20_on_eth_network",
+            "chainId": 1,
+            "servers": [
+                {
+                    "name": "blockbook",
+                    "urlAffix":"erc20"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "name": "all_bep2020_on_bsc_network",
+            "chainId": 56,
+            "servers": [
+                {
+                    "name": "prokey"
+                }
+            ]
+        }
+    ]
+}

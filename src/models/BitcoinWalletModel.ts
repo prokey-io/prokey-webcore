@@ -83,6 +83,12 @@ export interface BitcoinAccountInfo {
     addresses?: AddressModel[];
     // list of change addresses
     changeAddresses?: AddressModel[];
+    // the public key and path to this account
+    publicKey?: AddressModel,
+    // List of unspent transactions (UTXO)
+    sortedUtxos?: BitcoinUtxoModel[],
+    // The last unused address
+    lastUnusedAddress?: AddressModel;
 }
 
 /**
@@ -93,6 +99,8 @@ export interface BitcoinTransactionInfoModel {
     txid: string,
     // transaction version
     version?: number,
+    // locktime
+    lockTime?: number,
     // list of inputs
     vin: Array<BitcoinTransactionInputModel>,
     // list of outputs
@@ -291,7 +299,27 @@ export interface BitcoinTransactionOutputDetailModel {
         //    - nulldata when the script is unknown or OP_RETURN
         type: string
     }
-  }
+}
+
+/**
+ * Bitcoin utxo (unspent transaction) model
+ */
+ export interface BitcoinUtxoModel {
+    // transaction id
+    txid: string,
+    // prev. output index
+    vout: number,
+    // prev. output value
+    value: string,
+    // block height
+    height: number,
+    // number of confirmations (lastBlockNumber - blockHeight)
+    confirmations: number,
+    // address (if req by xpub)
+    address?: string,
+    // path to the address (if req by xpub)
+    path?: string
+}
 
 export interface BitcoinFee {
     economy: number,

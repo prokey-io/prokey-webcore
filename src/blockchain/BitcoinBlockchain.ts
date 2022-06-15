@@ -26,17 +26,21 @@ import { BlockbookServer } from './_servers/blockbook/BlockbookServer';
 import { BlockbookDetails, BlockbookRequestDetails, BlockbookTokens } from './_servers/blockbook/BlockbookRequestModels';
 import { MyConsole } from '../utils/console';
 import { BlockbookTransactionResult } from './_servers/blockbook/BlockbookCommonModel';
-import { BitcoinAccountInfoModel } from './_servers/blockbook/BlockbookBitcoinModel';
 import { AddressModel } from '../models/Prokey';
 import * as PathUtil from '../utils/pathUtils';
+import * as GenericWalletModel from '../models/GenericWalletModel'
 
 export class BitcoinBlockchain extends BlockchainBase {
     
-
     constructor(servers: BlockchainServerModel[]) {
         super(servers);
     }
 
+    /**
+     * Get address info
+     * @param reqAdd The address
+     * @returns Bitcoin Address Info
+     */
     public async GetAddressInfo(reqAdd: AddressModel): Promise<WalletModel.BitcoinAddressInfoModel> {
         this._ensureThereIsAServer();
         for(let i=0; i<this._servers.length; i++) {
@@ -61,6 +65,11 @@ export class BitcoinBlockchain extends BlockchainBase {
         throw new Error("BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request");
     }
 
+    /**
+     * Get account information using public key
+     * @param publicKey The extended public key
+     * @returns Bitcoin account info
+     */
     public async GetAccountInfoByPublicKey(publicKey: string): Promise<WalletModel.BitcoinAccountInfo> {
         this._ensureThereIsAServer();
 
@@ -83,12 +92,15 @@ export class BitcoinBlockchain extends BlockchainBase {
                         accInfo.changeAddresses = [];
                         accInfo.tokens.filter(t => t.type == "XPUBAddress").forEach(t => {
                             let path = PathUtil.getHDPath(t.path);
+                            // Set change addresses
                             if(PathUtil.IsChangePath(path)){
                                 accInfo.changeAddresses?.push({
                                     address: t.name,
                                     path: path
                                 });
-                            } else {
+                            }
+                            // Set addresses 
+                            else {
                                 accInfo.addresses?.push({
                                     address: t.name,
                                     path: path,
@@ -109,25 +121,76 @@ export class BitcoinBlockchain extends BlockchainBase {
         throw new Error("BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request");
     }
 
-    public GetAccountInfoByAddresses(addresses: RequestAddressInfo[]) {
-        
-
-    }
-
-    public async BroadCastTransaction(transaction: string): Promise<BlockbookTransactionResult> {
-        this._ensureThereIsAServer();
+    /**
+     * Get account utxo by public key
+     * @param publicKey The extended public key
+     * @returns List of UTXO
+     */
+    public async GetAccountUtxoByPublicKey(publicKey: string): Promise<WalletModel.BitcoinUtxoModel[]> {
         for(let i=0; i<this._servers.length; i++){
+            if(this._servers[i].isSupportXpub != true)
+                continue;
+            
             if(this._servers[i].apiType == "blockbook"){
+                // in case of any error, try the next server
                 try {
-                    return await BlockbookServer.BroadcastTransaction(this._servers[i], transaction);
-                }
+                    let utxos: WalletModel.BitcoinUtxoModel[] = await BlockbookServer.GetUtxo(this._servers[i], publicKey);
+
+                    return utxos;
+                } 
                 catch(e) {
-                    MyConsole.Exception("BitcoinBlockchain::GetAccountInfoByPublicKey->",e);
+                    MyConsole.Exception("BitcoinBlockchain::GetAccountUtxoByPublicKey->",e);
                 }
             }
         }
 
-        throw new Error("BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request");
+        throw new Error("BitcoinBlockchain::GetAccountUtxoByPublicKey->No server to handle the request");
+    }
+
+    /**
+     * Get account info by addresses
+     * @param addresses 
+     */
+    public GetAccountInfoByAddresses(addresses: RequestAddressInfo[]) {
+    }
+
+    /**
+     * Send new transaction to network
+     * @param transaction raw signed transaction to be sent
+     * @returns Send transaction result
+     */
+    public async BroadCastTransaction(transaction: string): Promise<GenericWalletModel.GenericSentTransactionResult> {
+        this._ensureThereIsAServer();
+        for(let i=0; i<this._servers.length; i++){
+            if(this._servers[i].apiType == "blockbook"){
+                try {
+                    const result = await BlockbookServer.BroadcastTransaction(this._servers[i], transaction);
+                    if(result.result) {
+                        return {
+                            isSuccess: true,
+                            txid: result.result,
+                        }
+                    }
+                    else if(result.error) {
+                        return {
+                            isSuccess: false,
+                            error: result.error,
+                        }
+                    } else {
+                        MyConsole.Info("BitcoinBlockchain::BroadCastTransaction->Send transaction neither have result or error");
+                        return {
+                            isSuccess: false,
+                            error: "Send transaction neither have result or error"
+                        }
+                    }
+                }
+                catch(e) {
+                    MyConsole.Exception("BitcoinBlockchain::BroadCastTransaction->",e);
+                }
+            }
+        }
+
+        throw new Error("BitcoinBlockchain::BroadCastTransaction->No server to handle the request");
     }
 
     public async GetTxFee(): Promise<WalletModel.BitcoinFee> {
@@ -143,17 +206,17 @@ export class BitcoinBlockchain extends BlockchainBase {
 
                     let res = await BlockbookServer.GetEstimateFee(this._servers[i], 1);
                     if(res.result) {
-                        fee.high = +res.result * 10000; // satoshi per KB
+                        fee.high = +res.result * 100000; // satoshi per KB
                     }
 
                     res = await BlockbookServer.GetEstimateFee(this._servers[i], 3);
                     if(res.result) {
-                        fee.normal = +res.result * 10000; // satoshi per KB
+                        fee.normal = +res.result * 100000; // satoshi per KB
                     }
 
                     res = await BlockbookServer.GetEstimateFee(this._servers[i], 6);
                     if(res.result) {
-                        fee.economy = +res.result * 10000; // satoshi per KB
+                        fee.economy = +res.result * 100000; // satoshi per KB
                     }
 
                     return fee;
