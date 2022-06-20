@@ -237,7 +237,14 @@ export class WebUsb implements ITransport {
                             errorMessage: "The device was disconnected",
                             errorCode: GeneralErrors.NO_DEVICE,
                         };
+                    } else if(e.name == "NetworkError") {
+                        return {
+                            success: false,
+                            errorMessage: "USB disconnect",
+                            errorCode: GeneralErrors.NO_DEVICE,
+                        }
                     }
+
                 }
                 return {
                     success: false,
