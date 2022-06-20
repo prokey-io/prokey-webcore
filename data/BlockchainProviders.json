@@ -3,12 +3,12 @@
         {
             "apiType": "blockbook",
             "name": "prokey-blockbook",
-            "baseUrl": "https://{a}.prokey.org/api/v2",
+            "baseUrl": "https://{a}.prokey.app/api/v2",
             "isSupportXpub": true
         },
         {
             "apiType": "chaino",
-            "name": "prokey",
+            "name": "prokey-chaino",
             "baseUrl": "https://blocks.prokey.org"
         },
         {
@@ -35,10 +35,73 @@
             "servers": [
                 {
                     "name":"prokey-blockbook",
-                    "urlAffix":"btc1"
-                },
+                    "urlAffix":"btc"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "dash",
+            "shortcut": "DASH",
+            "servers": [
                 {
-                    "name":"prokey"
+                    "name":"prokey-blockbook",
+                    "urlAffix":"dash"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "zcash",
+            "shortcut": "ZEC",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"zcash"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "digibyte",
+            "shortcut": "DGB",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"digibyte"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "decred",
+            "shortcut": "DCR",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"decred"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "vertcoin",
+            "shortcut": "VTC",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"vert"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "Dogecoin",
+            "shortcut": "DOGE",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"doge"
                 }
             ]
         },
@@ -50,9 +113,6 @@
                 {
                     "name":"prokey-blockbook",
                     "urlAffix":"btctest"
-                },
-                {
-                    "name":"prokey"
                 }
             ]
         },
@@ -62,7 +122,7 @@
             "shortcut": "LTC",
             "servers": [
                 {
-                    "name": "blockbook",
+                    "name": "prokey-blockbook",
                     "urlAffix":"ltc"
                 }
             ]
@@ -74,7 +134,7 @@
             "chainId": 1,
             "servers": [
                 {
-                    "name": "blockbook",
+                    "name": "prokey-blockbook",
                     "urlAffix":"eth"
                 }
             ]
@@ -86,7 +146,7 @@
             "chainId": 3,
             "servers": [
                 {
-                    "name": "blockbook",
+                    "name": "prokey-blockbook",
                     "urlAffix":"reth"
                 }
             ]
@@ -97,8 +157,8 @@
             "chainId": 1,
             "servers": [
                 {
-                    "name": "blockbook",
-                    "urlAffix":"erc20"
+                    "name": "prokey-blockbook",
+                    "urlAffix":"eth"
                 }
             ]
         },
@@ -108,7 +168,7 @@
             "chainId": 56,
             "servers": [
                 {
-                    "name": "prokey"
+                    "name": "prokey-chaino"
                 }
             ]
         }
