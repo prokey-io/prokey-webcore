@@ -1,7 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
- * Copyright (C) Prokey.io
- * 
+ * Copyright (C) 2022 Prokey.io
+ *
+ * Hadi Robati, hadi@prokey.io
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,19 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressModel } from "./Prokey";
-
 /**
- * This is the result of account discovery
- * Result of account discovery is a Wallet with total balance and list of AccountInfo
- * @end
+ * This is a ethereum account model
  */
-export interface EthereumWalletModel {
-    totalBalance: number,
-    accounts?: Array<EthereumAccountInfo>,
-}
-
-export interface EthereumAccountInfo {
+export interface EthereumAddressModel {
     // current page, starting from 1
     page?: number;
     // total number of pages
@@ -55,24 +48,6 @@ export interface EthereumAccountInfo {
     nonce: string;
     // list of tokens
     tokens?: EthereumTokenModel[];
-
-    //--------------------------
-    // Additional information
-    //--------------------------
-    // account index
-    accountIndex?: number,
-    addressModel?: AddressModel,
-}
-
-export interface EthereumTransactionView {
-    hash: string,
-    blockNumber: number,
-    date: string,
-    amount: number,
-    status: 'RECEIVED' | 'SENT',
-    received?: string,
-    sent?: string,
-    fee?: number,
 }
 
 /**
@@ -190,3 +165,4 @@ export interface EthereumTokenModel {
     // balance
     balance: string;
 }
+

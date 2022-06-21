@@ -54,10 +54,10 @@ export class BlockbookServer extends BaseBlockchainServer {
      * @param address address
      * @param details level of details
      */
-    public static async GetAddressInfo(server: BlockchainServerModel, address: string, details?: BlockbookRequestDetails): Promise<BitcoinAddressInfoModel> {
+    public static async GetAddressInfo<T>(server: BlockchainServerModel, address: string, details?: BlockbookRequestDetails): Promise<T> {
         const url = `${server.url}/address/${address}` + this._getReqParams(details);
 
-        return await this.GetFromServer<BitcoinAddressInfoModel>(url);
+        return await this.GetFromServer<T>(url);
     }
 
     /**

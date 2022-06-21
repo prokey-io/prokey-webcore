@@ -27,13 +27,14 @@ import { EthereumBaseCoinInfoModel, Erc20BaseCoinInfoModel } from '../models/Coi
 import { EthereumTx, LegacyEthereumTxModel } from '../models/EthereumTx';
 import { RlpEncoding } from "../utils/rlp-encoding"
 import * as ProkeyResponses from '../models/Prokey';
-import { EthereumBlockChain } from '../blockchain/servers/prokey/src/ethereum/Ethereum';
+import { EthereumBlockchain } from '../blockchain/EthereumBlockchain'
 import { GeneralResponse } from '../models/GeneralResponse';
 import { BaseWallet } from './BaseWallet';
 import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
 import * as EthereumNetworks from "../utils/ethereum-networks";
 import BigNumber from 'bignumber.js';
+import { BlockchainProviders, BlockchainServerModel } from '../blockchain/BlockchainProviders';
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -43,9 +44,10 @@ var WAValidator = require('multicoin-address-validator');
 export class EthereumWallet extends BaseWallet {
     _ethereumWallet!: WalletModel.EthereumWalletModel;
     _gasLimit: number = 21000;
-    _ethBlockChain: EthereumBlockChain;
+    _ethBlockchain: EthereumBlockchain;
     _isErc20 = false;
     _network = 'eth';
+    private _servers: BlockchainServerModel[];
 
     /**
      * class constructor
@@ -60,15 +62,17 @@ export class EthereumWallet extends BaseWallet {
 
         this._isErc20 = isErc20;
 
+        this._servers = BlockchainProviders.Get(super.GetCoinInfo());
+
         if (isErc20) {
             this._gasLimit = 65000;
             const ci = (super.GetCoinInfo() as Erc20BaseCoinInfoModel);
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
-            this._ethBlockChain = new EthereumBlockChain(this._network, true, ci.address);
+            this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci.address);
         } else {
             const ci = (this.GetCoinInfo() as EthereumBaseCoinInfoModel);
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
-            this._ethBlockChain = new EthereumBlockChain(this._network);
+            this._ethBlockchain = new EthereumBlockchain(this._servers);
         }
     }
 
@@ -94,6 +98,11 @@ export class EthereumWallet extends BaseWallet {
                         this._ethereumWallet.accounts = new Array<WalletModel.EthereumAccountInfo>();
                     }
 
+                    // Don't add empty account to list of accounts
+                    if(an > 0 && account.txs == 0) {
+                        return resolve(this._ethereumWallet);
+                    }
+
                     this._ethereumWallet.accounts.push(account);
 
                     // Calling callback to update the UI
@@ -102,12 +111,7 @@ export class EthereumWallet extends BaseWallet {
                     }
 
                     // update the total wallet balance 
-                    this._ethereumWallet.totalBalance += account.balance;
-
-                    // If there is no transaction, the discovery finished
-                    if (account.transactions == null && (account.trKeys == null || account.trKeys.length == 0)) {
-                        return resolve(this._ethereumWallet);
-                    }
+                    this._ethereumWallet.totalBalance += +account.balance;
 
                     // go for next account
                     an++;
@@ -126,11 +130,6 @@ export class EthereumWallet extends BaseWallet {
      * @param accountNumber account number to be discovered
      */
     public async AccountDiscovery(accountNumber: number = 0): Promise<WalletModel.EthereumAccountInfo> {
-        let accountInfo: WalletModel.EthereumAccountInfo = {
-            accountIndex: accountNumber,
-            balance: 0,
-        }
-
         let path = PathUtil.GetBipPath(
             (this._isErc20) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, // CoinType
             accountNumber, // Account Number
@@ -140,30 +139,16 @@ export class EthereumWallet extends BaseWallet {
         // Getting addresses from Prokey
         let address = await super.GetAddress<EthereumAddress>(path.path, false);
 
-        // Update the account info address
-        accountInfo.addressModel = {
-            address: address.address,
-            path: path.path,
-        };
 
-        // to lowercase
-        let lowerCaseAddress = address.address.toLowerCase();
-
-        // creating the request
-        let req: GenericWalletModel.RequestAddressInfo = {
-            address: lowerCaseAddress,      // Address
-            addressModel: path,
-        }
+        path.address = address.address;
 
         // Getting addresses' info
-        var addInfo = await this._ethBlockChain.GetAddressInfo(req);
+        var accInfo = await this._ethBlockchain.GetAddressInfo(path);
+        accInfo.accountIndex = accountNumber;
 
-        accountInfo.balance += (addInfo[0].balance == null) ? 0 : addInfo[0].balance;
-        accountInfo.trKeys = addInfo[0].trKeys;
-        accountInfo.transactions = addInfo[0].transactions;
-        accountInfo.nonce = addInfo[0].nonce;
+        MyConsole.Info("EthereumWallet::AccountDiscovery->Account info:", accInfo);
 
-        return accountInfo;
+        return accInfo;
     }
 
     /**
@@ -188,7 +173,7 @@ export class EthereumWallet extends BaseWallet {
         let account = this._ethereumWallet.accounts[accountNumber];
 
         // Get the gas price from server
-        const gasPrice = await this._ethBlockChain.GetGasPrice();
+        const gasPrice = await this._ethBlockchain.GetGasPrice();
 
         if (account.addressModel == null) {
             throw new Error("Invalid data");
@@ -197,17 +182,18 @@ export class EthereumWallet extends BaseWallet {
         let nonce = 0;
         if (this._isErc20) {
             // Estimate the transaction fee
-            this._gasLimit = await this.EstimateFee(
-                account.addressModel.address, // from address
-                (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address, // to contract address
-                this.GetErc20TransactionData(receivedAddress, amount)
-            );
+            // this._gasLimit = await this.EstimateFee(
+            //     account.addressModel.address, // from address
+            //     (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address, // to contract address
+            //     this.GetErc20TransactionData(receivedAddress, amount)
+            // );
+            this._gasLimit = 65000;
 
             // Reading balance & nonce from ETH
             const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
 
             // Check transaction fee
-            if (ethAddInfo.balance == null || gasPrice * this._gasLimit > ethAddInfo.balance) {
+            if (ethAddInfo.balance == null || gasPrice * this._gasLimit > +ethAddInfo.balance) {
                 let networkName = EthereumNetworks.GetNetworkFullNameByChainId((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
                 throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
@@ -218,7 +204,7 @@ export class EthereumWallet extends BaseWallet {
             }
 
             // Set the nonce
-            nonce = ethAddInfo.nonce || 0;
+            nonce = +ethAddInfo.nonce || 0;
         } else {
             // Check account balance
             if (amount.gt(account.balance)) {
@@ -227,12 +213,12 @@ export class EthereumWallet extends BaseWallet {
 
             // Check account balance for pay the tx fee
 
-            if (amount.gt(account.balance - (gasPrice * this._gasLimit))) {
+            if (amount.gt(+account.balance - (gasPrice * this._gasLimit))) {
                 throw new Error("Insufficient balance to pay the transaction fee");
             }
 
             // Set the nonce
-            nonce = account.nonce || 0;
+            nonce = +account.nonce || 0;
         }
 
         const coinInfo = super.GetCoinInfo() as (Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel);
@@ -301,8 +287,8 @@ export class EthereumWallet extends BaseWallet {
      * To send a transaction to the network
      * @param txData Transaction to be sent to the network
      */
-    public async SendTransaction(txData: string): Promise<GeneralResponse> {
-        return this._ethBlockChain.BroadCastTransaction(txData);
+    public async SendTransaction(txData: string): Promise<GenericWalletModel.GenericSentTransactionResult> {
+        return this._ethBlockchain.BroadCastTransaction(txData);
     }
 
     /**
@@ -324,37 +310,32 @@ export class EthereumWallet extends BaseWallet {
         // WE ONLY CHECK THE CURRENT ACCOUNT
         const account = this._ethereumWallet.accounts[accountNumber];
 
-        // Retrive transaction list from server
-        let listOfTransactions = !account.transactions ? !account.trKeys ? [] : await this._ethBlockChain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex) : account.transactions;
-
-        MyConsole.Info('listOfTransactions', listOfTransactions);
-
         let txViews = new Array<WalletModel.EthereumTransactionView>();
 
-        if (listOfTransactions == undefined || listOfTransactions.length == 0) {
+        if (account.transactions == undefined || account.transactions.length == 0) {
             return txViews;
         }
 
-        listOfTransactions.forEach(tx => {
+        account.transactions.forEach(tx => {
             let isSent = false;
             // To skip the warning/error
             if (account.addressModel != undefined) {
-                isSent = account.addressModel.address.toLowerCase() == tx.fromAddress;
+                isSent = account.addressModel.address.toLowerCase() == tx.vin[0].addresses[0].toLocaleLowerCase();
             }
 
             let txView: WalletModel.EthereumTransactionView = {
-                blockNumber: tx.blockNumber,
-                hash: tx.hash,
-                fee: tx.gasPrice * tx.gas,
-                date: new Date(tx.timeStamp * 1000).toLocaleString(),
+                blockNumber: tx.blockHeight,
+                hash: tx.txid,
+                fee: +tx.fees,
+                date: new Date(tx.blockTime * 1000).toLocaleString(),
                 status: isSent ? 'SENT' : 'RECEIVED',
-                amount: tx.amount,
+                amount: +tx.value,
             }
 
             if (isSent) {
-                txView.sent = tx.toAddress;
+                txView.sent = tx.vout[0].addresses[0];
             } else {
-                txView.received = tx.fromAddress;
+                txView.received = tx.vin[0].addresses[0];
             }
 
             txViews.push(txView);
@@ -405,7 +386,7 @@ export class EthereumWallet extends BaseWallet {
      * @returns TransactionFee, GasPrice * GasLimit
      */
     public async CalculateTransactionFee(): Promise<number> {
-        const gasPrice = await this._ethBlockChain.GetGasPrice();
+        const gasPrice = await this._ethBlockchain.GetGasPrice();
 
         return gasPrice * this._gasLimit;
     }
@@ -459,17 +440,14 @@ export class EthereumWallet extends BaseWallet {
      * Get address info of ETH address, For signing an ERC20 transaction, The last nonce number of ETH address is needed.
      * @param address ETH address
      */
-    private async GetEthAddressInfo(address: string): Promise<WalletModel.EthereumAddressInfo> {
-        var ethBlockchain = new EthereumBlockChain(this._network);
+    private async GetEthAddressInfo(address: string): Promise<WalletModel.EthereumAccountInfo> {
+        var ethBlockchain = new EthereumBlockchain(this._servers);
         var addInfo = await ethBlockchain.GetAddressInfo({
-            address: address
+            address: address,
+            path: []
         });
 
-        if (addInfo == null || addInfo.length == 0) {
-            throw new Error("The ETH address is not valid");
-        }
-
-        return addInfo[0];
+        return addInfo;
     }
 
     /**
@@ -479,17 +457,17 @@ export class EthereumWallet extends BaseWallet {
      * @param data ERC20 Data (Function call with parameters)
      * @returns Estimated fee for this transaction
      */
-    private async EstimateFee(from: string, to: string, data: string): Promise<number> {
-        try {
-            var fee = await this._ethBlockChain.EstimateFee(from, to, data);
+    // private async EstimateFee(from: string, to: string, data: string): Promise<number> {
+    //     try {
+    //         var fee = await this._ethBlockChain.EstimateFee(from, to, data);
 
-            if (fee < 40000)
-                fee = 40000;
-            return fee;
-        } catch (error) {
-            return 65000;
-        }
-    }
+    //         if (fee < 40000)
+    //             fee = 40000;
+    //         return fee;
+    //     } catch (error) {
+    //         return 65000;
+    //     }
+    // }
 
     /**
      * Get ERC20 data for calling "TransferTo" function

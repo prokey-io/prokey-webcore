@@ -25,10 +25,10 @@ import { BlockchainServerModel } from './BlockchainProviders';
 import { BlockbookServer } from './_servers/blockbook/BlockbookServer';
 import { BlockbookDetails, BlockbookRequestDetails, BlockbookTokens } from './_servers/blockbook/BlockbookRequestModels';
 import { MyConsole } from '../utils/console';
-import { BlockbookTransactionResult } from './_servers/blockbook/BlockbookCommonModel';
 import { AddressModel } from '../models/Prokey';
 import * as PathUtil from '../utils/pathUtils';
 import * as GenericWalletModel from '../models/GenericWalletModel'
+import * as BlockbookModels from './_servers/blockbook/BlockbookBitcoinModel';
 
 export class BitcoinBlockchain extends BlockchainBase {
     
@@ -49,7 +49,7 @@ export class BitcoinBlockchain extends BlockchainBase {
                 req.details = BlockbookDetails.Txs;
 
                 try {
-                    let addInfo: WalletModel.BitcoinAddressInfoModel = await BlockbookServer.GetAddressInfo(this._servers[i], reqAdd.address);
+                    let addInfo: WalletModel.BitcoinAddressInfoModel = await BlockbookServer.GetAddressInfo<BlockbookModels.BitcoinAddressInfoModel>(this._servers[i], reqAdd.address);
                     
                     //! Add address model
                     addInfo.addressModel = reqAdd;

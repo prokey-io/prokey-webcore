@@ -22,8 +22,6 @@ import {
     Request,
     newHttpClient } from 'typescript-http-client';
 
-import { BaseCoinInfoModel } from '../../models/CoinInfoModel';
-
 export abstract class BaseBlockchainServer {
     /**
      * Get account info from blockchain node

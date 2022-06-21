@@ -29,7 +29,5 @@ export abstract class BlockchainBase {
     }
 
     public abstract GetAddressInfo(reqAdd: RequestAddressInfo);
-    public abstract GetAccountInfoByPublicKey(publicKey: string);
-    public abstract GetAccountInfoByAddresses(addresses: RequestAddressInfo[]);
     public abstract BroadCastTransaction(transaction: string);
 }
