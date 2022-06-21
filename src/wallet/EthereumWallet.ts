@@ -179,7 +179,7 @@ export class EthereumWallet extends BaseWallet {
             throw new Error("Invalid data");
         }
 
-        let nonce = 0;
+        let nonce = "0";
         if (this._isErc20) {
             // Estimate the transaction fee
             // this._gasLimit = await this.EstimateFee(
@@ -204,7 +204,7 @@ export class EthereumWallet extends BaseWallet {
             }
 
             // Set the nonce
-            nonce = +ethAddInfo.nonce || 0;
+            nonce = ethAddInfo.nonce || "0";
         } else {
             // Check account balance
             if (amount.gt(account.balance)) {
@@ -218,7 +218,7 @@ export class EthereumWallet extends BaseWallet {
             }
 
             // Set the nonce
-            nonce = +account.nonce || 0;
+            nonce = account.nonce || "0";
         }
 
         const coinInfo = super.GetCoinInfo() as (Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel);
@@ -229,7 +229,7 @@ export class EthereumWallet extends BaseWallet {
             to: receivedAddress,
             value: amount.toString(16),
 
-            nonce: nonce.toString(16),
+            nonce: nonce,
             gasLimit: this._gasLimit.toString(16),
             
             gasPrice: gasPrice.toString(16),
