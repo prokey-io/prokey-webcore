@@ -202,6 +202,24 @@ export class BitcoinWallet extends BaseWallet {
                     path: lastAddressPath,
                 }
             }
+        } else {
+            // Get the first address path
+            const firstAddressPath = PathUtil.GetBipPath(
+                CoinBaseType.BitcoinBase,   // Coin Type
+                accountNumber,              // Account Number
+                super.GetCoinInfo(),        // CoinInfo
+                false,                      // No Change
+                0                           // First Address
+            );
+
+            // get address from device
+            const add = await this.GetAddress(firstAddressPath.path, false);
+
+            // set the last unused address
+            accInfo.lastUnusedAddress = {
+                address: add.address,
+                path: firstAddressPath.path,
+            }
         }
 
         MyConsole.Info("BitcoinWallet::AccountDiscoveryByPublicKey->Account info:", accInfo);
