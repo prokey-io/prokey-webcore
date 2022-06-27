@@ -29,6 +29,8 @@ import { EthereumTx, EthTxToProkey } from '../models/EthereumTx';
 import { validateParams } from '../utils/paramsValidator';
 import { Erc20BaseCoinInfoModel, EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
 import { CoinInfo, CoinBaseType } from '../coins/CoinInfo';
+import { TypedMessage, MessageTypes, HashTypedDataModel } from '../models/EthereumTypedDataModel';
+import { HashTypedData } from '../utils/ethereum-hashTypedData';
 
 export class EthereumCommands implements ICoinCommands {
 
@@ -254,6 +256,51 @@ export class EthereumCommands implements ICoinCommands {
             await this.signTx(device, ethTx, resolve, reject);
 
         });
+    }
+
+    /**
+     * 
+     * @param device Prokey device instance
+     * @param path BIP44 path
+     * @param typedData Typed data to be signed(Hash of this data will be sent to device)
+     * @param isMetamaskV4Compatible Only V4 is supported
+     * @returns 
+     */
+    public async SignTypedData(device: Device, path: string | Array<number>, typedData: TypedMessage<MessageTypes>, isMetamaskV4Compatible: boolean ): Promise<ProkeyResponses.EthereumSignedTypedData> {
+        if(isMetamaskV4Compatible == false) {
+            throw new Error("Only version 4 of typed data signing is supported");
+        }
+
+        if(!device)
+            throw new Error("Ethereum::SignTransaction->parameter Device cannot be null");
+
+        const hashed: HashTypedDataModel = HashTypedData(typedData, true);
+
+        // convert path to array of num
+        let address_n: Array<number>;
+        if (typeof path == "string") {
+            try {
+                address_n = getHDPath(path);
+            }
+            catch (e) {
+                return Promise.reject({ success: false, errorCode: GeneralErrors.PATH_NOT_VALID });
+            }
+
+        } else {
+            address_n = path;
+        }
+
+        let param = {
+            address_n: address_n,
+            domain_separator_hash: hashed.domain_separator_hash,
+            message_hash: hashed.message_hash
+        }
+
+        const { address, signature } = await device.SendMessage<ProkeyResponses.EthereumSignedTypedData>('EthereumSignTypedHash', param, 'EthereumTypedDataSignature');
+        return {
+            address: address,
+            signature: "0x" + signature,
+        }
     }
 
     /**
