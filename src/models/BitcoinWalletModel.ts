@@ -129,7 +129,9 @@ export interface BitcoinTransactionInfoModel {
     // omni transaction value
     omniValue?: number,
     // the address of receiver fund
-    omniReceivedAddress?: string,
+    omniReceiverAddress?: string,
+    // the sender address
+    omniSenderAddress?: string,
 }
 
 /**

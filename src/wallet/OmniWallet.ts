@@ -187,7 +187,8 @@ export class OmniWallet extends BaseWallet {
                     accountInfo.balance -= value;
                     tx.omniIsReceived = false;
                 }
-                tx.omniReceivedAddress = receiverAddress;
+                tx.omniSenderAddress = tx.vin[0].addresses[0];
+                tx.omniReceiverAddress = receiverAddress;
                 tx.omniValue = value;
                 accountInfo.transactions?.push(tx);
             }
@@ -252,98 +253,79 @@ export class OmniWallet extends BaseWallet {
             throw new Error('UTXO list is empty or undefined');
         }
 
-        return <BitcoinTx>{};
+        //! Get the prefered transaction fee
+        //! For SECURITY, We must calculate the transaction fee again
+        let fees = await this._bitcoinBlockchain.GetTxFee();
+        selectedFee = selectedFee.toLowerCase();
+        let selectedTxFee = fees.economy;
+        if (selectedFee == 'economy' || selectedFee == 'low' || selectedFee == 'minimal' || selectedFee == 'min') {
+            selectedTxFee = +fees.economy;
+        } else if (selectedFee == 'priority' || selectedFee == 'high' || selectedFee == 'fast' || selectedFee == 'max') {
+            selectedTxFee = +fees.high;
+        }
+        let txLen = this.CalculateTxLen();
+        let txFee = selectedTxFee * txLen;
 
-        // if(!addInfo.utxOs || addInfo.utxOs.length == 0) {
-        //     throw new Error('No UTXO for this address');
-        // }
+        let selectedUtxo = acc.sortedUtxos.find((utxo) => {
+            return +utxo.value > coinInfo.dust_limit + txFee;
+        });
 
-        // //! Get the prefered transaction fee
-        // //! For SECURITY, We must calculate the transaction fee again
-        // let fees = await this._blockchain.GetTxFee();
-        // selectedFee = selectedFee.toLowerCase();
-        // let selectedTxFee = fees.economy;
-        // if(selectedFee == 'economy' || selectedFee == 'low' || selectedFee == 'minimal' || selectedFee == 'min'){
-        //     selectedTxFee = +fees.economy;
-        // } else if( selectedFee == 'priority' || selectedFee == 'high' || selectedFee == 'fast' || selectedFee == 'max') {
-        //     selectedTxFee = +fees.high;
-        // }
+        if (!selectedUtxo) {
+            throw new Error('No sufficient balance in one UTXO');
+        }
 
-        // let txLen = this.CalculateTxLen();
-        // let txFee = selectedTxFee * txLen;
+        let tx: BitcoinTx = {
+            coinName: 'Bitcoin',
+            inputs: [],
+            outputs: [],
+            options: {},
+        };
 
-        // // Sort UTXO
-        // let sortedUtoxs = addInfo.utxOs.sort( (a,b) => {
-        //     if (a.amount > b.amount)
-        //         return -1;
-        //     else if( a.amount == b.amount)
-        //         return 0;
-        //     else
-        //         return 1;
-        // });
+        // Transaction input
+        tx.inputs.push({
+            address_n: acc.addressModel.path,
+            prev_hash: selectedUtxo.txid,
+            prev_index: selectedUtxo.vout,
+            amount: selectedUtxo.value,
+        });
 
-        // MyConsole.Info("sortedUtoxs", sortedUtoxs);
+        //! Load previous transactions
+        await this.LoadPrevTx(acc, tx);
 
-        // let selectedUtxo = sortedUtoxs.find(utxo => {
-        //     return utxo.amount > (coinInfo.dust_limit + txFee );
-        // })
+        // first address is CHANGE which should be the same as account address
+        tx.outputs.push({
+            address_n: acc.addressModel.path,
+            script_type: EnumOutputScriptType.PAYTOP2SHWITNESS,
+            amount: (+selectedUtxo.value - txFee - coinInfo.dust_limit).toString(),
+        });
 
-        // if(!selectedUtxo) {
-        //     throw new Error("No sufficient balance in one UTXO");
-        // }
+        // Omni Simple send Transaction
+        // VVVV = 2 bytes version
+        // SSSS = 2 bytes transaction type, 0: Simple Send
+        // COINIDEN = 4 bytes, Currency identifier, 1 = OMNI, 2 OMNI test, 3 = MAID, 31 = USDT
+        // NUMBER_OF_COINS = 8 bytes
+        let omniCoinId = ('00000000' + coinInfo.proparty_id.toString(16)).substr(-8);
+        let omniAmount = ('0000000000000000' + amount.toString(16)).substr(-16);
 
-        // let tx: BitcoinTx = {
-        //     coinName: 'Bitcoin',
-        //     inputs: [],
-        //     outputs: [],
-        //     options: {},
-        // };
+        //                                                    omni   VVVVSSSS   COINIDEN     AMOUNT
+        let omniProto = Utility.HexStringToByteArrayNumber( `6f6d6e6900000000${omniCoinId}${omniAmount}`);
 
-        // // Transaction input
-        // tx.inputs.push({
-        //     address_n: acc.addressModel.path,
-        //     prev_hash: selectedUtxo.hash,
-        //     prev_index: selectedUtxo.index,
-        //     amount: selectedUtxo.amount.toString(),
-        // });
+        tx.outputs.push({
+            op_return_data: omniProto,
+            amount: '0',
+            script_type: EnumOutputScriptType.PAYTOOPRETURN,
+        });
 
-        // //! Load previous transactions
-        // await this.LoadPrevTx(tx);
+        // Receiver
+        tx.outputs.push({
+            address: receiverAddress,
+            script_type: EnumOutputScriptType.PAYTOADDRESS,
+            amount: '546', // dust
+        });
 
-        // // first address is CHANGE which should be the same as account address
-        // tx.outputs.push({
-        //     address_n: acc.addressModel.path,
-        //     script_type: EnumOutputScriptType.PAYTOP2SHWITNESS,
-        //     amount: (selectedUtxo.amount - txFee - coinInfo.dust_limit).toString(),
-        // });
+        MyConsole.Info("tx:", tx);
 
-        // // Omni Simple send Transaction
-        // // VVVV = 2 bytes version
-        // // SSSS = 2 bytes transaction type, 0: Simple Send
-        // // COINIDEN = 4 bytes, Currency identifier, 1 = OMNI, 2 OMNI test, 3 = MAID, 31 = USDT
-        // // NUMBER_OF_COINS = 8 bytes
-        // let omniCoinId = ("00000000" + coinInfo.proparty_id.toString(16)).substr(-8);
-        // let omniAmount = ("0000000000000000" + amount.toString(16)).substr(-16);
-
-        // //                                                    omni   VVVVSSSS   COINIDEN     AMOUNT
-        // let omniProto = Utility.HexStringToByteArrayNumber( `6f6d6e6900000000${omniCoinId}${omniAmount}`);
-
-        // tx.outputs.push({
-        //     op_return_data: omniProto,
-        //     amount: '0',
-        //     script_type: EnumOutputScriptType.PAYTOOPRETURN,
-        // });
-
-        // // Receiver
-        // tx.outputs.push({
-        //     address: receiverAddress,
-        //     script_type: EnumOutputScriptType.PAYTOADDRESS,
-        //     amount: coinInfo.dust_limit.toString(),
-        // });
-
-        // MyConsole.Info("tx:", tx);
-
-        //return tx;
+        return tx;
     }
 
     /**
@@ -359,7 +341,7 @@ export class OmniWallet extends BaseWallet {
 
         utxos = await this._bitcoinBlockchain.GetAddressUtxo(acc.addressModel?.address);
 
-        acc.sortedUtxos = utxos.sort((a,b) => {
+        acc.sortedUtxos = utxos.sort((a, b) => {
             const aValue = +a.value;
             const bValue = +b.value;
             if (aValue > bValue) {
@@ -389,7 +371,7 @@ export class OmniWallet extends BaseWallet {
 
         // Validate account
         if (accountNumber >= this._wallet.accounts.length) {
-            throw new Error(`Cannot fine account #${accountNumber}`);
+            throw new Error(`Cannot find account #${accountNumber}`);
         }
 
         // WE ONLY CHECK THE CURRENT ACCOUNT
@@ -402,33 +384,29 @@ export class OmniWallet extends BaseWallet {
         }
 
         // Retrive transaction list from server
-        // let listOfTransactions = await this._blockchain.GetLatestTransactions(account.trKeys, numberOfTransactions, startIndex);
+        let listOfTransactions = account.transactions;
 
-        // if(account.addressModel == undefined)
-        // {
-        //     throw new Error('Address Model can not be undefined');
-        // }
+        if (account.addressModel == undefined) {
+            throw new Error('Address Model can not be undefined');
+        }
 
-        // // Decimal Factor
-        // // for divisible coins or tokens, the value in this field is to be divided by 100,000,000
-        // // for indivisible coins or tokens, the value in this field is the integer number of Omni Protocol coins or tokens (e.g. 1 represents 1 indivisible token)
-        // const decimalFactor = (super.GetCoinInfo() as OmniCoinInfoModel).divisible ? 100000000 : 1;
+        listOfTransactions.forEach((tx) => {
+            let tv: WalletModel.OmniTransactionView = {
+                fromAddress: tx.omniSenderAddress ?? '',
+                toAddress: tx.omniReceiverAddress ?? '',
+                amount: tx.omniValue ?? 0,
+                blockId: tx.blockHeight,
+                hash: tx.txid,
+                date: new Date(tx.blockTime * 1000).toLocaleString(),
+                status: tx.omniIsReceived ? 'RECEIVED' : 'SENT',
+                isValid: true,
+                invalidReason: '',
+            };
 
-        // listOfTransactions.forEach(tx => {
-        //     let tv: WalletModel.OmniTransactionView = {
-        //         fromAddress: tx.fromAddress,
-        //         toAddress: tx.toAddress,
-        //         amount: tx.amount * decimalFactor,
-        //         blockId: tx.blockId,
-        //         hash: tx.hash,
-        //         date: new Date(tx.timeStamp * 1000).toLocaleString(),
-        //         status: (account.addressModel == undefined || tx.fromAddress == account.addressModel.address) ? 'SENT' : 'RECEIVED',
-        //         isValid: tx.valid,
-        //         invalidReason: tx.invalidReason,
-        //     };
+            txViewList.push(tv);
+        });
 
-        //     txViewList.push(tv);
-        // });
+        MyConsole.Info('OmniWallet::GetTransactionViewList->Transaction view list', txViewList);
 
         return txViewList;
     }
@@ -498,18 +476,22 @@ export class OmniWallet extends BaseWallet {
      */
     private async LoadPrevTx(acc: WalletModel.OmniAccountInfo, tx: BitcoinTx) {
         if (tx.inputs == undefined || tx.inputs.length == 0) {
-            throw new Error('BitcoinWallet::LoadPrevTx->Transaction inputs cannot be null or empty');
+            throw new Error('OmniWallet::LoadPrevTx->Transaction inputs cannot be null or empty');
         }
 
-        if (acc.transactions == null || acc.transactions.length == 0) {
-            throw new Error('BitcoinWallet::LoadPrevTx->PrevTx are not set correctly');
+        if (
+            acc.bitcoinAddressInfo == null ||
+            acc.bitcoinAddressInfo.transactions == null ||
+            acc.bitcoinAddressInfo.transactions.length == 0
+        ) {
+            throw new Error('OmniWallet::No Bitcoin Address info or empty transaction');
         }
 
         tx.refTxs = new Array<RefTransaction>();
         tx.inputs.forEach((txInput) => {
-            let prev = acc.transactions?.find((t) => t.txid == txInput.prev_hash);
+            let prev = acc.bitcoinAddressInfo?.transactions?.find((t) => t.txid == txInput.prev_hash);
             if (prev == null) {
-                throw new Error('BitcoinWallet::LoadPrevTx->No transaction found for this UTXO');
+                throw new Error('OmniWallet::LoadPrevTx->No transaction found for this UTXO');
             }
 
             let ref: RefTransaction = {
@@ -522,11 +504,11 @@ export class OmniWallet extends BaseWallet {
 
             prev.vin.forEach((inp) => {
                 if (inp.txid == null) {
-                    throw new Error('BitcoinWallet::LoadPrevTx->PrevTransation id is null');
+                    throw new Error('OmniWallet::LoadPrevTx->PrevTransation id is null');
                 }
 
                 if (inp.hex == null) {
-                    throw new Error('BitcoinWallet::LoadPrevTx->PrevTransation hex is null');
+                    throw new Error('OmniWallet::LoadPrevTx->PrevTransation hex is null');
                 }
 
                 ref.inputs.push({
@@ -539,7 +521,7 @@ export class OmniWallet extends BaseWallet {
 
             prev.vout.forEach((out) => {
                 if (out.hex == null) {
-                    throw new Error('BitcoinWallet::LoadPrevTx->PrevTransation hex is null');
+                    throw new Error('OmniWallet::LoadPrevTx->PrevTransation hex is null');
                 }
                 ref.bin_outputs.push({
                     amount: out.value,
