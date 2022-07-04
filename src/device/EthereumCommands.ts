@@ -292,8 +292,8 @@ export class EthereumCommands implements ICoinCommands {
 
         let param = {
             address_n: address_n,
-            domain_separator_hash: hashed.domain_separator_hash,
-            message_hash: hashed.message_hash
+            domain_separator_hash: Util.HexStringToByteArray(hashed.domain_separator_hash),
+            message_hash: hashed.message_hash ? Util.HexStringToByteArray(hashed.message_hash) : null,
         }
 
         const { address, signature } = await device.SendMessage<ProkeyResponses.EthereumSignedTypedData>('EthereumSignTypedHash', param, 'EthereumTypedDataSignature');
