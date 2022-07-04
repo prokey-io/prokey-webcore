@@ -299,7 +299,7 @@ export class EthereumCommands implements ICoinCommands {
         const { address, signature } = await device.SendMessage<ProkeyResponses.EthereumSignedTypedData>('EthereumSignTypedHash', param, 'EthereumTypedDataSignature');
         return {
             address: address,
-            signature: "0x" + signature,
+            signature: "0x" + Util.ByteArrayToHexString(signature),
         }
     }
 
