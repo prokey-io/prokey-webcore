@@ -120,7 +120,18 @@ export interface BitcoinTransactionInfoModel {
     // transaction fee
     fees: string,
     // the transaction in raw
-    hex: string
+    hex: string,
+    //-----------
+    // OmniLayer transaction data
+    //-----------
+    // true means this is a receive transaction
+    omniIsReceived?: boolean,
+    // omni transaction value
+    omniValue?: number,
+    // the address of receiver fund
+    omniReceiverAddress?: string,
+    // the sender address
+    omniSenderAddress?: string,
 }
 
 /**
