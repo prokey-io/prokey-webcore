@@ -255,12 +255,17 @@ export class OmniWallet extends BaseWallet {
 
         //! Get the prefered transaction fee
         //! For SECURITY, We must calculate the transaction fee again
-        let fees = await this._bitcoinBlockchain.GetTxFee();
+        let fees = await this._bitcoinBlockchain.GetTxFee(true);
         selectedFee = selectedFee.toLowerCase();
         let selectedTxFee = fees.economy;
         if (selectedFee == 'economy' || selectedFee == 'low' || selectedFee == 'minimal' || selectedFee == 'min') {
             selectedTxFee = +fees.economy;
-        } else if (selectedFee == 'priority' || selectedFee == 'high' || selectedFee == 'fast' || selectedFee == 'max') {
+        } else if (
+            selectedFee == 'priority' ||
+            selectedFee == 'high' ||
+            selectedFee == 'fast' ||
+            selectedFee == 'max'
+        ) {
             selectedTxFee = +fees.high;
         }
         let txLen = this.CalculateTxLen();
@@ -308,7 +313,7 @@ export class OmniWallet extends BaseWallet {
         let omniAmount = ('0000000000000000' + amount.toString(16)).substr(-16);
 
         //                                                    omni   VVVVSSSS   COINIDEN     AMOUNT
-        let omniProto = Utility.HexStringToByteArrayNumber( `6f6d6e6900000000${omniCoinId}${omniAmount}`);
+        let omniProto = Utility.HexStringToByteArrayNumber(`6f6d6e6900000000${omniCoinId}${omniAmount}`);
 
         tx.outputs.push({
             op_return_data: omniProto,
@@ -323,7 +328,7 @@ export class OmniWallet extends BaseWallet {
             amount: '546', // dust
         });
 
-        MyConsole.Info("tx:", tx);
+        MyConsole.Info('OmniWallet::GenerateTransaction->tx to be signed:', tx);
 
         return tx;
     }
@@ -445,7 +450,7 @@ export class OmniWallet extends BaseWallet {
      * To calculate the a transaction fee
      */
     public async CalculateTransactionFee(): Promise<BitcoinFeeSelectionModel> {
-        let txFees = await this._bitcoinBlockchain.GetTxFee();
+        let txFees = await this._bitcoinBlockchain.GetTxFee(true);
 
         // Calculate transaction length
         let txLen = this.CalculateTxLen();

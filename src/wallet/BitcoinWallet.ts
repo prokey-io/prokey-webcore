@@ -706,7 +706,7 @@ export class BitcoinWallet extends BaseWallet {
         let acc = this._bitcoinWallet.accounts[fromAccount];
 
         // Get the current fees from blockchain
-        let txFees = await this._bitcoinBlockchain.GetTxFee();
+        let txFees = await this._bitcoinBlockchain.GetTxFee(coinInfo.name == 'Bitcoin');
 
         // Calculate transaction length
         let txLen = await this.CalculateTxLen(receivers, acc, txFees);

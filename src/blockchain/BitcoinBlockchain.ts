@@ -33,10 +33,17 @@ import { AddressModel } from '../models/Prokey';
 import * as PathUtil from '../utils/pathUtils';
 import * as GenericWalletModel from '../models/GenericWalletModel';
 import * as BlockbookModels from './_servers/blockbook/BlockbookBitcoinModel';
+import { Request, newHttpClient } from 'typescript-http-client';
 
 export class BitcoinBlockchain extends BlockchainBase {
+    _lastFeeFetchTime: Date = new Date();
+    _lastFee: WalletModel.BitcoinFee = <WalletModel.BitcoinFee>{};
+
     constructor(servers: BlockchainServerModel[]) {
         super(servers);
+
+        //! Initial time to yesterday
+        this._lastFeeFetchTime.setDate(this._lastFeeFetchTime.getDate() - 1);
     }
 
     /**
@@ -240,38 +247,75 @@ export class BitcoinBlockchain extends BlockchainBase {
         throw new Error('BitcoinBlockchain::BroadCastTransaction->No server to handle the request');
     }
 
-    public async GetTxFee(): Promise<WalletModel.BitcoinFee> {
-        this._ensureThereIsAServer();
-        for (let i = 0; i < this._servers.length; i++) {
-            if (this._servers[i].apiType == 'blockbook') {
-                try {
-                    let fee: WalletModel.BitcoinFee = {
-                        economy: 0,
-                        high: 0,
-                        normal: 0,
-                    };
-
-                    let res = await BlockbookServer.GetEstimateFee(this._servers[i], 1);
-                    if (res.result) {
-                        fee.high = +res.result * 100000; // satoshi per KB
-                    }
-
-                    res = await BlockbookServer.GetEstimateFee(this._servers[i], 3);
-                    if (res.result) {
-                        fee.normal = +res.result * 100000; // satoshi per KB
-                    }
-
-                    res = await BlockbookServer.GetEstimateFee(this._servers[i], 6);
-                    if (res.result) {
-                        fee.economy = +res.result * 100000; // satoshi per KB
-                    }
-
-                    return fee;
-                } catch (e) {}
-            }
+    public async GetTxFee(isBitcoin: boolean): Promise<WalletModel.BitcoinFee> {
+        //! fetch/update the fee rate every 1 minutes
+        const secondsPassedFromLastCall = (new Date().getTime() - this._lastFeeFetchTime.getTime()) / 1000;
+        if (this._lastFee != null && secondsPassedFromLastCall < 60) {
+            return this._lastFee;
         }
 
-        throw new Error('BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request');
+        try {
+            var fee = <WalletModel.BitcoinFee>{};
+            // get fee from https://bitcoinfees.earn.com/api/v1/fees/list
+            const client = newHttpClient();
+
+            const request = new Request('https://bitcoinfees.earn.com/api/v1/fees/list', { method: 'GET' });
+            var r = await client.execute<any>(request);
+            r.fees.forEach((element) => {
+                if (
+                    (element.maxMinutes == 360 && fee.economy == null) ||
+                    (element.minMinutes < 180 && fee.economy == null)
+                ) {
+                    fee.economy = element.minFee;
+                } else if (
+                    (element.maxMinutes == 180 && fee.normal == null) ||
+                    (element.minMinutes < 90 && fee.normal == null)
+                ) {
+                    fee.normal = element.minFee;
+                } else if (
+                    (element.maxMinutes == 60 && fee.high == null) ||
+                    (element.minMinutes < 30 && fee.high == null)
+                ) {
+                    fee.high = element.minFee;
+                }
+            });
+
+            this._lastFee = fee;
+            return fee;
+        } catch {
+            this._ensureThereIsAServer();
+            for (let i = 0; i < this._servers.length; i++) {
+                if (this._servers[i].apiType == 'blockbook') {
+                    try {
+                        let fee: WalletModel.BitcoinFee = {
+                            economy: 0,
+                            high: 0,
+                            normal: 0,
+                        };
+
+                        let res = await BlockbookServer.GetEstimateFee(this._servers[i], 1);
+                        if (res.result) {
+                            fee.high = Math.floor(+res.result * 100000); // satoshi per KB
+                        }
+
+                        res = await BlockbookServer.GetEstimateFee(this._servers[i], 3);
+                        if (res.result) {
+                            fee.normal = Math.floor(+res.result * 100000); // satoshi per KB
+                        }
+
+                        res = await BlockbookServer.GetEstimateFee(this._servers[i], 6);
+                        if (res.result) {
+                            fee.economy = Math.floor(+res.result * 100000); // satoshi per KB
+                        }
+
+                        this._lastFee = fee;
+                        return fee;
+                    } catch (e) {}
+                }
+            }
+
+            throw new Error('BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request');
+        }
     }
 
     //**********************
