@@ -34,6 +34,7 @@ import * as PathUtil from '../utils/pathUtils';
 import * as GenericWalletModel from '../models/GenericWalletModel';
 import * as BlockbookModels from './_servers/blockbook/BlockbookBitcoinModel';
 import { Request, newHttpClient } from 'typescript-http-client';
+import { BitcoinWallet } from '../wallet/BitcoinWallet';
 
 export class BitcoinBlockchain extends BlockchainBase {
     _lastFeeFetchTime: Date = new Date();
@@ -254,6 +255,10 @@ export class BitcoinBlockchain extends BlockchainBase {
             return this._lastFee;
         }
 
+        if (isBitcoin == false) {
+            return await this._getTxEstimatedFee();
+        }
+
         try {
             var fee = <WalletModel.BitcoinFee>{};
             // get fee from https://bitcoinfees.earn.com/api/v1/fees/list
@@ -283,38 +288,7 @@ export class BitcoinBlockchain extends BlockchainBase {
             this._lastFee = fee;
             return fee;
         } catch {
-            this._ensureThereIsAServer();
-            for (let i = 0; i < this._servers.length; i++) {
-                if (this._servers[i].apiType == 'blockbook') {
-                    try {
-                        let fee: WalletModel.BitcoinFee = {
-                            economy: 0,
-                            high: 0,
-                            normal: 0,
-                        };
-
-                        let res = await BlockbookServer.GetEstimateFee(this._servers[i], 1);
-                        if (res.result) {
-                            fee.high = Math.floor(+res.result * 100000); // satoshi per KB
-                        }
-
-                        res = await BlockbookServer.GetEstimateFee(this._servers[i], 3);
-                        if (res.result) {
-                            fee.normal = Math.floor(+res.result * 100000); // satoshi per KB
-                        }
-
-                        res = await BlockbookServer.GetEstimateFee(this._servers[i], 6);
-                        if (res.result) {
-                            fee.economy = Math.floor(+res.result * 100000); // satoshi per KB
-                        }
-
-                        this._lastFee = fee;
-                        return fee;
-                    } catch (e) {}
-                }
-            }
-
-            throw new Error('BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request');
+            return this._getTxEstimatedFee();
         }
     }
 
@@ -325,5 +299,40 @@ export class BitcoinBlockchain extends BlockchainBase {
         if (this._servers == undefined || this._servers.length == 0) {
             throw new Error('BitcoinBlockchain::_ensureThereIsAServer->No server');
         }
+    }
+
+    private async _getTxEstimatedFee(): Promise<WalletModel.BitcoinFee> {
+        this._ensureThereIsAServer();
+        for (let i = 0; i < this._servers.length; i++) {
+            if (this._servers[i].apiType == 'blockbook') {
+                try {
+                    let fee: WalletModel.BitcoinFee = {
+                        economy: 0,
+                        high: 0,
+                        normal: 0,
+                    };
+
+                    let res = await BlockbookServer.GetEstimateFee(this._servers[i], 1);
+                    if (res.result) {
+                        fee.high = Math.floor(+res.result * 100000); // satoshi per KB
+                    }
+
+                    res = await BlockbookServer.GetEstimateFee(this._servers[i], 3);
+                    if (res.result) {
+                        fee.normal = Math.floor(+res.result * 100000); // satoshi per KB
+                    }
+
+                    res = await BlockbookServer.GetEstimateFee(this._servers[i], 6);
+                    if (res.result) {
+                        fee.economy = Math.floor(+res.result * 100000); // satoshi per KB
+                    }
+
+                    this._lastFee = fee;
+                    return fee;
+                } catch (e) {}
+            }
+        }
+
+        throw new Error('BitcoinBlockchain::GetAccountInfoByPublicKey->No server to handle the request');
     }
 }
