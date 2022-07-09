@@ -77,4 +77,30 @@ describe('EthereumWallet test', () => {
             tokenSymbols.should.all.equal('USDT');
         });
     });
+
+    describe('GetTransactionViewList test', () => {
+        it('ETH token transactions count should match fake data', async () => {
+            ethWallet = new EthereumWallet(device, 'ETH', false);
+            await ethWallet.StartDiscovery();
+            const result = await ethWallet.GetTransactionViewList();
+
+            const ethTransactions = AccountDiscoveryResponse.transactions.filter(
+                (item) => item.tokenTransfers == undefined
+            );
+
+            expect(result.length).to.equal(ethTransactions.length);
+        });
+
+        it('token transactions count should match fake data', async () => {
+            ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+            await ethWallet.StartDiscovery();
+            const result = await ethWallet.GetTransactionViewList();
+
+            const tokenTransactions = AccountDiscoveryResponse.transactions.filter(
+                (item) => item.tokenTransfers && item.tokenTransfers[0].token == usdtContractAddress
+            );
+
+            expect(result.length).to.equal(tokenTransactions.length);
+        });
+    });
 });
