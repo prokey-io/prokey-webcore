@@ -512,15 +512,11 @@ export class OmniWallet extends BaseWallet {
                     throw new Error('OmniWallet::LoadPrevTx->PrevTransation id is null');
                 }
 
-                if (inp.hex == null) {
-                    throw new Error('OmniWallet::LoadPrevTx->PrevTransation hex is null');
-                }
-
                 ref.inputs.push({
                     prev_hash: inp.txid,
                     prev_index: inp.vout ?? 0,
                     sequence: inp.sequence,
-                    script_sig: inp.hex,
+                    script_sig: inp.hex ?? '',
                 });
             });
 

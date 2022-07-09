@@ -146,6 +146,23 @@ export class BitcoinBlockchain extends BlockchainBase {
     }
 
     /**
+     * Get bitcoin transaction data in the exact format as returned by backend
+     * @param transactionId Transaction ID
+     */
+    public async GetRawTransaction(transactionId: string): Promise<WalletModel.BitcoinTransactionDetailInfoModel> {
+        this._ensureThereIsAServer();
+        for (let i = 0; i < this._servers.length; i++) { 
+            if (this._servers[i].apiType == 'blockbook') {
+                let txInfo = await BlockbookServer.GetRawTransaction(this._servers[i], transactionId);
+
+                return txInfo;
+            }
+        }
+
+        throw new Error('BitcoinBlockchain::GetRawTransaction->No server to handle the request');
+    }
+
+    /**
      * Get account utxo by public key
      * @param publicKey The extended public key
      * @returns List of UTXO
