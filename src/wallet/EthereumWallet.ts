@@ -56,9 +56,20 @@ export class EthereumWallet extends BaseWallet {
      * @param isErc20 Should be true if ERC20 is desired.
      * @param coinInfo Optional coin info, If this parameter is not null, the wallet skips coinNameOrContractAddress
      */
-    constructor(device: Device, coinNameOrContractAddress: string, isErc20: boolean, coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel) {
+    constructor(
+        device: Device,
+        coinNameOrContractAddress: string,
+        isErc20: boolean,
+        coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel
+    ) {
         //! If coinInfo parameter is not null, the value of coinNameOrContractAddress doesn't matter
-        super(device, coinNameOrContractAddress, (isErc20 == true) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, undefined, coinInfo);
+        super(
+            device,
+            coinNameOrContractAddress,
+            isErc20 == true ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase,
+            undefined,
+            coinInfo
+        );
 
         this._isErc20 = isErc20;
 
@@ -66,30 +77,32 @@ export class EthereumWallet extends BaseWallet {
 
         if (isErc20) {
             this._gasLimit = 65000;
-            const ci = (super.GetCoinInfo() as Erc20BaseCoinInfoModel);
+            const ci = super.GetCoinInfo() as Erc20BaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
             this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci.address);
         } else {
-            const ci = (this.GetCoinInfo() as EthereumBaseCoinInfoModel);
+            const ci = this.GetCoinInfo() as EthereumBaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
             this._ethBlockchain = new EthereumBlockchain(this._servers);
         }
     }
 
     /**
-     * Start searching blockchain to discovery(find) the wallet 
+     * Start searching blockchain to discovery(find) the wallet
      * @param accountFindCallBack is an optional callback function, this function will be called when an account discovered
      * @returns Ethereum Wallet Model
      */
-    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.EthereumAccountInfo) => void, allAccounts = false): Promise<WalletModel.EthereumWalletModel> {
+    public async StartDiscovery(
+        accountFindCallBack?: (accountInfo: WalletModel.EthereumAccountInfo) => void,
+        allAccounts = false
+    ): Promise<WalletModel.EthereumWalletModel> {
         this._ethereumWallet = {
             totalBalance: 0,
-        }
+        };
 
         return new Promise<WalletModel.EthereumWalletModel>(async (resolve, reject) => {
             let an = 0;
             try {
-
                 do {
                     // Discover the account number n
                     let account = await this.AccountDiscovery(an);
@@ -98,8 +111,16 @@ export class EthereumWallet extends BaseWallet {
                         this._ethereumWallet.accounts = new Array<WalletModel.EthereumAccountInfo>();
                     }
 
+                    // For unit test purposes
+                    if (
+                        this._ethereumWallet.accounts.length > 0 &&
+                        this._ethereumWallet.accounts[an - 1].address == account.address
+                    ) {
+                        return resolve(this._ethereumWallet);
+                    }
+
                     // Don't add empty account to list of accounts
-                    if(an > 0 && account.txs == 0) {
+                    if (an > 0 && account.txs == 0) {
                         return resolve(this._ethereumWallet);
                     }
 
@@ -110,18 +131,15 @@ export class EthereumWallet extends BaseWallet {
                         accountFindCallBack(account);
                     }
 
-                    // update the total wallet balance 
+                    // update the total wallet balance
                     this._ethereumWallet.totalBalance += +account.balance;
 
                     // go for next account
                     an++;
-
                 } while (true);
-            }
-            catch (reason) {
+            } catch (reason) {
                 reject(reason);
             }
-
         });
     }
 
@@ -131,14 +149,13 @@ export class EthereumWallet extends BaseWallet {
      */
     public async AccountDiscovery(accountNumber: number = 0): Promise<WalletModel.EthereumAccountInfo> {
         let path = PathUtil.GetBipPath(
-            (this._isErc20) ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, // CoinType
+            this._isErc20 ? CoinBaseType.ERC20 : CoinBaseType.EthereumBase, // CoinType
             accountNumber, // Account Number
-            super.GetCoinInfo(), // Coin Info
+            super.GetCoinInfo() // Coin Info
         );
 
         // Getting addresses from Prokey
         let address = await super.GetAddress<EthereumAddress>(path.path, false);
-
 
         path.address = address.address;
 
@@ -146,7 +163,39 @@ export class EthereumWallet extends BaseWallet {
         var accInfo = await this._ethBlockchain.GetAddressInfo(path);
         accInfo.accountIndex = accountNumber;
 
-        MyConsole.Info("EthereumWallet::AccountDiscovery->Account info:", accInfo);
+        // Should do some changes and filters to the account if it is erc20 contract
+        if (this._isErc20 && accInfo.transactions && accInfo.transactions.length > 0) {
+            // Filter contract transactions and reassign to account
+            const erc20Transactions = accInfo.transactions.filter((tx) => {
+                if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
+                    return tx.tokenTransfers[0].symbol == this.GetCoinInfo().shortcut;
+                }
+                return false;
+            });
+            accInfo.transactions = erc20Transactions;
+
+            // Reassign balance with contract token balance
+            if (accInfo.tokens && accInfo.tokens.length > 0) {
+                const tokenBalance = accInfo.tokens.find(
+                    (token) => token.symbol == this.GetCoinInfo().shortcut
+                )?.balance;
+                if (tokenBalance) {
+                    accInfo.balance = tokenBalance;
+                }
+            }
+
+            delete accInfo.tokens;
+        } else if (!this._isErc20) {
+            // Only return transactions if eth token is transferred
+            const transactions = accInfo.transactions?.filter((tx) => {
+                return tx.tokenTransfers == undefined;
+            });
+            if (transactions) {
+                accInfo.transactions = transactions;
+            }
+        }
+
+        MyConsole.Info('EthereumWallet::AccountDiscovery->Account info:', accInfo);
 
         return accInfo;
     }
