@@ -173,6 +173,7 @@ export class EthereumWallet extends BaseWallet {
                 return false;
             });
             accInfo.transactions = erc20Transactions;
+            accInfo.txs = erc20Transactions.length;
 
             // Reassign balance with contract token balance
             if (accInfo.tokens && accInfo.tokens.length > 0) {
@@ -182,6 +183,8 @@ export class EthereumWallet extends BaseWallet {
                 if (tokenBalance) {
                     accInfo.balance = tokenBalance;
                 }
+            } else {
+                accInfo.balance = '0';
             }
 
             delete accInfo.tokens;
@@ -342,13 +345,17 @@ export class EthereumWallet extends BaseWallet {
 
     /**
      * To get a list of transaction to show to end user on the UI
-     * @param accountNumber 
-     * @param startIndex 
-     * @param numberOfTransactions 
+     * @param accountNumber
+     * @param startIndex
+     * @param numberOfTransactions
      */
-    public async GetTransactionViewList(accountNumber: number = 0, startIndex: number = 0, numberOfTransactions: number): Promise<Array<WalletModel.EthereumTransactionView>> {
+    public async GetTransactionViewList(
+        accountNumber: number = 0,
+        startIndex: number = 0,
+        numberOfTransactions: number
+    ): Promise<Array<WalletModel.EthereumTransactionView>> {
         if (this._ethereumWallet.accounts == null) {
-            throw new Error("There is no account in wallet, Do Wallet Discovery First");
+            throw new Error('There is no account in wallet, Do Wallet Discovery First');
         }
 
         // Validate account
@@ -365,7 +372,7 @@ export class EthereumWallet extends BaseWallet {
             return txViews;
         }
 
-        account.transactions.forEach(tx => {
+        account.transactions.forEach((tx) => {
             let isSent = false;
             // To skip the warning/error
             if (account.addressModel != undefined) {
@@ -378,8 +385,8 @@ export class EthereumWallet extends BaseWallet {
                 fee: +tx.fees,
                 date: new Date(tx.blockTime * 1000).toLocaleString(),
                 status: isSent ? 'SENT' : 'RECEIVED',
-                amount: +tx.value,
-            }
+                amount: this._isErc20 ? +tx.tokenTransfers[0].value : +tx.value,
+            };
 
             if (isSent) {
                 txView.sent = tx.vout[0].addresses[0];
@@ -388,7 +395,6 @@ export class EthereumWallet extends BaseWallet {
             }
 
             txViews.push(txView);
-
         });
 
         return txViews;

@@ -9,8 +9,9 @@ const MockXhr = MockXMLHttpRequest.newMockXhr();
 import { Device } from '../src/device/Device';
 import { EthereumWallet } from '../src/wallet/EthereumWallet';
 import { BaseWallet } from '../src/wallet/BaseWallet';
+import * as WalletModel from '../src/models/EthereumWalletModel';
 
-const AccountDiscoveryResponse = require('./fakeData/account-discovery.json');
+const AccountDiscoveryResponse: WalletModel.EthereumAccountInfo = require('./fakeData/account-discovery-3.json');
 
 const expect = chai.expect;
 
@@ -20,7 +21,8 @@ describe('EthereumWallet test', () => {
     const defaultPath = "m/44'/60'/0'/0/0";
     const testAddress1 = '0x858abb1F5e2BE982FB755bdcCa5adCB4c08F5954';
     const testAddress2 = '0x6bca60d6ce8d72b087b499abc95b5b1668b33369';
-    const usdtContractAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+    const usdtContractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+    const testSymbol = 'USDT';
     before(() => {
         MockXhr.onSend = (xhr) => {
             const responseHeaders = { 'Content-Type': 'application/json' };
@@ -74,7 +76,18 @@ describe('EthereumWallet test', () => {
                 });
             });
 
-            tokenSymbols.should.all.equal('USDT');
+            tokenSymbols.should.all.equal(testSymbol);
+        });
+
+        it('Should return correct token balance', async () => {
+            ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+            const result = await ethWallet.StartDiscovery();
+
+            const usdtTokenBalance = AccountDiscoveryResponse?.tokens?.find(
+                (item) => item.symbol == testSymbol
+            )?.balance;
+
+            expect(usdtTokenBalance || '0').to.equal(result.accounts?.[0].balance);
         });
     });
 
@@ -82,25 +95,25 @@ describe('EthereumWallet test', () => {
         it('ETH token transactions count should match fake data', async () => {
             ethWallet = new EthereumWallet(device, 'ETH', false);
             await ethWallet.StartDiscovery();
-            const result = await ethWallet.GetTransactionViewList();
+            const result = await ethWallet.GetTransactionViewList(0, 0, 0);
 
-            const ethTransactions = AccountDiscoveryResponse.transactions.filter(
+            const ethTransactions = AccountDiscoveryResponse?.transactions?.filter(
                 (item) => item.tokenTransfers == undefined
             );
 
-            expect(result.length).to.equal(ethTransactions.length);
+            expect(result.length).to.equal(ethTransactions?.length);
         });
 
         it('token transactions count should match fake data', async () => {
             ethWallet = new EthereumWallet(device, usdtContractAddress, true);
             await ethWallet.StartDiscovery();
-            const result = await ethWallet.GetTransactionViewList();
+            const result = await ethWallet.GetTransactionViewList(0, 0, 0);
 
-            const tokenTransactions = AccountDiscoveryResponse.transactions.filter(
+            const tokenTransactions = AccountDiscoveryResponse?.transactions?.filter(
                 (item) => item.tokenTransfers && item.tokenTransfers[0].token == usdtContractAddress
             );
 
-            expect(result.length).to.equal(tokenTransactions.length);
+            expect(result.length).to.equal(tokenTransactions?.length);
         });
     });
 });
