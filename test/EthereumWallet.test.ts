@@ -10,9 +10,15 @@ import { Device } from '../src/device/Device';
 import { EthereumWallet } from '../src/wallet/EthereumWallet';
 import { BaseWallet } from '../src/wallet/BaseWallet';
 import * as WalletModel from '../src/models/EthereumWalletModel';
+import BigNumber from 'bignumber.js';
+import { Features } from '../src/models/Prokey';
 
-const AccountDiscoveryResponse: WalletModel.EthereumAccountInfo = require('./fakeData/account-discovery-3.json');
+const AccountDiscoveryResponseWithNoTokenTransfers: WalletModel.EthereumAccountInfo = require('./testFixtures/account-discovery-3.json');
+const AccountDiscoveryResponseWithTokens: WalletModel.EthereumAccountInfo = require('./testFixtures/account-discovery.json');
+const DeviceFeaturesSupportingEIP1559: Features = require('./testFixtures/device-features-eip1559.json');
+const DeviceFeaturesNotSupportingEIP1559: Features = require('./testFixtures/device-features-no-eip1559.json');
 
+chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 
 describe('EthereumWallet test', () => {
@@ -26,7 +32,7 @@ describe('EthereumWallet test', () => {
     before(() => {
         MockXhr.onSend = (xhr) => {
             const responseHeaders = { 'Content-Type': 'application/json' };
-            const response = JSON.stringify(AccountDiscoveryResponse);
+            const response = JSON.stringify(AccountDiscoveryResponseWithNoTokenTransfers);
             xhr.respond(200, responseHeaders, response);
         };
         global.XMLHttpRequest = MockXhr;
@@ -83,7 +89,7 @@ describe('EthereumWallet test', () => {
             ethWallet = new EthereumWallet(device, usdtContractAddress, true);
             const result = await ethWallet.StartDiscovery();
 
-            const usdtTokenBalance = AccountDiscoveryResponse?.tokens?.find(
+            const usdtTokenBalance = AccountDiscoveryResponseWithNoTokenTransfers?.tokens?.find(
                 (item) => item.symbol == testSymbol
             )?.balance;
 
@@ -97,7 +103,7 @@ describe('EthereumWallet test', () => {
             await ethWallet.StartDiscovery();
             const result = await ethWallet.GetTransactionViewList(0, 0, 0);
 
-            const ethTransactions = AccountDiscoveryResponse?.transactions?.filter(
+            const ethTransactions = AccountDiscoveryResponseWithNoTokenTransfers?.transactions?.filter(
                 (item) => item.tokenTransfers == undefined
             );
 
@@ -109,11 +115,125 @@ describe('EthereumWallet test', () => {
             await ethWallet.StartDiscovery();
             const result = await ethWallet.GetTransactionViewList(0, 0, 0);
 
-            const tokenTransactions = AccountDiscoveryResponse?.transactions?.filter(
+            const tokenTransactions = AccountDiscoveryResponseWithNoTokenTransfers?.transactions?.filter(
                 (item) => item.tokenTransfers && item.tokenTransfers[0].token == usdtContractAddress
             );
 
             expect(result.length).to.equal(tokenTransactions?.length);
+        });
+    });
+
+    describe('GenerateTransaction test', () => {
+        describe('coin type is contract', () => {
+            before(() => {
+                MockXhr.onSend = (xhr) => {
+                    const responseHeaders = { 'Content-Type': 'application/json' };
+                    const response = JSON.stringify(AccountDiscoveryResponseWithTokens);
+                    xhr.respond(200, responseHeaders, response);
+                };
+                global.XMLHttpRequest = MockXhr;
+            });
+
+            it('Should return a legacy transaction. device not supporting eip1559', async () => {
+                // @ts-ignore
+                sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                    GetFeatures: () => Promise.resolve(DeviceFeaturesNotSupportingEIP1559),
+                }));
+
+                ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+                await ethWallet.StartDiscovery();
+                const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
+                expect(result).not.to.haveOwnProperty('maxPriorityFeePerGas');
+                expect(result).not.to.haveOwnProperty('maxFeePerGas');
+                expect(result).to.haveOwnProperty('gasPrice');
+            });
+
+            it('Should return a eip1559 transaction. device supports eip1559', async () => {
+                // @ts-ignore
+                sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                    GetFeatures: () => Promise.resolve(DeviceFeaturesSupportingEIP1559),
+                }));
+
+                ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+                await ethWallet.StartDiscovery();
+                const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
+                expect(result).to.haveOwnProperty('maxPriorityFeePerGas');
+                expect(result).to.haveOwnProperty('maxFeePerGas');
+                expect(result).not.to.haveOwnProperty('gasPrice');
+            });
+        });
+
+        describe('coin type is ethereum', () => {
+            before(() => {
+                MockXhr.onSend = (xhr) => {
+                    const responseHeaders = { 'Content-Type': 'application/json' };
+                    const response = JSON.stringify(AccountDiscoveryResponseWithTokens);
+                    xhr.respond(200, responseHeaders, response);
+                };
+                global.XMLHttpRequest = MockXhr;
+            });
+
+            it('Should return a legacy transaction. device not supporting eip1559', async () => {
+                // @ts-ignore
+                sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                    GetFeatures: () => Promise.resolve(DeviceFeaturesNotSupportingEIP1559),
+                }));
+
+                ethWallet = new EthereumWallet(device, 'ETH', false);
+                await ethWallet.StartDiscovery();
+                const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
+                expect(result).not.to.haveOwnProperty('maxPriorityFeePerGas');
+                expect(result).not.to.haveOwnProperty('maxFeePerGas');
+                expect(result).to.haveOwnProperty('gasPrice');
+            });
+
+            it('Should return a eip1559 transaction. device supports eip1559', async () => {
+                // @ts-ignore
+                sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                    GetFeatures: () => Promise.resolve(DeviceFeaturesSupportingEIP1559),
+                }));
+
+                ethWallet = new EthereumWallet(device, 'ETH', false);
+                await ethWallet.StartDiscovery();
+                const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
+                expect(result).to.haveOwnProperty('maxPriorityFeePerGas');
+                expect(result).to.haveOwnProperty('maxFeePerGas');
+                expect(result).not.to.haveOwnProperty('gasPrice');
+            });
+        });
+
+        describe('balance is insufficient', () => {
+            before(() => {
+                MockXhr.onSend = (xhr) => {
+                    const responseHeaders = { 'Content-Type': 'application/json' };
+                    const response = JSON.stringify(AccountDiscoveryResponseWithNoTokenTransfers);
+                    xhr.respond(200, responseHeaders, response);
+                };
+                global.XMLHttpRequest = MockXhr;
+            });
+
+            beforeEach(() => {
+                // @ts-ignore
+                sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                    GetFeatures: () => Promise.resolve(DeviceFeaturesNotSupportingEIP1559),
+                }));
+            });
+
+            it('Should get rejected with insufficient balance error', async () => {
+                ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+                await ethWallet.StartDiscovery();
+                await expect(ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000))).to.be.rejectedWith(
+                    'Insufficient balance'
+                );
+            });
+
+            it('Should get rejected with insufficient balance error', async () => {
+                ethWallet = new EthereumWallet(device, 'ETH', false);
+                await ethWallet.StartDiscovery();
+                await expect(
+                    ethWallet.GenerateTransaction(testAddress2, new BigNumber('28351323276424620000'))
+                ).to.be.rejectedWith('Insufficient balance');
+            });
         });
     });
 });

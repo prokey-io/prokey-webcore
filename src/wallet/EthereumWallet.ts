@@ -24,17 +24,19 @@ import { CoinBaseType } from '../coins/CoinInfo';
 import { Device } from '../device/Device'
 import * as PathUtil from '../utils/pathUtils';
 import { EthereumBaseCoinInfoModel, Erc20BaseCoinInfoModel } from '../models/CoinInfoModel';
-import { EthereumTx, LegacyEthereumTxModel } from '../models/EthereumTx';
+import { EthereumTx } from '../models/EthereumTx';
 import { RlpEncoding } from "../utils/rlp-encoding"
 import * as ProkeyResponses from '../models/Prokey';
 import { EthereumBlockchain } from '../blockchain/EthereumBlockchain'
-import { GeneralResponse } from '../models/GeneralResponse';
 import { BaseWallet } from './BaseWallet';
 import { EthereumAddress } from "../models/Prokey";
 import { MyConsole } from "../utils/console";
 import * as EthereumNetworks from "../utils/ethereum-networks";
 import BigNumber from 'bignumber.js';
 import { BlockchainProviders, BlockchainServerModel } from '../blockchain/BlockchainProviders';
+import { EstimateGasLimit } from '../utils/ethereum-providers';
+import { TransactionRequest } from '@ethersproject/providers';
+import { supportsEIP1559 } from '../utils/DeviceUtils';
 var WAValidator = require('multicoin-address-validator');
 
 /**
@@ -209,7 +211,12 @@ export class EthereumWallet extends BaseWallet {
      * @param amount Amount to be sent in WEI
      * @param accountNumber Account number to send fund from
      */
-    public async GenerateTransaction(receivedAddress: string, amount: BigNumber, accountNumber: number = 0): Promise<EthereumTx> {
+    public async GenerateTransaction(
+        receivedAddress: string,
+        amount: BigNumber,
+        accountNumber: number = 0
+    ): Promise<EthereumTx> {
+        const deviceFeatures = await this.GetDevice().GetFeatures();
 
         // Check if wallet is already loaded
         if (this._ethereumWallet == null || this._ethereumWallet.accounts == null) {
@@ -225,81 +232,90 @@ export class EthereumWallet extends BaseWallet {
         let account = this._ethereumWallet.accounts[accountNumber];
 
         // Get the gas price from server
-        const gasPrice = await this._ethBlockchain.GetGasPrice();
+        const feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
 
         if (account.addressModel == null) {
-            throw new Error("Invalid data");
+            throw new Error('Invalid data');
         }
 
-        let nonce = "0";
+        let nonce = '0';
         if (this._isErc20) {
-            // Estimate the transaction fee
-            // this._gasLimit = await this.EstimateFee(
-            //     account.addressModel.address, // from address
-            //     (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address, // to contract address
-            //     this.GetErc20TransactionData(receivedAddress, amount)
-            // );
-            this._gasLimit = 65000;
+            // Estimate the transaction gas limit
+            try {
+                const tx: TransactionRequest = {
+                    to: receivedAddress,
+                    data: '0x' + this.GetErc20TransactionData(receivedAddress, amount),
+                };
+                this._gasLimit = (
+                    await EstimateGasLimit((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id, tx)
+                ).toNumber();
+            } catch (error) {
+                this._gasLimit = 65000;
+            }
 
             // Reading balance & nonce from ETH
             const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
-
             // Check transaction fee
-            if (ethAddInfo.balance == null || gasPrice * this._gasLimit > +ethAddInfo.balance) {
-                let networkName = EthereumNetworks.GetNetworkFullNameByChainId((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+            if (
+                ethAddInfo.balance == null ||
+                (await this.CalculateTransactionFee(supportsEIP1559(deviceFeatures))) > +ethAddInfo.balance
+            ) {
+                let networkName = EthereumNetworks.GetNetworkFullNameByChainId(
+                    (super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id
+                );
                 throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
 
             // Check account balance
             if (amount.gt(account.balance)) {
-                throw new Error("Insufficient balance");
+                throw new Error('Insufficient balance');
             }
 
             // Set the nonce
-            nonce = ethAddInfo.nonce || "0";
+            nonce = ethAddInfo.nonce || '0';
         } else {
             // Check account balance
             if (amount.gt(account.balance)) {
-                throw new Error("Insufficient balance");
+                throw new Error('Insufficient balance');
             }
 
             // Check account balance for pay the tx fee
 
-            if (amount.gt(+account.balance - (gasPrice * this._gasLimit))) {
-                throw new Error("Insufficient balance to pay the transaction fee");
+            if (amount.gt(+account.balance - (await this.CalculateTransactionFee(supportsEIP1559(deviceFeatures))))) {
+                throw new Error('Insufficient balance to pay the transaction fee');
             }
 
             // Set the nonce
-            nonce = account.nonce || "0";
+            nonce = account.nonce || '0';
         }
 
-        const coinInfo = super.GetCoinInfo() as (Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel);
+        const coinInfo = super.GetCoinInfo() as Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel;
 
         // Generate Transaction
         let txToSign: EthereumTx = <EthereumTx>{
             address_n: account.addressModel.path,
             to: receivedAddress,
             value: amount.toString(16),
-
             nonce: nonce,
             gasLimit: this._gasLimit.toString(16),
-            
-            gasPrice: gasPrice.toString(16),
-            // JUST FOR TESTING EIP1559, NEED TO CHECK DEVICE VERSION IF IT SUPPORTS EIP1559
-            //*********************************/
-            //TODO: Get this parameters
-            //maxFeePerGas: "0x1D91CA3600",
-            //maxPriorityFeePerGas:"0x59682f00",
-            //*********************************/
-
             chainId: coinInfo.chain_id,
         };
+
+        // Check if device supports EIP1559 and set fee based on that.
+        if (supportsEIP1559(deviceFeatures)) {
+            // EIP1559 gas params
+            txToSign.maxFeePerGas = feeData.maxFeePerGas?.toHexString();
+            txToSign.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toHexString();
+        } else {
+            // Legacy gas param
+            txToSign.gasPrice = feeData.gasPrice?.toHexString();
+        }
 
         if (this._isErc20) {
             //! TO ERC20 contract address
             txToSign.to = (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address;
             //! Value should be empty
-            txToSign.value = "0";
+            txToSign.value = '0';
 
             txToSign.data = this.GetErc20TransactionData(receivedAddress, amount);
         }
@@ -438,12 +454,17 @@ export class EthereumWallet extends BaseWallet {
 
     /**
      * Get the transaction fee
-     * @returns TransactionFee, GasPrice * GasLimit
+     * @returns TransactionFee
+     * Legacy: GasPrice * GasLimit
+     * EIP1559 : GasLimit * maxFeePerGas + maxPriorityFeePerGas
      */
-    public async CalculateTransactionFee(): Promise<number> {
-        const gasPrice = await this._ethBlockchain.GetGasPrice();
+    public async CalculateTransactionFee(isEIP1559 = false): Promise<number> {
+        const feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
 
-        return gasPrice * this._gasLimit;
+        if (isEIP1559) {
+            return this._gasLimit * feeData.maxFeePerGas!.toNumber() + feeData.maxPriorityFeePerGas!.toNumber();
+        }
+        return feeData.gasPrice!.toNumber() * this._gasLimit;
     }
 
     private legacyTxRlpEncode(tx: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
