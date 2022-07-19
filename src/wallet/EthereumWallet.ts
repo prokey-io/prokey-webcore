@@ -49,6 +49,7 @@ export class EthereumWallet extends BaseWallet {
     _ethBlockchain: EthereumBlockchain;
     _isErc20 = false;
     _network = 'eth';
+    _coinNameOrContractAddress: string;
     private _servers: BlockchainServerModel[];
 
     /**
@@ -72,6 +73,8 @@ export class EthereumWallet extends BaseWallet {
             undefined,
             coinInfo
         );
+
+        this._coinNameOrContractAddress = coinNameOrContractAddress;
 
         this._isErc20 = isErc20;
 
@@ -166,30 +169,34 @@ export class EthereumWallet extends BaseWallet {
         accInfo.accountIndex = accountNumber;
 
         // Should do some changes and filters to the account if it is erc20 contract
-        if (this._isErc20 && accInfo.transactions && accInfo.transactions.length > 0) {
-            // Filter contract transactions and reassign to account
-            const erc20Transactions = accInfo.transactions.filter((tx) => {
-                if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
-                    return tx.tokenTransfers[0].symbol == this.GetCoinInfo().shortcut;
-                }
-                return false;
-            });
-            accInfo.transactions = erc20Transactions;
-            accInfo.txs = erc20Transactions.length;
+        if (this._isErc20) {
+            if (accInfo.transactions && accInfo.transactions.length > 0) {
+                // Filter contract transactions and reassign to account
+                const erc20Transactions = accInfo.transactions.filter((tx) => {
+                    if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
+                        return tx.tokenTransfers[0].token == this._coinNameOrContractAddress;
+                    }
+                    return false;
+                });
+                accInfo.transactions = erc20Transactions;
+                accInfo.txs = erc20Transactions.length;
 
-            // Reassign balance with contract token balance
-            if (accInfo.tokens && accInfo.tokens.length > 0) {
-                const tokenBalance = accInfo.tokens.find(
-                    (token) => token.symbol == this.GetCoinInfo().shortcut
-                )?.balance;
-                if (tokenBalance) {
-                    accInfo.balance = tokenBalance;
+                // Reassign balance with contract token balance
+                if (accInfo.tokens && accInfo.tokens.length > 0) {
+                    const tokenBalance = accInfo.tokens.find(
+                        (token) => token.contract == this._coinNameOrContractAddress
+                    )?.balance;
+                    if (tokenBalance) {
+                        accInfo.balance = tokenBalance;
+                    }
+                } else {
+                    accInfo.balance = '0';
                 }
+
+                delete accInfo.tokens;
             } else {
                 accInfo.balance = '0';
             }
-
-            delete accInfo.tokens;
         } else if (!this._isErc20) {
             // Only return transactions if eth token is transferred
             const transactions = accInfo.transactions?.filter((tx) => {
