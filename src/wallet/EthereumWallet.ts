@@ -188,14 +188,14 @@ export class EthereumWallet extends BaseWallet {
                     )?.balance;
                     if (tokenBalance) {
                         accInfo.balance = tokenBalance;
+                    } else {
+                        accInfo.balance = '0';
                     }
                 } else {
                     accInfo.balance = '0';
                 }
 
                 delete accInfo.tokens;
-            } else {
-                accInfo.balance = '0';
             }
         } else if (!this._isErc20) {
             // Only return transactions if eth token is transferred
