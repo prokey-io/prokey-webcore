@@ -49,7 +49,7 @@ export class EthereumWallet extends BaseWallet {
     _ethBlockchain: EthereumBlockchain;
     _isErc20 = false;
     _network = 'eth';
-    _coinNameOrContractAddress: string;
+    _contractAddress: string = '';
     private _servers: BlockchainServerModel[];
 
     /**
@@ -74,9 +74,14 @@ export class EthereumWallet extends BaseWallet {
             coinInfo
         );
 
-        this._coinNameOrContractAddress = coinNameOrContractAddress;
-
         this._isErc20 = isErc20;
+        if (isErc20) {
+            if (coinInfo) {
+                this._contractAddress = (coinInfo as Erc20BaseCoinInfoModel).address;
+            } else {
+                this._contractAddress = coinNameOrContractAddress;
+            }
+        }
 
         this._servers = BlockchainProviders.Get(super.GetCoinInfo());
 
@@ -174,7 +179,7 @@ export class EthereumWallet extends BaseWallet {
                 // Filter contract transactions and reassign to account
                 const erc20Transactions = accInfo.transactions.filter((tx) => {
                     if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
-                        return tx.tokenTransfers[0].token == this._coinNameOrContractAddress;
+                        return tx.tokenTransfers[0].token == this._contractAddress;
                     }
                     return false;
                 });
@@ -184,7 +189,7 @@ export class EthereumWallet extends BaseWallet {
                 // Reassign balance with contract token balance
                 if (accInfo.tokens && accInfo.tokens.length > 0) {
                     const tokenBalance = accInfo.tokens.find(
-                        (token) => token.contract == this._coinNameOrContractAddress
+                        (token) => token.contract == this._contractAddress
                     )?.balance;
                     if (tokenBalance) {
                         accInfo.balance = tokenBalance;
