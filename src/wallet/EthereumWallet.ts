@@ -229,6 +229,8 @@ export class EthereumWallet extends BaseWallet {
         accountNumber: number = 0
     ): Promise<EthereumTx> {
         const deviceFeatures = await this.GetDevice().GetFeatures();
+        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures);
+        const transactionFee = await this.CalculateTransactionFee(deviceSupportsEIP1559);
 
         // Check if wallet is already loaded
         if (this._ethereumWallet == null || this._ethereumWallet.accounts == null) {
@@ -268,10 +270,7 @@ export class EthereumWallet extends BaseWallet {
             // Reading balance & nonce from ETH
             const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
             // Check transaction fee
-            if (
-                ethAddInfo.balance == null ||
-                (await this.CalculateTransactionFee(supportsEIP1559(deviceFeatures))) > +ethAddInfo.balance
-            ) {
+            if (ethAddInfo.balance == null || transactionFee > +ethAddInfo.balance) {
                 let networkName = EthereumNetworks.GetNetworkFullNameByChainId(
                     (super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id
                 );
@@ -293,7 +292,7 @@ export class EthereumWallet extends BaseWallet {
 
             // Check account balance for pay the tx fee
 
-            if (amount.gt(+account.balance - (await this.CalculateTransactionFee(supportsEIP1559(deviceFeatures))))) {
+            if (amount.gt(+account.balance - transactionFee)) {
                 throw new Error('Insufficient balance to pay the transaction fee');
             }
 
@@ -314,7 +313,7 @@ export class EthereumWallet extends BaseWallet {
         };
 
         // Check if device supports EIP1559 and set fee based on that.
-        if (supportsEIP1559(deviceFeatures)) {
+        if (deviceSupportsEIP1559) {
             // EIP1559 gas params
             txToSign.maxFeePerGas = feeData.maxFeePerGas?.toHexString();
             txToSign.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas?.toHexString();
