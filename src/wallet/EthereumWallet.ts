@@ -35,7 +35,7 @@ import * as EthereumNetworks from "../utils/ethereum-networks";
 import BigNumber from 'bignumber.js';
 import { BlockchainProviders, BlockchainServerModel } from '../blockchain/BlockchainProviders';
 import { EstimateGasLimit } from '../utils/ethereum-providers';
-import { TransactionRequest } from '@ethersproject/providers';
+import { TransactionRequest, FeeData } from '@ethersproject/providers';
 import { supportsEIP1559 } from '../utils/DeviceUtils';
 var WAValidator = require('multicoin-address-validator');
 
@@ -228,10 +228,6 @@ export class EthereumWallet extends BaseWallet {
         amount: BigNumber,
         accountNumber: number = 0
     ): Promise<EthereumTx> {
-        const deviceFeatures = await this.GetDevice().GetFeatures();
-        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures);
-        const transactionFee = await this.CalculateTransactionFee(deviceSupportsEIP1559);
-
         // Check if wallet is already loaded
         if (this._ethereumWallet == null || this._ethereumWallet.accounts == null) {
             throw new Error('Wallet is not loaded');
@@ -242,11 +238,14 @@ export class EthereumWallet extends BaseWallet {
             throw new Error('Account number is wrong');
         }
 
+        const deviceFeatures = await this.GetDevice().GetFeatures();
+        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures);
+        // Get the gas params from server
+        const feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+        const transactionFee = await this.CalculateTransactionFee(deviceSupportsEIP1559, feeData);
+
         // Get the account
         let account = this._ethereumWallet.accounts[accountNumber];
-
-        // Get the gas price from server
-        const feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
 
         if (account.addressModel == null) {
             throw new Error('Invalid data');
@@ -257,7 +256,7 @@ export class EthereumWallet extends BaseWallet {
             // Estimate the transaction gas limit
             try {
                 const tx: TransactionRequest = {
-                    to: receivedAddress,
+                    to: this._contractAddress,
                     data: '0x' + this.GetErc20TransactionData(receivedAddress, amount),
                 };
                 this._gasLimit = (
@@ -324,7 +323,7 @@ export class EthereumWallet extends BaseWallet {
 
         if (this._isErc20) {
             //! TO ERC20 contract address
-            txToSign.to = (super.GetCoinInfo() as Erc20BaseCoinInfoModel).address;
+            txToSign.to = this._contractAddress;
             //! Value should be empty
             txToSign.value = '0';
 
@@ -469,8 +468,10 @@ export class EthereumWallet extends BaseWallet {
      * Legacy: GasPrice * GasLimit
      * EIP1559 : GasLimit * maxFeePerGas + maxPriorityFeePerGas
      */
-    public async CalculateTransactionFee(isEIP1559 = false): Promise<number> {
-        const feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+    public async CalculateTransactionFee(isEIP1559 = false, feeData?: FeeData): Promise<number> {
+        if (!feeData) {
+            feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+        }
 
         if (isEIP1559) {
             return this._gasLimit * feeData.maxFeePerGas!.toNumber() + feeData.maxPriorityFeePerGas!.toNumber();
