@@ -18,20 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import * as WalletModel from '../models/EthereumWalletModel'
-import * as GenericWalletModel from '../models/GenericWalletModel'
+import * as WalletModel from '../models/EthereumWalletModel';
+import * as GenericWalletModel from '../models/GenericWalletModel';
 import { CoinBaseType } from '../coins/CoinInfo';
-import { Device } from '../device/Device'
+import { Device } from '../device/Device';
 import * as PathUtil from '../utils/pathUtils';
 import { EthereumBaseCoinInfoModel, Erc20BaseCoinInfoModel } from '../models/CoinInfoModel';
 import { EthereumTx } from '../models/EthereumTx';
-import { RlpEncoding } from "../utils/rlp-encoding"
+import { RlpEncoding } from '../utils/rlp-encoding';
 import * as ProkeyResponses from '../models/Prokey';
-import { EthereumBlockchain } from '../blockchain/EthereumBlockchain'
+import { EthereumBlockchain } from '../blockchain/EthereumBlockchain';
 import { BaseWallet } from './BaseWallet';
-import { EthereumAddress } from "../models/Prokey";
-import { MyConsole } from "../utils/console";
-import * as EthereumNetworks from "../utils/ethereum-networks";
+import { EthereumAddress } from '../models/Prokey';
+import { MyConsole } from '../utils/console';
+import * as EthereumNetworks from '../utils/ethereum-networks';
 import BigNumber from 'bignumber.js';
 import { BlockchainProviders, BlockchainServerModel } from '../blockchain/BlockchainProviders';
 import { EstimateGasLimit } from '../utils/ethereum-providers';
@@ -40,7 +40,7 @@ import { supportsEIP1559 } from '../utils/DeviceUtils';
 var WAValidator = require('multicoin-address-validator');
 
 /**
- * If you wish to discover and use your ethereum wallet, you need to use this class. 
+ * If you wish to discover and use your ethereum wallet, you need to use this class.
  * This class can be used for all ethereum based coins and all ERC20.
  */
 export class EthereumWallet extends BaseWallet {
@@ -334,29 +334,28 @@ export class EthereumWallet extends BaseWallet {
     }
 
     /**
-     * This function will prepare raw RLP encoded transaction to be sent 
+     * This function will prepare raw RLP encoded transaction to be sent
      * @param transaction Signed Transaction
      * @param signedValues Signature values, R,S and V
      */
     public async PrepareAndSendTransaction(transaction: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
         if (transaction == undefined) {
-            throw new Error("Transaction can not be null");
+            throw new Error('Transaction can not be null');
         }
 
         if (signedValues == undefined) {
-            throw new Error("SignedValues can not be null");
+            throw new Error('SignedValues can not be null');
         }
 
-        let rlpTx = "";
+        let rlpTx = '';
         // Encoding transaction
-        if(transaction.gasPrice != null) {
+        if (transaction.gasPrice != null) {
             rlpTx = this.legacyTxRlpEncode(transaction, signedValues);
         } else {
             rlpTx = this.eip1559TxRlpEncode(transaction, signedValues);
         }
 
         console.log(rlpTx);
-
 
         return await this.SendTransaction(rlpTx);
     }
@@ -435,8 +434,8 @@ export class EthereumWallet extends BaseWallet {
 
         let symbol: string = coinInfo.shortcut.toLocaleLowerCase();
         //! these coins are use same address encoding model
-        if (this._isErc20 || symbol == "trin" || symbol == "bnb" || symbol == "rbtc" || symbol == "trbtc") {
-            symbol = "ETH";
+        if (this._isErc20 || symbol == 'trin' || symbol == 'bnb' || symbol == 'rbtc' || symbol == 'trbtc') {
+            symbol = 'ETH';
         }
 
         if (coinInfo.test != undefined && coinInfo.test) {
@@ -465,8 +464,8 @@ export class EthereumWallet extends BaseWallet {
     /**
      * Get the transaction fee
      * @returns TransactionFee
-     * Legacy: GasPrice * GasLimit
-     * EIP1559 : GasLimit * maxFeePerGas + maxPriorityFeePerGas
+     * Legacy: GasLimit * GasPrice
+     * EIP1559 : GasLimit * maxFeePerGas
      */
     public async CalculateTransactionFee(isEIP1559 = false, feeData?: FeeData): Promise<number> {
         if (!feeData) {
@@ -474,14 +473,20 @@ export class EthereumWallet extends BaseWallet {
         }
 
         if (isEIP1559) {
-            return this._gasLimit * feeData.maxFeePerGas!.toNumber() + feeData.maxPriorityFeePerGas!.toNumber();
+            // The maximum fee user is willing to pay for this transaction is calculated here that inclusive baseFeePerGas & maxPriorityFeePerGas
+            // However, this is not the actual fee that the user will pay, the actual will be:
+            // GasLimit * (baseFeePerGas + maxPriorityFeePerGas)
+            // To make sure that user has enough balance and this transaction will be confirmed, we consider transaction fee as GasLimit * maxFeePerGas
+            // Note: maxFeePerGas = (2 * baseFeePerGas) + maxPriorityFeePerGas
+            return this._gasLimit * feeData.maxFeePerGas!.toNumber();
         }
+
         return feeData.gasPrice!.toNumber() * this._gasLimit;
     }
 
     private legacyTxRlpEncode(tx: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
-        let nonce = (tx.nonce == '0' || tx.nonce == '00') ? '' : tx.nonce;
-        let value = (tx.value == '0' || tx.value == '00') ? '' : tx.value;
+        let nonce = tx.nonce == '0' || tx.nonce == '00' ? '' : tx.nonce;
+        let value = tx.value == '0' || tx.value == '00' ? '' : tx.value;
         const { r, s, v } = signedValues;
         let rlp: RlpEncoding = new RlpEncoding();
 
@@ -491,19 +496,18 @@ export class EthereumWallet extends BaseWallet {
             '0x' + (tx.gasLimit || ''),
             '0x' + tx.to.toLowerCase() || '',
             '0x' + value,
-            '0x' + (tx.data || '')
+            '0x' + (tx.data || ''),
         ];
 
-        
         const toEncode = [...rawTx, ...[v, r, s]];
         return '0x' + rlp.encode(toEncode).toString('hex');
     }
 
     private eip1559TxRlpEncode(tx: EthereumTx, signedValues: ProkeyResponses.EthereumSignedTx) {
-        let nonce = (tx.nonce == '0' || tx.nonce == '00') ? '' : tx.nonce;
-        let value = (tx.value == '0' || tx.value == '00') ? '' : tx.value;
-        let v = (signedValues.v == '0x0' || signedValues.v == '0x00') ? '' : signedValues.v;
-        
+        let nonce = tx.nonce == '0' || tx.nonce == '00' ? '' : tx.nonce;
+        let value = tx.value == '0' || tx.value == '00' ? '' : tx.value;
+        let v = signedValues.v == '0x0' || signedValues.v == '0x00' ? '' : signedValues.v;
+
         let rlp: RlpEncoding = new RlpEncoding();
 
         console.log(signedValues);
@@ -517,7 +521,7 @@ export class EthereumWallet extends BaseWallet {
             '0x' + tx.to.toLowerCase() || '',
             '0x' + value,
             '0x' + (tx.data || ''),
-            []
+            [],
         ];
 
         const toEncode = [...rawTx, ...[v, signedValues.r, signedValues.s]];
@@ -532,7 +536,7 @@ export class EthereumWallet extends BaseWallet {
         var ethBlockchain = new EthereumBlockchain(this._servers);
         var addInfo = await ethBlockchain.GetAddressInfo({
             address: address,
-            path: []
+            path: [],
         });
 
         return addInfo;
@@ -570,7 +574,7 @@ export class EthereumWallet extends BaseWallet {
         }
 
         let amountInHex = amount.toString(16);
-        let amount64 = ("0000000000000000000000000000000000000000000000000000000000000000" + (amountInHex)).substr(-64);
+        let amount64 = ('0000000000000000000000000000000000000000000000000000000000000000' + amountInHex).substr(-64);
         //! Data struct is 16Bytes * TransferTo(a9059cbb...) + 20Bytes * receiverAddress + 32Bytes * amount
         return `a9059cbb000000000000000000000000${receivingAddress}${amount64}`; //! SmartContract function call
     }
