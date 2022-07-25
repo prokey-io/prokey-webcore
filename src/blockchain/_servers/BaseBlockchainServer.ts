@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) 2022 Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { 
+import {
     Request,
     newHttpClient } from 'typescript-http-client';
 
@@ -41,5 +41,20 @@ export abstract class BaseBlockchainServer {
         const request = new Request(url, { method: 'GET' });
 
         return await client.execute<T>(request);
+    }
+
+    /**
+     * This is a private helper function to POST data to server
+     * @param url URL
+     * @param body Request Body
+     * @returns Response data from server
+     */
+    protected static async PostToServer<T>(url: string, body: any): Promise<T> {
+
+        const client = newHttpClient();
+
+        const request = new Request(url, {body: body, method: 'POST'});
+
+        return JSON.parse(await client.execute<string>(request)) as T;
     }
 }

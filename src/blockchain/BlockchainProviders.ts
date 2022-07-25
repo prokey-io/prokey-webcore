@@ -66,7 +66,7 @@ export class BlockchainProviders {
         }
 
         // CoinName
-        const cn = coinInfo.name.toLocaleLowerCase(); 
+        const cn = coinInfo.name.toLocaleLowerCase();
 
         // Coin shortcut
         const cs = coinInfo.shortcut.toLocaleLowerCase();
@@ -99,7 +99,7 @@ export class BlockchainProviders {
             case CoinBaseType.Stellar:
             case CoinBaseType.Ripple:
                 // find the coin in providers
-                coin = coins.find(c => c.type == coinInfo.coinBaseType);
+                coin = coins.find(c => c.type == CoinBaseType.BitcoinBase && (c.name.toLowerCase() == "ripple" || c.shortcut.toLowerCase() == "xrp"));
                 break;
         }
 
@@ -123,7 +123,7 @@ export class BlockchainProviders {
                     apiType: s.apiType,
                     serverName: s.name,
                     url: url,
-                    isSupportXpub: s.isSupportXpub, 
+                    isSupportXpub: s.isSupportXpub,
                 });
             }
         });
