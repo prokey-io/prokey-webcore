@@ -238,10 +238,26 @@ export class EthereumWallet extends BaseWallet {
             throw new Error('Account number is wrong');
         }
 
+        // Cast coin info model
+        let coinInfo = super.GetCoinInfo() as Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel;
+
+        // Estimate the transaction gas limit
+        if (this._isErc20) {
+            try {
+                const tx: TransactionRequest = {
+                    to: this._contractAddress,
+                    data: '0x' + this.GetErc20TransactionData(receivedAddress, amount),
+                };
+                this._gasLimit = (await EstimateGasLimit(coinInfo.chain_id, tx)).toNumber();
+            } catch (error) {
+                this._gasLimit = 65000;
+            }
+        }
+
         const deviceFeatures = await this.GetDevice().GetFeatures();
         const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures);
         // Get the gas params from server
-        const feeData = await this._ethBlockchain.GetFeeData((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id);
+        const feeData = await this._ethBlockchain.GetFeeData(coinInfo.chain_id);
         const transactionFee = await this.CalculateTransactionFee(deviceSupportsEIP1559, feeData);
 
         // Get the account
@@ -253,26 +269,11 @@ export class EthereumWallet extends BaseWallet {
 
         let nonce = '0';
         if (this._isErc20) {
-            // Estimate the transaction gas limit
-            try {
-                const tx: TransactionRequest = {
-                    to: this._contractAddress,
-                    data: '0x' + this.GetErc20TransactionData(receivedAddress, amount),
-                };
-                this._gasLimit = (
-                    await EstimateGasLimit((super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id, tx)
-                ).toNumber();
-            } catch (error) {
-                this._gasLimit = 65000;
-            }
-
             // Reading balance & nonce from ETH
             const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
             // Check transaction fee
             if (ethAddInfo.balance == null || transactionFee > +ethAddInfo.balance) {
-                let networkName = EthereumNetworks.GetNetworkFullNameByChainId(
-                    (super.GetCoinInfo() as Erc20BaseCoinInfoModel).chain_id
-                );
+                let networkName = EthereumNetworks.GetNetworkFullNameByChainId(coinInfo.chain_id);
                 throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
 
@@ -298,8 +299,6 @@ export class EthereumWallet extends BaseWallet {
             // Set the nonce
             nonce = account.nonce || '0';
         }
-
-        const coinInfo = super.GetCoinInfo() as Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel;
 
         // Generate Transaction
         let txToSign: EthereumTx = <EthereumTx>{
