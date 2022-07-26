@@ -50,7 +50,7 @@ export interface EthereumAccountInfo {
     // list of transactions
     transactions?: EthereumTransactionInfoModel[];
     // list of transactions' ids(hash)
-    txids?: string[],
+    txids?: string[];
     // address nonce
     nonce: string;
     // list of tokens
@@ -60,8 +60,11 @@ export interface EthereumAccountInfo {
     // Additional information
     //--------------------------
     // account index
-    accountIndex?: number,
-    addressModel?: AddressModel,
+    accountIndex?: number;
+    addressModel?: AddressModel;
+    // When account is erc20, balance is overridden to token balance
+    // but we also need eth balance for fee calculation
+    ethBalance?: string;
 }
 
 export interface EthereumTransactionView {

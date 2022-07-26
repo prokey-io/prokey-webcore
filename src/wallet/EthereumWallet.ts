@@ -175,6 +175,7 @@ export class EthereumWallet extends BaseWallet {
 
         // Should do some changes and filters to the account if it is erc20 contract
         if (this._isErc20) {
+            accInfo.ethBalance = accInfo.balance;
             if (accInfo.transactions && accInfo.transactions.length > 0) {
                 // Filter contract transactions and reassign to account
                 const erc20Transactions = accInfo.transactions.filter((tx) => {
@@ -269,10 +270,8 @@ export class EthereumWallet extends BaseWallet {
 
         let nonce = '0';
         if (this._isErc20) {
-            // Reading balance & nonce from ETH
-            const ethAddInfo = await this.GetEthAddressInfo(account.addressModel.address);
             // Check transaction fee
-            if (ethAddInfo.balance == null || transactionFee > +ethAddInfo.balance) {
+            if (account.ethBalance == null || transactionFee > +account.ethBalance) {
                 let networkName = EthereumNetworks.GetNetworkFullNameByChainId(coinInfo.chain_id);
                 throw new Error(`Insufficient balance in the ${networkName} wallet to pay the transaction fee`);
             }
@@ -283,7 +282,7 @@ export class EthereumWallet extends BaseWallet {
             }
 
             // Set the nonce
-            nonce = ethAddInfo.nonce || '0';
+            nonce = account.nonce || '0';
         } else {
             // Check account balance
             if (amount.gt(account.balance)) {
