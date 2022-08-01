@@ -32,24 +32,31 @@
     "scripts": {
         "build": "tsc",
         "prepublish": "tsc && copyfiles data/ProkeyCoinsInfo.json dist/src/data/ProkeyCoinsInfo.json",
-        "test": "mocha --require ts-node/register test/**/*.ts --timeout 10000",
-        "test:inspect": "mocha --debug-brk --inspect --require ts-node/register test/**/*.ts --timeout 10000"
+        "test": "mocha --require mocha-suppress-logs --require mock-local-storage --require ts-node/register test/**/*.ts --timeout 20000"
     },
     "devDependencies": {
         "@types/chai": "^4.3.1",
         "@types/chai-as-promised": "^7.1.5",
+        "@types/chai-things": "^0.0.35",
         "@types/mocha": "^9.1.1",
-        "chai": "^4.3.6",
-        "chai-as-promised": "^7.1.1",
-        "mocha": "^10.0.0",
-        "ts-node": "^10.8.1",
+        "@types/sinon": "^10.0.12",
         "@typescript-eslint/eslint-plugin": "^5.29.0",
         "@typescript-eslint/parser": "^5.29.0",
+        "chai": "^4.3.6",
+        "chai-as-promised": "^7.1.1",
+        "chai-things": "^0.2.0",
         "copyfiles": "^2.4.1",
         "eslint": "^8.18.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.1.0",
+        "mocha": "^10.0.0",
+        "mocha-suppress-logs": "^0.3.1",
+        "mock-local-storage": "^1.1.23",
+        "mock-xmlhttprequest": "^7.0.4",
         "prettier": "^2.7.1",
-        "typescript": "^4.2.3"
+        "sinon": "^14.0.0",
+        "ts-node": "^10.8.1",
+        "typescript": "^4.2.3",
+        "xmlhttprequest": "^1.8.0"
     }
 }

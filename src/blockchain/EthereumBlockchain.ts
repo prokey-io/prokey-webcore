@@ -20,15 +20,15 @@
 
 import { BlockchainBase } from './BlockchainBase'
 import * as WalletModel from '../models/EthereumWalletModel'
-import { RequestAddressInfo } from '../models/GenericWalletModel';
 import { BlockchainServerModel } from './BlockchainProviders';
 import { BlockbookServer } from './_servers/blockbook/BlockbookServer';
 import { BlockbookDetails, BlockbookRequestDetails, BlockbookTokens } from './_servers/blockbook/BlockbookRequestModels';
 import { MyConsole } from '../utils/console';
 import { AddressModel } from '../models/Prokey';
-import * as PathUtil from '../utils/pathUtils';
 import * as GenericWalletModel from '../models/GenericWalletModel'
 import * as BlockbookModels from './_servers/blockbook/BlockbookEthereumModel'
+import { GetGasParams } from '../utils/ethereum-providers';
+import { FeeData } from '@ethersproject/providers';
 
 export class EthereumBlockchain extends BlockchainBase {
     private _isErc20: boolean;
@@ -70,8 +70,8 @@ export class EthereumBlockchain extends BlockchainBase {
         throw new Error("EthereumBlockchain::GetAddressInfo->No server to handle the request");
     }
 
-    public async GetGasPrice(): Promise<number> {
-        return 0;
+    public async GetFeeData(chainId: number): Promise<FeeData> {
+        return await GetGasParams(chainId);
     }
 
     public async BroadCastTransaction(transaction: string): Promise<GenericWalletModel.GenericSentTransactionResult> {
