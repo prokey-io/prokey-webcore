@@ -21,21 +21,27 @@ const DeviceFeaturesNotSupportingEIP1559: Features = require('./testFixtures/dev
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 
+const setAccountDiscoveryServerResponse = (res: any) => {
+    MockXhr.onSend = (xhr) => {
+        const responseHeaders = { 'Content-Type': 'application/json' };
+        const response = JSON.stringify(res);
+        xhr.respond(200, responseHeaders, response);
+    };
+    global.XMLHttpRequest = MockXhr;
+};
+
 describe('EthereumWallet test', () => {
     let ethWallet: EthereumWallet;
     let device: Device;
     const defaultPath = "m/44'/60'/0'/0/0";
     const testAddress1 = '0x858abb1F5e2BE982FB755bdcCa5adCB4c08F5954';
     const testAddress2 = '0x6bca60d6ce8d72b087b499abc95b5b1668b33369';
-    const usdtContractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+    const USDTContractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+    const WETHContractAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
     const testSymbol = 'USDT';
     before(() => {
-        MockXhr.onSend = (xhr) => {
-            const responseHeaders = { 'Content-Type': 'application/json' };
-            const response = JSON.stringify(AccountDiscoveryResponseWithNoTokenTransfers);
-            xhr.respond(200, responseHeaders, response);
-        };
-        global.XMLHttpRequest = MockXhr;
+        setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithNoTokenTransfers);
     });
 
     beforeEach(() => {
@@ -56,14 +62,14 @@ describe('EthereumWallet test', () => {
         });
 
         it('Should return contract token transactions', async () => {
-            ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+            ethWallet = new EthereumWallet(device, USDTContractAddress, true);
             const result = await ethWallet.StartDiscovery();
 
             result?.accounts?.[0].transactions?.should.all.haveOwnProperty('tokenTransfers');
         });
 
         it('All transactions of account should include erc20 token transfer and equal contract symbol', async () => {
-            ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+            ethWallet = new EthereumWallet(device, USDTContractAddress, true);
             const result = await ethWallet.StartDiscovery();
 
             const tokenTypes = new Array<string>();
@@ -85,19 +91,59 @@ describe('EthereumWallet test', () => {
             tokenSymbols.should.all.equal(testSymbol);
         });
 
-        it('Should return correct token balance', async () => {
-            ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+        it('When coin type is contract ethBalance property should also have value on account model', async () => {
+            ethWallet = new EthereumWallet(device, USDTContractAddress, true);
             const result = await ethWallet.StartDiscovery();
 
-            const usdtTokenBalance = AccountDiscoveryResponseWithNoTokenTransfers?.tokens?.find(
-                (item) => item.symbol == testSymbol
-            )?.balance;
+            expect(parseInt(result?.accounts?.[0].ethBalance!)).to.greaterThanOrEqual(0);
+        });
 
-            expect(usdtTokenBalance || '0').to.equal(result.accounts?.[0].balance);
+        it('When coin type is ETH, ethBalance property should not exist on account model', async () => {
+            ethWallet = new EthereumWallet(device, 'ETH', false);
+            const result = await ethWallet.StartDiscovery();
+
+            expect(result?.accounts?.[0].ethBalance).to.not.exist;
+        });
+
+        describe('txs should equal to transactions count', () => {
+            it('coin type is ETH', async () => {
+                ethWallet = new EthereumWallet(device, 'ETH', false);
+                const result = await ethWallet.StartDiscovery();
+
+                const ethTransactions = AccountDiscoveryResponseWithNoTokenTransfers.transactions?.filter(
+                    (item) => !item.tokenTransfers
+                );
+
+                expect(result?.accounts?.[0].txs).to.equal(ethTransactions?.length);
+            });
+        });
+
+        describe('Balance test', () => {
+            it('token Balance should be zero when there is no token transfers', async () => {
+                setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithNoTokenTransfers);
+
+                ethWallet = new EthereumWallet(device, USDTContractAddress, true);
+                const result = await ethWallet.StartDiscovery();
+
+                expect(result.accounts?.[0].balance).to.equal('0');
+            });
+
+            it('token Balance should be zero when there is no transaction for it', async () => {
+                setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithTokens);
+
+                ethWallet = new EthereumWallet(device, WETHContractAddress, true);
+                const result = await ethWallet.StartDiscovery();
+
+                expect(result.accounts?.[0].balance).to.equal('0');
+            });
         });
     });
 
     describe('GetTransactionViewList test', () => {
+        before(() => {
+            setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithNoTokenTransfers);
+        });
+
         it('ETH token transactions count should match fake data', async () => {
             ethWallet = new EthereumWallet(device, 'ETH', false);
             await ethWallet.StartDiscovery();
@@ -111,12 +157,12 @@ describe('EthereumWallet test', () => {
         });
 
         it('token transactions count should match fake data', async () => {
-            ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+            ethWallet = new EthereumWallet(device, USDTContractAddress, true);
             await ethWallet.StartDiscovery();
             const result = await ethWallet.GetTransactionViewList(0, 0, 0);
 
             const tokenTransactions = AccountDiscoveryResponseWithNoTokenTransfers?.transactions?.filter(
-                (item) => item.tokenTransfers && item.tokenTransfers[0].token == usdtContractAddress
+                (item) => item.tokenTransfers && item.tokenTransfers[0].token == USDTContractAddress
             );
 
             expect(result.length).to.equal(tokenTransactions?.length);
@@ -126,12 +172,7 @@ describe('EthereumWallet test', () => {
     describe('GenerateTransaction test', () => {
         describe('coin type is contract', () => {
             before(() => {
-                MockXhr.onSend = (xhr) => {
-                    const responseHeaders = { 'Content-Type': 'application/json' };
-                    const response = JSON.stringify(AccountDiscoveryResponseWithTokens);
-                    xhr.respond(200, responseHeaders, response);
-                };
-                global.XMLHttpRequest = MockXhr;
+                setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithTokens);
             });
 
             it('Should return a legacy transaction. device not supporting eip1559', async () => {
@@ -140,7 +181,7 @@ describe('EthereumWallet test', () => {
                     GetFeatures: () => Promise.resolve(DeviceFeaturesNotSupportingEIP1559),
                 }));
 
-                ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+                ethWallet = new EthereumWallet(device, USDTContractAddress, true);
                 await ethWallet.StartDiscovery();
                 const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
                 expect(result).not.to.haveOwnProperty('maxPriorityFeePerGas');
@@ -154,23 +195,35 @@ describe('EthereumWallet test', () => {
                     GetFeatures: () => Promise.resolve(DeviceFeaturesSupportingEIP1559),
                 }));
 
-                ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+                ethWallet = new EthereumWallet(device, USDTContractAddress, true);
                 await ethWallet.StartDiscovery();
                 const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
                 expect(result).to.haveOwnProperty('maxPriorityFeePerGas');
                 expect(result).to.haveOwnProperty('maxFeePerGas');
                 expect(result).not.to.haveOwnProperty('gasPrice');
+            });
+
+            describe('device supporting eip1559 is not important', () => {
+                before(() => {
+                    // @ts-ignore
+                    sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                        GetFeatures: () => Promise.resolve(DeviceFeaturesNotSupportingEIP1559),
+                    }));
+                });
+
+                it('Gas limit should be more than 21000 because coin type is contract', async () => {
+                    ethWallet = new EthereumWallet(device, USDTContractAddress, true);
+                    await ethWallet.StartDiscovery();
+                    const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
+                    const gaslimit = Number('0x' + result.gasLimit).toFixed();
+                    expect(parseInt(gaslimit)).to.greaterThan(21000);
+                });
             });
         });
 
         describe('coin type is ethereum', () => {
             before(() => {
-                MockXhr.onSend = (xhr) => {
-                    const responseHeaders = { 'Content-Type': 'application/json' };
-                    const response = JSON.stringify(AccountDiscoveryResponseWithTokens);
-                    xhr.respond(200, responseHeaders, response);
-                };
-                global.XMLHttpRequest = MockXhr;
+                setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithTokens);
             });
 
             it('Should return a legacy transaction. device not supporting eip1559', async () => {
@@ -200,16 +253,24 @@ describe('EthereumWallet test', () => {
                 expect(result).to.haveOwnProperty('maxFeePerGas');
                 expect(result).not.to.haveOwnProperty('gasPrice');
             });
+
+            it('Gas limit should equal to 21000 because coin type is ethereum', async () => {
+                // @ts-ignore
+                sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                    GetFeatures: () => Promise.resolve(DeviceFeaturesSupportingEIP1559),
+                }));
+
+                ethWallet = new EthereumWallet(device, 'ETH', false);
+                await ethWallet.StartDiscovery();
+                const result = await ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000));
+                const gaslimit = Number('0x' + result.gasLimit).toFixed();
+                expect(parseInt(gaslimit)).to.equal(21000);
+            });
         });
 
         describe('balance is insufficient', () => {
             before(() => {
-                MockXhr.onSend = (xhr) => {
-                    const responseHeaders = { 'Content-Type': 'application/json' };
-                    const response = JSON.stringify(AccountDiscoveryResponseWithNoTokenTransfers);
-                    xhr.respond(200, responseHeaders, response);
-                };
-                global.XMLHttpRequest = MockXhr;
+                setAccountDiscoveryServerResponse(AccountDiscoveryResponseWithNoTokenTransfers);
             });
 
             beforeEach(() => {
@@ -220,7 +281,7 @@ describe('EthereumWallet test', () => {
             });
 
             it('Should get rejected with insufficient balance error', async () => {
-                ethWallet = new EthereumWallet(device, usdtContractAddress, true);
+                ethWallet = new EthereumWallet(device, USDTContractAddress, true);
                 await ethWallet.StartDiscovery();
                 await expect(ethWallet.GenerateTransaction(testAddress2, new BigNumber(100000))).to.be.rejectedWith(
                     'Insufficient balance'
