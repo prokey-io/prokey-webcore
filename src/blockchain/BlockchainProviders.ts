@@ -115,7 +115,8 @@ export class BlockchainProviders {
                 // add prefix to url if any
                 let url: string = s.baseUrl;
                 if(coinServer.urlAffix){
-                    url = url.replace("{a}", coinServer.urlAffix);
+                  const searchRegExp = new RegExp("\{a\}", 'g');
+                  url = url.replace(searchRegExp, coinServer.urlAffix);
                 }
 
                 // push to list

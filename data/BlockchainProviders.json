@@ -29,7 +29,7 @@
         {
             "apiType": "prokey",
             "name": "prokey",
-            "baseUrl": "https://localhost:5001/api/{a}"
+            "baseUrl": "https://{a}.prokey.app/api/{a}"
         }
     ],
     "coins": [

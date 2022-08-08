@@ -65,7 +65,6 @@ export class RippleProkeyServer extends BaseBlockchainServer {
     const requestBody = {
       "signedTransactionBlob": data
     }
-    const url = `${server.url}/transaction/submit`;
-    return await this.PostToServer<RippleTransactionResponse>(`transaction/submit`, requestBody);
+    return await this.PostToServer<RippleTransactionResponse>(`${server.url}/transaction/submit`, requestBody);
   }
 }
