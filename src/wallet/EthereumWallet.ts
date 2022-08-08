@@ -432,7 +432,7 @@ export class EthereumWallet extends BaseWallet {
 
         let symbol: string = coinInfo.shortcut.toLocaleLowerCase();
         //! these coins are use same address encoding model
-        if (this._isErc20 || symbol == 'trin' || symbol == 'bnb' || symbol == 'rbtc' || symbol == 'trbtc') {
+        if (this._isErc20 || symbol == 'bnb' || symbol == 'rbtc' || coinInfo.test == true) {
             symbol = 'ETH';
         }
 

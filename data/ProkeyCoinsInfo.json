@@ -35586,18 +35586,18 @@
       "decimals": 18
     },
     {
-      "chain": "rin",
-      "chain_id": 4,
-      "name": "Ethereum Testnet Rinkeby",
+      "chain": "gth",
+      "chain_id": 5,
+      "name": "Ethereum Testnet Goerli",
       "rskip60": false,
-      "shortcut": "tRIN",
+      "shortcut": "tGTH",
       "slip44": 1,
       "support": {
         "optimum": "1.8.1"
       },
       "priority": 100,
       "test": true,
-      "tx_url": "https://rinkeby.etherscan.io/tx/{hash}",
+      "tx_url": "https://goerli.etherscan.io/tx/{hash}",
       "wallets": [
         "https://wallet.prokey.io"
       ],

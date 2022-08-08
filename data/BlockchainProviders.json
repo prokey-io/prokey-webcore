@@ -141,13 +141,13 @@
         },
         {
             "type": 1,
-            "name": "ropsten",
-            "shortcut": "rETH",
-            "chainId": 3,
+            "name": "Ethereum Testnet Goerli",
+            "shortcut": "tGTH",
+            "chainId": 5,
             "servers": [
                 {
                     "name": "prokey-blockbook",
-                    "urlAffix":"reth"
+                    "urlAffix":"eth-test"
                 }
             ]
         },
