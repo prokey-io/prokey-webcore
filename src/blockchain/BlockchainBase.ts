@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) 2022 Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@
 
 import { RequestAddressInfo } from "../models/GenericWalletModel";
 import { BlockchainServerModel } from "./BlockchainProviders";
+import {NemSubmitTransaction} from "./servers/prokey/src/nem/NemModels";
 
 export abstract class BlockchainBase {
     _servers: BlockchainServerModel[];
@@ -29,5 +30,5 @@ export abstract class BlockchainBase {
     }
 
     public abstract GetAddressInfo(reqAdd: RequestAddressInfo);
-    public abstract BroadCastTransaction(transaction: string);
+    public abstract BroadCastTransaction(transaction: string | NemSubmitTransaction);
 }

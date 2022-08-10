@@ -1,5 +1,4 @@
 import {BaseWallet} from "../BaseWallet";
-import {NemBlockchain} from "../../blockchain/servers/prokey/src/nem/NemBlockchain";
 import {
   NemAccount,
   NemAccountInfo,
@@ -8,24 +7,24 @@ import {
 } from "../../blockchain/servers/prokey/src/nem/NemModels";
 import {CoinBaseType} from "../../coins/CoinInfo";
 import {Device} from "../../device/Device";
-import {NemCoinInfoModel} from "../../models/CoinInfoModel";
-import {AddressModel, NEMAddress, NEMSignedTx, NEMSignTxMessage} from "../../models/Prokey";
+import {NEMAddress, NEMSignedTx, NEMSignTxMessage} from "../../models/Prokey";
 import {createTx} from "../../utils/nem/NemSignTxHelper";
 import {NEMTransferTransaction} from "./NemWalletModels";
 import {ByteArrayToHexString} from "../../utils/utils";
 import * as PathUtil from "../../utils/pathUtils";
+import {NemBlockchain} from "../../blockchain/NemBlockchain";
 
 var WAValidator = require('multicoin-address-validator');
 
 export class NemWallet extends BaseWallet {
-  _block_chain : NemBlockchain;
+  private _blockchain: NemBlockchain;
   _accounts: Array<NemAccount>;
   private readonly NEM_EPOCH = Date.UTC(2015, 2, 29, 0, 6, 25, 0);
   private readonly NEM_DEADLINE_IN_MINUTE = 5;
 
   constructor(device: Device, coinName: string) {
     super(device, coinName, CoinBaseType.NEM);
-    this._block_chain = new NemBlockchain(this.GetCoinInfo().shortcut);
+    this._blockchain = new NemBlockchain(this.GetCoinInfo());
     this._accounts = [];
   }
 
@@ -40,7 +39,7 @@ export class NemWallet extends BaseWallet {
    */
   public async StartDiscovery(accountFindCallBack?: (accountInfo: NemAccount) => void): Promise<Array<NemAccount>>
   {
-    return new Promise<Array<NemAccount>>(async (resolve, reject) => {
+    return new Promise<Array<NemAccount>>(async (resolve) => {
       let accountNumber = 0;
       this._accounts = new Array<NemAccount>();
       do
@@ -70,11 +69,11 @@ export class NemWallet extends BaseWallet {
   private async GetAccountInfo(accountNumber: number): Promise<NemAccountInfo | null> {
     let address = await this.GetAccountAddress(accountNumber);
 
-    return await this._block_chain.GetAddressInfo({address: address.address});
+    return await this._blockchain.GetAddressInfo({address: address.address});
   }
 
   public async GetAccountTransactions(account: string): Promise<Array<NemTransactionResponse>> {
-    let nemTransactionsResponse = await this._block_chain.GetAccountTransactions(account);
+    let nemTransactionsResponse = await this._blockchain.GetAccountTransactions(account);
     if (nemTransactionsResponse) {
       return nemTransactionsResponse;
     }
@@ -143,7 +142,7 @@ export class NemWallet extends BaseWallet {
       data: ByteArrayToHexString(signedTransaction.data),
       signature: ByteArrayToHexString(signedTransaction.signature)
     }
-    return await this._block_chain.BroadCastTransaction(transactionSubmitModel);
+    return await this._blockchain.BroadCastTransaction(transactionSubmitModel);
   }
 
   private getNemNetworkId() {

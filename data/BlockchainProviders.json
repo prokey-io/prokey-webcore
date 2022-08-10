@@ -30,6 +30,11 @@
             "apiType": "prokey",
             "name": "prokey",
             "baseUrl": "https://{a}.prokey.app/api/{a}"
+        },
+        {
+            "apiType": "node",
+            "name": "node",
+            "baseUrl": "https://{a}.prokey.app"
         }
     ],
     "coins": [
@@ -185,6 +190,17 @@
                 {
                     "name":"prokey",
                     "urlAffix":"XRP"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "nem",
+            "shortcut": "XEM",
+            "servers": [
+                {
+                    "name":"node",
+                    "urlAffix":"NEM"
                 }
             ]
         }
