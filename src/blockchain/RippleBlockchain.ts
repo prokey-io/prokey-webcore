@@ -1,9 +1,13 @@
 import {BlockchainProviders, BlockchainServerModel} from "./BlockchainProviders";
 import {BlockchainBase} from "./BlockchainBase";
-import {RequestAddressInfo} from "../models/GenericWalletModel";
 import {BaseCoinInfoModel} from "../models/CoinInfoModel";
 import {RippleProkeyServer} from "./_servers/prokey/ripple/RippleProkeyServer";
-import {RippleAccountInfo, RippleFee, RippleTransactionDataInfo} from "./_servers/prokey/ripple/ProkeyRippleModel";
+import {
+  RippleAccountInfo,
+  RippleFee,
+  RippleTransactionDataInfo,
+  RippleTransactionResponse
+} from "./_servers/prokey/ripple/ProkeyRippleModel";
 import {MyConsole} from "../utils/console";
 import {AddressModel} from "../models/Prokey";
 
@@ -20,29 +24,15 @@ export class RippleBlockchain extends BlockchainBase {
 
   public async GetAddressInfo(reqAdd: AddressModel): Promise<RippleAccountInfo> {
     return this.foreachServer<RippleAccountInfo>(async server => {
-      console.log(server);
-      const rippleAccountInfo: RippleAccountInfo = await RippleProkeyServer.GetAddressInfo(server, reqAdd.address);
-      return rippleAccountInfo;
+      return await RippleProkeyServer.GetAddressInfo(server, reqAdd.address);
     }, (error) => {
       MyConsole.Exception("RippleBlockchain::GetAddressInfo->", error);
     });
-    // for (const server of this._servers) {
-    //   if (server.apiType === 'prokey') {
-    //     try {
-    //       const rippleAccountInfo: RippleAccountInfo = await RippleProkeyServer.GetAddressInfo(server, reqAdd.address);
-    //       rippleAccountInfo.addressModel = reqAdd.addressModel;
-    //       return rippleAccountInfo;
-    //     } catch (e) {
-    //       MyConsole.Exception("RippleBlockchain::GetAddressInfo->",e);
-    //     }
-    //   }
-    // }
   }
 
-  public async BroadCastTransaction(transaction: string) {
-    return this.foreachServer<RippleAccountInfo>(async server => {
-      const rippleAccountInfo: RippleAccountInfo = await RippleProkeyServer.BroadCastTransaction(server, transaction);
-      return rippleAccountInfo;
+  public async BroadCastTransaction(transaction: string): Promise<RippleTransactionResponse> {
+    return this.foreachServer<RippleTransactionResponse>(async server => {
+      return await RippleProkeyServer.BroadCastTransaction(server, transaction);
     }, (error) => {
       MyConsole.Exception("RippleBlockchain::BroadCastTransaction->", error);
     });
@@ -58,9 +48,7 @@ export class RippleBlockchain extends BlockchainBase {
 
   async GetFee(): Promise<RippleFee> {
       return this.foreachServer<RippleFee>(async server => {
-        let rippleFee = await RippleProkeyServer.GetCurrentFee(server);
-        console.log(rippleFee);
-        return rippleFee;
+        return await RippleProkeyServer.GetCurrentFee(server);
       }, (error) => {
         MyConsole.Exception("RippleBlockchain::GetFee->", error);
       });

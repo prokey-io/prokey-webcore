@@ -48,7 +48,7 @@ export interface RippleAccountTransactionResponse {
 
 export interface RippleTransactionDataInfo {
   meta: any,
-  tx: RippleTransactionInfo,
+  transactionDetail: RippleTransactionInfo,
   validated: boolean
 }
 
@@ -88,11 +88,7 @@ export interface RippleTransactionResponse {
   txBlob: string,
   txJson: {
     account: string,
-    amount: {
-      currency: string,
-      issuer: string,
-      value: string
-    },
+    amount: string,
     destination: string,
     fee: string,
     flags: number,

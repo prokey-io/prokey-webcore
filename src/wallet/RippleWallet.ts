@@ -27,7 +27,7 @@ import {RippleBlockchain} from "../blockchain/RippleBlockchain";
 import {
   RippleAccountInfo,
   RippleFee,
-  RippleTransactionDataInfo
+  RippleTransactionDataInfo, RippleTransactionResponse
 } from "../blockchain/_servers/prokey/ripple/ProkeyRippleModel";
 var WAValidator = require('multicoin-address-validator');
 
@@ -151,7 +151,7 @@ export class RippleWallet extends BaseWallet {
         return tx;
     }
 
-    public async SendTransaction(tx: RippleSignedTx): Promise<any> {
+    public async SendTransaction(tx: RippleSignedTx): Promise<RippleTransactionResponse> {
         return await this._rippleBlockchain.BroadCastTransaction(tx.serialized_tx);
     }
 }

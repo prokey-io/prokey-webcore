@@ -178,7 +178,7 @@
             ]
         },
         {
-            "type": 0,
+            "type": 5,
             "name": "ripple",
             "shortcut": "XRP",
             "servers": [

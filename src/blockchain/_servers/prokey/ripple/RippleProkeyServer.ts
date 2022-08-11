@@ -27,7 +27,7 @@ export class RippleProkeyServer extends BaseBlockchainServer {
    * @param data Signed data to be broadcasted to network
    * @returns
    */
-  public static async BroadCastTransaction(server: BlockchainServerModel, data: string): Promise<any> {
+  public static async BroadCastTransaction(server: BlockchainServerModel, data: string): Promise<RippleTransactionResponse> {
     let data_any = data as any;
     if (data_any instanceof Uint8Array) {
       return await this.SendTransaction(server, Utils.ByteArrayToHexString(data_any).toUpperCase());
@@ -62,9 +62,6 @@ export class RippleProkeyServer extends BaseBlockchainServer {
   }
 
   private static async SendTransaction(server: BlockchainServerModel, data: string): Promise<RippleTransactionResponse> {
-    const requestBody = {
-      "signedTransactionBlob": data
-    }
-    return await this.PostToServer<RippleTransactionResponse>(`${server.url}/transaction/submit`, requestBody);
+    return await this.GetFromServer<RippleTransactionResponse>(`${server.url}/transaction/submit/${data}`);
   }
 }
