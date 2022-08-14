@@ -22,7 +22,6 @@ import { RippleCoinInfoModel } from "../models/CoinInfoModel";
 import { BaseWallet } from "./BaseWallet";
 import * as PathUtil from '../utils/pathUtils';
 import {AddressModel, RippleAddress, RippleSignedTx, RippleTransaction} from "../models/Prokey";
-import {ProkeyRippleBlockchain} from "../blockchain/servers/prokey/src/ripple/ProkeyRippleBlockChain";
 import {RippleBlockchain} from "../blockchain/RippleBlockchain";
 import {
   RippleAccountInfo,
@@ -61,6 +60,33 @@ export class RippleWallet extends BaseWallet {
                 let account = await this.GetAccountInfo(an);
                 if (account == null)
                 {
+                    if (this._accounts.length == 0) {
+                        let path = PathUtil.GetBipPath(
+                            CoinBaseType.Ripple,
+                            an,
+                            super.GetCoinInfo()
+                        )
+
+                        let emptyAccount: RippleAccountInfo = {
+                            balance: "0",
+                            account: "",
+                            ownerCount: 0,
+                            previousTxnId: "",
+                            previousTxnLgrSeq: 0,
+                            sequence: 0,
+                            tickSize: 0,
+                            transferRate: 0,
+                            ledgerEntryType: "",
+                            flags: 0,
+                            index: "",
+
+                            addressModel: path
+                        };
+                        if (accountFindCallBack) {
+                            accountFindCallBack(emptyAccount);
+                        }
+                      this._accounts.push(emptyAccount);
+                    }
                     // there is nothing here
                     return resolve(this._accounts);
                 }
