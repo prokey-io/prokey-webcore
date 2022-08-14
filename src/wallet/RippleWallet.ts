@@ -66,6 +66,8 @@ export class RippleWallet extends BaseWallet {
                             an,
                             super.GetCoinInfo()
                         )
+                        let address = await this.GetAddress<RippleAddress>(path.path, false);
+                        path.address = address.address;
 
                         let emptyAccount: RippleAccountInfo = {
                             balance: "0",
@@ -85,7 +87,7 @@ export class RippleWallet extends BaseWallet {
                         if (accountFindCallBack) {
                             accountFindCallBack(emptyAccount);
                         }
-                      this._accounts.push(emptyAccount);
+                        this._accounts.push(emptyAccount);
                     }
                     // there is nothing here
                     return resolve(this._accounts);
