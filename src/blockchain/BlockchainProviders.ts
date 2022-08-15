@@ -96,10 +96,12 @@ export class BlockchainProviders {
                 coin = coins.find(c => c.type == CoinBaseType.BitcoinBase && (c.name.toLowerCase() == "bitcoin" || c.shortcut == "BTC"));
                 break;
             case CoinBaseType.NEM:
+              break;
             case CoinBaseType.Stellar:
+              break;
             case CoinBaseType.Ripple:
                 // find the coin in providers
-                coin = coins.find(c => c.type == CoinBaseType.Ripple && (c.name.toLowerCase() == "ripple" || c.shortcut.toLowerCase() == "xrp"));
+                coin = coins.find(c => c.type == CoinBaseType.Ripple);
                 break;
         }
 

@@ -1,15 +1,15 @@
-import {BlockchainProviders, BlockchainServerModel} from "./BlockchainProviders";
-import {BlockchainBase} from "./BlockchainBase";
-import {BaseCoinInfoModel} from "../models/CoinInfoModel";
-import {RippleProkeyServer} from "./_servers/prokey/ripple/RippleProkeyServer";
+import { BlockchainProviders, BlockchainServerModel } from './BlockchainProviders';
+import { BlockchainBase } from './BlockchainBase';
+import { BaseCoinInfoModel } from '../models/CoinInfoModel';
+import { RippleProkeyServer } from './_servers/prokey/ripple/RippleProkeyServer';
 import {
   RippleAccountInfo,
   RippleFee,
   RippleTransactionDataInfo,
   RippleTransactionResponse
-} from "./_servers/prokey/ripple/ProkeyRippleModel";
-import {MyConsole} from "../utils/console";
-import {AddressModel} from "../models/Prokey";
+} from './_servers/prokey/ripple/ProkeyRippleModel';
+import { MyConsole } from '../utils/console';
+import { AddressModel } from '../models/Prokey';
 
 type ProcessServersCallBack<T> = (server: BlockchainServerModel) => Promise<T>;
 type ProcessServersError = (error: any) => void;
@@ -26,7 +26,7 @@ export class RippleBlockchain extends BlockchainBase {
     return this.foreachServer<RippleAccountInfo>(async server => {
       return await RippleProkeyServer.GetAddressInfo(server, reqAdd.address);
     }, (error) => {
-      MyConsole.Exception("RippleBlockchain::GetAddressInfo->", error);
+      MyConsole.Exception('RippleBlockchain::GetAddressInfo->', error);
     });
   }
 
@@ -34,24 +34,24 @@ export class RippleBlockchain extends BlockchainBase {
     return this.foreachServer<RippleTransactionResponse>(async server => {
       return await RippleProkeyServer.BroadCastTransaction(server, transaction);
     }, (error) => {
-      MyConsole.Exception("RippleBlockchain::BroadCastTransaction->", error);
+      MyConsole.Exception('RippleBlockchain::BroadCastTransaction->', error);
     });
   }
 
   async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>> {
-      return this.foreachServer<Array<RippleTransactionDataInfo>>(async server => {
-        return await RippleProkeyServer.GetAccountTransactions(server, account, limit);
-      }, (error) => {
-        MyConsole.Exception("RippleBlockchain::GetAccountTransactions->", error);
-      });
+    return this.foreachServer<Array<RippleTransactionDataInfo>>(async server => {
+      return await RippleProkeyServer.GetAccountTransactions(server, account, limit);
+    }, (error) => {
+      MyConsole.Exception('RippleBlockchain::GetAccountTransactions->', error);
+    });
   }
 
   async GetFee(): Promise<RippleFee> {
-      return this.foreachServer<RippleFee>(async server => {
-        return await RippleProkeyServer.GetCurrentFee(server);
-      }, (error) => {
-        MyConsole.Exception("RippleBlockchain::GetFee->", error);
-      });
+    return this.foreachServer<RippleFee>(async server => {
+      return await RippleProkeyServer.GetCurrentFee(server);
+    }, (error) => {
+      MyConsole.Exception('RippleBlockchain::GetFee->', error);
+    });
   }
 
   private async foreachServer<T>(callback: ProcessServersCallBack<T>, errorCallback: ProcessServersError): Promise<T> {
@@ -66,8 +66,8 @@ export class RippleBlockchain extends BlockchainBase {
   }
 
   private _ensureThereIsAServer() {
-    if(this._servers == undefined || this._servers.length == 0) {
-      throw new Error("RippleBlockchain::_ensureThereIsAServer->No server")
+    if (this._servers == undefined || this._servers.length == 0) {
+      throw new Error('RippleBlockchain::_ensureThereIsAServer->No server');
     }
   }
 }
