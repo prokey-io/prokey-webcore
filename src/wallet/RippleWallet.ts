@@ -71,7 +71,7 @@ export class RippleWallet extends BaseWallet {
 
                         let emptyAccount: RippleAccountInfo = {
                             balance: "0",
-                            account: "",
+                            account: address.address,
                             ownerCount: 0,
                             previousTxnId: "",
                             previousTxnLgrSeq: 0,
