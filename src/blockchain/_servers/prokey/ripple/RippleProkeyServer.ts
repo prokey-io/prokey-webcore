@@ -1,13 +1,13 @@
-import {BaseBlockchainServer} from "../../BaseBlockchainServer";
-import {BlockchainServerModel} from "../../../BlockchainProviders";
+import { BaseBlockchainServer } from '../../BaseBlockchainServer';
+import { BlockchainServerModel } from '../../../BlockchainProviders';
 import {
   RippleAccountInfo,
   RippleAccountTransactionResponse,
   RippleFee,
   RippleTransactionDataInfo,
   RippleTransactionResponse
-} from "./ProkeyRippleModel";
-import * as Utils from "../../../../utils/utils";
+} from './ProkeyRippleModel';
+import * as Utils from '../../../../utils/utils';
 
 export class RippleProkeyServer extends BaseBlockchainServer {
   /**
@@ -43,11 +43,9 @@ export class RippleProkeyServer extends BaseBlockchainServer {
    * @param limit Number of transactions
    * @returns List of ripple transaction data
    */
-  public static async GetAccountTransactions(server: BlockchainServerModel, account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>>
-  {
+  public static async GetAccountTransactions(server: BlockchainServerModel, account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>> {
     let trs = await this.GetFromServer<RippleAccountTransactionResponse>(`${server.url}/account/transactions?accountAddress=${account}&pageSize${limit}`);
-    if (trs != null && trs.transactions != null)
-    {
+    if (trs != null && trs.transactions != null) {
       return trs.transactions;
     }
     return [];

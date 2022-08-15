@@ -1,4 +1,4 @@
-import {AddressModel} from "../../../../models/Prokey";
+import { AddressModel } from '../../../../models/Prokey';
 
 export interface RippleAccountInfo {
   account: string,
@@ -36,14 +36,14 @@ export interface RippleTransactionInfo {
 }
 
 export interface RippleAccountTransactionResponse {
-  "account": string,
-  "ledgerIndexMax": number,
-  "ledgerIndexMin": number,
-  "limit": number,
-  "marker": string,
-  "transactions": Array<RippleTransactionDataInfo>,
-  "status": string,
-  "validated": boolean
+  'account': string,
+  'ledgerIndexMax': number,
+  'ledgerIndexMin': number,
+  'limit': number,
+  'marker': string,
+  'transactions': Array<RippleTransactionDataInfo>,
+  'status': string,
+  'validated': boolean
 }
 
 export interface RippleTransactionDataInfo {
