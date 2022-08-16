@@ -25,6 +25,11 @@
             "apiType": "nem",
             "name": "nem",
             "baseUrl": "https://nem.prokey.app/api"
+        },
+        {
+            "apiType": "prokey",
+            "name": "prokey",
+            "baseUrl": "https://{a}.prokey.app/api/{a}"
         }
     ],
     "coins": [
@@ -169,6 +174,17 @@
             "servers": [
                 {
                     "name": "prokey-chaino"
+                }
+            ]
+        },
+        {
+            "type": 5,
+            "name": "ripple",
+            "shortcut": "XRP",
+            "servers": [
+                {
+                    "name":"prokey",
+                    "urlAffix":"XRP"
                 }
             ]
         }
