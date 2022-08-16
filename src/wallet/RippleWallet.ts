@@ -24,156 +24,156 @@ import * as PathUtil from '../utils/pathUtils';
 import { AddressModel, RippleAddress, RippleSignedTx, RippleTransaction } from '../models/Prokey';
 import { RippleBlockchain } from '../blockchain/RippleBlockchain';
 import {
-  RippleAccountInfo,
-  RippleFee,
-  RippleTransactionDataInfo, RippleTransactionResponse
+    RippleAccountInfo,
+    RippleFee,
+    RippleTransactionDataInfo, RippleTransactionResponse
 } from '../blockchain/_servers/prokey/ripple/ProkeyRippleModel';
 
 var WAValidator = require('multicoin-address-validator');
 
 export class RippleWallet extends BaseWallet {
 
-  // _block_chain : ProkeyRippleBlockchain;
-  _rippleBlockchain: RippleBlockchain;
-  _accounts: Array<RippleAccountInfo>;
+    // _block_chain : ProkeyRippleBlockchain;
+    _rippleBlockchain: RippleBlockchain;
+    _accounts: Array<RippleAccountInfo>;
 
-  constructor(device: Device, coinName: string) {
-    super(device, coinName, CoinBaseType.Ripple);
+    constructor(device: Device, coinName: string) {
+        super(device, coinName, CoinBaseType.Ripple);
 
-    this._rippleBlockchain = new RippleBlockchain(super.GetCoinInfo());
-    this._accounts = [];
-  }
+        this._rippleBlockchain = new RippleBlockchain(super.GetCoinInfo());
+        this._accounts = [];
+    }
 
-  public IsAddressValid(address: string): boolean {
-    return WAValidator.validate(address, 'xrp');
-  }
+    public IsAddressValid(address: string): boolean {
+        return WAValidator.validate(address, 'xrp');
+    }
 
-  public async StartDiscovery(
-    accountFindCallBack?: (accountInfo: RippleAccountInfo) => void
-  ): Promise<Array<RippleAccountInfo>> {
-    return new Promise<Array<RippleAccountInfo>>(async (resolve, reject) => {
-      let an = 0;
-      this._accounts = new Array<RippleAccountInfo>();
-      do {
-        let account = await this.GetAccountInfo(an);
-        if (account == null) {
-          if (this._accounts.length == 0) {
-            let path = PathUtil.GetBipPath(
-              CoinBaseType.Ripple,
-              an,
-              super.GetCoinInfo()
-            );
-            let address = await this.GetAddress<RippleAddress>(path.path, false);
-            path.address = address.address;
+    public async StartDiscovery(
+        accountFindCallBack?: (accountInfo: RippleAccountInfo) => void
+    ): Promise<Array<RippleAccountInfo>> {
+        return new Promise<Array<RippleAccountInfo>>(async (resolve, reject) => {
+            let an = 0;
+            this._accounts = new Array<RippleAccountInfo>();
+            do {
+                let account = await this.GetAccountInfo(an);
+                if (account == null) {
+                    if (this._accounts.length == 0) {
+                        let path = PathUtil.GetBipPath(
+                            CoinBaseType.Ripple,
+                            an,
+                            super.GetCoinInfo()
+                        );
+                        let address = await this.GetAddress<RippleAddress>(path.path, false);
+                        path.address = address.address;
 
-            let emptyAccount: RippleAccountInfo = {
-              balance: '0',
-              account: address.address,
-              ownerCount: 0,
-              previousTxnId: '',
-              previousTxnLgrSeq: 0,
-              sequence: 0,
-              tickSize: 0,
-              transferRate: 0,
-              ledgerEntryType: '',
-              flags: 0,
-              index: '',
+                        let emptyAccount: RippleAccountInfo = {
+                            balance: '0',
+                            account: address.address,
+                            ownerCount: 0,
+                            previousTxnId: '',
+                            previousTxnLgrSeq: 0,
+                            sequence: 0,
+                            tickSize: 0,
+                            transferRate: 0,
+                            ledgerEntryType: '',
+                            flags: 0,
+                            index: '',
 
-              addressModel: path
-            };
-            if (accountFindCallBack) {
-              accountFindCallBack(emptyAccount);
+                            addressModel: path
+                        };
+                        if (accountFindCallBack) {
+                            accountFindCallBack(emptyAccount);
+                        }
+                        this._accounts.push(emptyAccount);
+                    }
+                    // there is nothing here
+                    return resolve(this._accounts);
+                }
+                this._accounts.push(account);
+                if (accountFindCallBack) {
+                    accountFindCallBack(account);
+                }
+                an++;
+            } while (true);
+        });
+    }
+
+    // Get ripple account info from blockchain
+    private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo | null> {
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.Ripple,
+            accountNumber,
+            super.GetCoinInfo()
+        );
+
+        let address = await this.GetAddress<RippleAddress>(path.path, false);
+
+        //! Save address
+
+        //! Getting address(account) info. from blockchain
+        let reqAdd: AddressModel = { address: address.address, path: path.path };
+        let addressInfo = await this._rippleBlockchain.GetAddressInfo(reqAdd);
+
+        //! Add AddressModel
+        if (addressInfo != null) {
+            addressInfo.addressModel = path;
+        }
+
+        return addressInfo;
+    }
+
+    public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
+        return await this._rippleBlockchain.GetAccountTransactions(account);
+    }
+
+    public async GetCurrentFee(): Promise<RippleFee> {
+        return await this._rippleBlockchain.GetFee();
+    }
+
+    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string, destinationTag?: number): RippleTransaction {
+        // Validate accountNumber
+        if (accountNumber >= this._accounts.length) {
+            throw new Error('Account number is wrong');
+        }
+
+        // Check balance
+        let bal = 0;
+        var acc = this._accounts[accountNumber];
+        if (acc != null && acc.balance != null) {
+            bal = +acc.balance;
+        }
+
+        let ci = super.GetCoinInfo() as RippleCoinInfoModel;
+
+        bal = bal
+            - ci.min_balance // 20 XRP for reserve
+            - amount
+            - (+selectedFee);
+        if (bal < 0)
+            throw new Error('Insufficient balance you need to hold 20 XRP in your account.');
+
+        let path = PathUtil.GetBipPath(
+            CoinBaseType.Ripple,
+            accountNumber,
+            ci
+        );
+
+        let tx: RippleTransaction = {
+            address_n: path.path,
+            fee: +selectedFee,
+            sequence: this._accounts[accountNumber].sequence,
+            payment: {
+                amount: amount,
+                destination: toAccount
             }
-            this._accounts.push(emptyAccount);
-          }
-          // there is nothing here
-          return resolve(this._accounts);
+        };
+        if (destinationTag) {
+            tx.payment.destination_tag = destinationTag;
         }
-        this._accounts.push(account);
-        if (accountFindCallBack) {
-          accountFindCallBack(account);
-        }
-        an++;
-      } while (true);
-    });
-  }
-
-  // Get ripple account info from blockchain
-  private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo | null> {
-    let path = PathUtil.GetBipPath(
-      CoinBaseType.Ripple,
-      accountNumber,
-      super.GetCoinInfo()
-    );
-
-    let address = await this.GetAddress<RippleAddress>(path.path, false);
-
-    //! Save address
-
-    //! Getting address(account) info. from blockchain
-    let reqAdd: AddressModel = { address: address.address, path: path.path };
-    let addressInfo = await this._rippleBlockchain.GetAddressInfo(reqAdd);
-
-    //! Add AddressModel
-    if (addressInfo != null) {
-      addressInfo.addressModel = path;
+        return tx;
     }
 
-    return addressInfo;
-  }
-
-  public async GetAccountTransactions(account: string): Promise<Array<RippleTransactionDataInfo>> {
-    return await this._rippleBlockchain.GetAccountTransactions(account);
-  }
-
-  public async GetCurrentFee(): Promise<RippleFee> {
-    return await this._rippleBlockchain.GetFee();
-  }
-
-  public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string, destinationTag?: number): RippleTransaction {
-    // Validate accountNumber
-    if (accountNumber >= this._accounts.length) {
-      throw new Error('Account number is wrong');
+    public async SendTransaction(tx: RippleSignedTx): Promise<RippleTransactionResponse> {
+        return await this._rippleBlockchain.BroadCastTransaction(tx.serialized_tx);
     }
-
-    // Check balance
-    let bal = 0;
-    var acc = this._accounts[accountNumber];
-    if (acc != null && acc.balance != null) {
-      bal = +acc.balance;
-    }
-
-    let ci = super.GetCoinInfo() as RippleCoinInfoModel;
-
-    bal = bal
-      - ci.min_balance // 20 XRP for reserve
-      - amount
-      - (+selectedFee);
-    if (bal < 0)
-      throw new Error('Insufficient balance you need to hold 20 XRP in your account.');
-
-    let path = PathUtil.GetBipPath(
-      CoinBaseType.Ripple,
-      accountNumber,
-      ci
-    );
-
-    let tx: RippleTransaction = {
-      address_n: path.path,
-      fee: +selectedFee,
-      sequence: this._accounts[accountNumber].sequence,
-      payment: {
-        amount: amount,
-        destination: toAccount
-      }
-    };
-    if (destinationTag) {
-      tx.payment.destination_tag = destinationTag;
-    }
-    return tx;
-  }
-
-  public async SendTransaction(tx: RippleSignedTx): Promise<RippleTransactionResponse> {
-    return await this._rippleBlockchain.BroadCastTransaction(tx.serialized_tx);
-  }
 }
