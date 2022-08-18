@@ -10,6 +10,7 @@ import {
 } from './_servers/prokey/ripple/ProkeyRippleModel';
 import { MyConsole } from '../utils/console';
 import { AddressModel } from '../models/Prokey';
+import * as WalletModel from '../models/RippleWalletModel'
 
 type ProcessServersCallBack<T> = (server: BlockchainServerModel) => Promise<T>;
 type ProcessServersError = (error: any) => void;
@@ -18,11 +19,10 @@ export class RippleBlockchain extends BlockchainBase {
     constructor(coinInfo: BaseCoinInfoModel) {
         const servers: Array<BlockchainServerModel> = BlockchainProviders.Get(coinInfo);
         super(servers);
-        console.log(servers);
         this._ensureThereIsAServer();
     }
 
-    public async GetAddressInfo(reqAdd: AddressModel): Promise<RippleAccountInfo> {
+    public async GetAddressInfo(reqAdd: AddressModel): Promise<WalletModel.RippleAccountInfo> {
         return this.foreachServer<RippleAccountInfo>(async server => {
             return await RippleProkeyServer.GetAddressInfo(server, reqAdd.address);
         }, (error) => {
@@ -30,7 +30,7 @@ export class RippleBlockchain extends BlockchainBase {
         });
     }
 
-    public async BroadCastTransaction(transaction: string): Promise<RippleTransactionResponse> {
+    public async BroadCastTransaction(transaction: string): Promise<WalletModel.RippleTransactionResponse> {
         return this.foreachServer<RippleTransactionResponse>(async server => {
             return await RippleProkeyServer.BroadCastTransaction(server, transaction);
         }, (error) => {
@@ -38,7 +38,7 @@ export class RippleBlockchain extends BlockchainBase {
         });
     }
 
-    async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<RippleTransactionDataInfo>> {
+    async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<WalletModel.RippleTransactionDataInfo>> {
         return this.foreachServer<Array<RippleTransactionDataInfo>>(async server => {
             return await RippleProkeyServer.GetAccountTransactions(server, account, limit);
         }, (error) => {
@@ -46,7 +46,7 @@ export class RippleBlockchain extends BlockchainBase {
         });
     }
 
-    async GetFee(): Promise<RippleFee> {
+    async GetFee(): Promise<WalletModel.RippleFee> {
         return this.foreachServer<RippleFee>(async server => {
             return await RippleProkeyServer.GetCurrentFee(server);
         }, (error) => {
