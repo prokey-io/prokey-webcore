@@ -26,8 +26,8 @@ import { RippleBlockchain } from '../blockchain/RippleBlockchain';
 import {
     RippleAccountInfo,
     RippleFee,
-    RippleTransactionDataInfo, RippleTransactionResponse
-} from '../blockchain/_servers/prokey/ripple/ProkeyRippleModel';
+    RippleTransactionDataInfo, RippleTransactionResponse, RippleWalletModel
+} from '../models/RippleWalletModel';
 
 var WAValidator = require('multicoin-address-validator');
 
@@ -35,29 +35,30 @@ export class RippleWallet extends BaseWallet {
 
     // _block_chain : ProkeyRippleBlockchain;
     _rippleBlockchain: RippleBlockchain;
-    _accounts: Array<RippleAccountInfo>;
+    _rippleWallet: RippleWalletModel;
 
     constructor(device: Device, coinName: string) {
         super(device, coinName, CoinBaseType.Ripple);
 
         this._rippleBlockchain = new RippleBlockchain(super.GetCoinInfo());
-        this._accounts = [];
+        this._rippleWallet = {
+            totalBalance: 0,
+            accounts: new Array<RippleAccountInfo>()
+        }
     }
 
     public IsAddressValid(address: string): boolean {
         return WAValidator.validate(address, 'xrp');
     }
 
-    public async StartDiscovery(
-        accountFindCallBack?: (accountInfo: RippleAccountInfo) => void
-    ): Promise<Array<RippleAccountInfo>> {
-        return new Promise<Array<RippleAccountInfo>>(async (resolve, reject) => {
+    public async StartDiscovery(accountFindCallBack?: (accountInfo: RippleAccountInfo) => void): Promise<RippleWalletModel> {
+        return new Promise<RippleWalletModel>(async (resolve, reject) => {
             let an = 0;
-            this._accounts = new Array<RippleAccountInfo>();
+            this._rippleWallet.accounts = new Array<RippleAccountInfo>();
             do {
                 let account = await this.GetAccountInfo(an);
                 if (account == null) {
-                    if (this._accounts.length == 0) {
+                    if (this._rippleWallet.accounts.length == 0) {
                         let path = PathUtil.GetBipPath(
                             CoinBaseType.Ripple,
                             an,
@@ -84,16 +85,18 @@ export class RippleWallet extends BaseWallet {
                         if (accountFindCallBack) {
                             accountFindCallBack(emptyAccount);
                         }
-                        this._accounts.push(emptyAccount);
+                        this._rippleWallet.accounts.push(emptyAccount);
                     }
                     // there is nothing here
-                    return resolve(this._accounts);
+                    return resolve(this._rippleWallet);
+                } else {
+                    this._rippleWallet.accounts.push(account);
+                    this._rippleWallet.totalBalance += +account.balance!;
+                    if (accountFindCallBack) {
+                        accountFindCallBack(account);
+                    }
+                    an++;
                 }
-                this._accounts.push(account);
-                if (accountFindCallBack) {
-                    accountFindCallBack(account);
-                }
-                an++;
             } while (true);
         });
     }
@@ -132,13 +135,13 @@ export class RippleWallet extends BaseWallet {
 
     public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string, destinationTag?: number): RippleTransaction {
         // Validate accountNumber
-        if (accountNumber >= this._accounts.length) {
+        if (accountNumber >= this._rippleWallet.accounts!.length) {
             throw new Error('Account number is wrong');
         }
 
         // Check balance
         let bal = 0;
-        var acc = this._accounts[accountNumber];
+        var acc = this._rippleWallet.accounts![accountNumber];
         if (acc != null && acc.balance != null) {
             bal = +acc.balance;
         }
@@ -161,7 +164,7 @@ export class RippleWallet extends BaseWallet {
         let tx: RippleTransaction = {
             address_n: path.path,
             fee: +selectedFee,
-            sequence: this._accounts[accountNumber].sequence,
+            sequence: this._rippleWallet.accounts![accountNumber].sequence,
             payment: {
                 amount: amount,
                 destination: toAccount
