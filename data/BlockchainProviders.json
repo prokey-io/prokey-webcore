@@ -146,6 +146,18 @@
         },
         {
             "type": 1,
+            "name": "Binance smart chain",
+            "shortcut": "BNB",
+            "chainId": 56,
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "type" : "publicProvider"
+                }
+            ]
+        },
+        {
+            "type": 1,
             "name": "Ethereum Testnet Goerli",
             "shortcut": "tGTH",
             "chainId": 5,
@@ -173,6 +185,7 @@
             "chainId": 56,
             "servers": [
                 {
+                    "type" : "publicProvider",
                     "name": "prokey-chaino"
                 }
             ]
