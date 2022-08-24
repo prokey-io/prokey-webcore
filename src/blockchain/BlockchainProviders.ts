@@ -23,7 +23,7 @@ delete require.cache[_serverFileModel];
 const _providers = require('../../data/BlockchainProviders.json');
 
 import { CoinBaseType } from '../coins/CoinInfo';
-import { BaseCoinInfoModel, Erc20BaseCoinInfoModel, EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
+import { BaseCoinInfoModel, EthereumBaseCoinInfoModel } from '../models/CoinInfoModel';
 import _publicProviders from '../../data/NetworkProviders.json';
 
 export interface BlockchainServerModel {
@@ -90,43 +90,28 @@ export class BlockchainProviders {
                 );
                 break;
             case CoinBaseType.EthereumBase:
-                // find the coin in providers
-                coin = coins.find(
-                    (c) =>
-                        c.type == CoinBaseType.EthereumBase &&
-                        c.chainId == (coinInfo as EthereumBaseCoinInfoModel).chain_id
-                );
-                if (coin?.servers[0].type == 'publicProvider') {
-                    const publicProvider = _publicProviders.find((item) => item.chainId == coin?.chainId);
-                    if (publicProvider) {
-                        publicProvider.url.forEach((url) => {
-                            servers.push({
-                                apiType: 'publicProvider',
-                                serverName: 'public',
-                                url,
-                            });
-                        });
-                    }
-                }
-                break;
             case CoinBaseType.ERC20:
                 // find the coin in providers
                 coin = coins.find(
                     (c) =>
-                        c.type == CoinBaseType.EthereumBase &&
-                        c.chainId == (coinInfo as Erc20BaseCoinInfoModel).chain_id
+                        c.type == coinInfo.coinBaseType && c.chainId == (coinInfo as EthereumBaseCoinInfoModel).chain_id
                 );
-                if (coin?.servers[0].type == 'publicProvider') {
+                //blockbook servers are priority but if there is a geth type on coin data,
+                //we are going to use public provider then.
+                //There can be multiple rpc urls that will be pushed to servers after some change.
+                if (coin?.servers[0].type == 'geth') {
                     const publicProvider = _publicProviders.find((item) => item.chainId == coin?.chainId);
                     if (publicProvider) {
                         publicProvider.url.forEach((url) => {
                             servers.push({
-                                apiType: 'publicProvider',
+                                apiType: 'geth',
                                 serverName: 'public',
                                 url,
                             });
                         });
+                        return servers;
                     }
+                    return [];
                 }
                 break;
             case CoinBaseType.OMNI:

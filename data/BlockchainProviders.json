@@ -152,7 +152,7 @@
             "servers": [
                 {
                     "name": "prokey-blockbook",
-                    "type" : "publicProvider"
+                    "type" : "geth"
                 }
             ]
         },
@@ -185,7 +185,7 @@
             "chainId": 56,
             "servers": [
                 {
-                    "type" : "publicProvider",
+                    "type" : "geth",
                     "name": "prokey-chaino"
                 }
             ]

@@ -35,19 +35,16 @@ import { BlockbookTransactionResult } from './_servers/blockbook/BlockbookCommon
 
 export class EthereumBlockchain extends BlockchainBase {
     private _isErc20: boolean;
-    private _contractAddress?: string;
     private _coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel;
 
     constructor(
         servers: BlockchainServerModel[],
         isErc20 = false,
-        contractAddress?: string,
         coinInfo?: Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel
     ) {
         super(servers);
 
         this._isErc20 = isErc20;
-        this._contractAddress = contractAddress;
         this._coinInfo = coinInfo;
     }
 
@@ -80,7 +77,7 @@ export class EthereumBlockchain extends BlockchainBase {
                         MyConsole.Exception('EthereumBlockchain::GetAddressInfo->', e);
                     }
                     break;
-                case 'publicProvider':
+                case 'geth':
                     try {
                         let providerResponse: WalletModel.EthereumAccountInfo =
                             await PublicEthereumServer.GetAddressInfo(

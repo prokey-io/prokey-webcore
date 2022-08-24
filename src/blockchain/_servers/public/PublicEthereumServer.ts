@@ -1,4 +1,4 @@
-import { FeeData, JsonRpcProvider, Provider } from '@ethersproject/providers';
+import { FeeData, JsonRpcProvider } from '@ethersproject/providers';
 import { BlockchainServerModel } from '../../BlockchainProviders';
 import * as WalletModel from '../../../models/EthereumWalletModel';
 import { Erc20BaseCoinInfoModel, EthereumBaseCoinInfoModel } from '../../../models/CoinInfoModel';
@@ -35,8 +35,8 @@ class PublicEthereumServer {
             nonTokenTxs: 0,
             txs: 0,
             unconfirmedTxs: 0,
-            tokens: [],
             transactions: [],
+            isDirectQueryFromGeth: true,
         };
         if (isErc20) {
             accInfo.ethBalance = balance;

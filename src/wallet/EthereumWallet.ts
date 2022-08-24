@@ -89,7 +89,7 @@ export class EthereumWallet extends BaseWallet {
             this._gasLimit = 65000;
             const ci = super.GetCoinInfo() as Erc20BaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
-            this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci.address, ci);
+            this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci);
         } else {
             const ci = this.GetCoinInfo() as EthereumBaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
@@ -173,15 +173,10 @@ export class EthereumWallet extends BaseWallet {
         var accInfo = await this._ethBlockchain.GetAddressInfo(path);
         accInfo.accountIndex = accountNumber;
 
+        if (accInfo.isDirectQueryFromGeth) return accInfo;
+
         // Should do some changes and filters to the account if it is erc20 contract
         if (this._isErc20) {
-            if (
-                (accInfo.balance || accInfo.ethBalance) &&
-                (!accInfo.transactions || accInfo.transactions?.length == 0)
-            ) {
-                return accInfo;
-            }
-
             accInfo.ethBalance = accInfo.balance;
             if (accInfo.transactions && accInfo.transactions.length > 0) {
                 // Filter contract transactions and reassign to account
