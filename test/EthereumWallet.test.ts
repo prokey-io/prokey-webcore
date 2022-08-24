@@ -12,11 +12,17 @@ import { BaseWallet } from '../src/wallet/BaseWallet';
 import * as WalletModel from '../src/models/EthereumWalletModel';
 import BigNumber from 'bignumber.js';
 import { Features } from '../src/models/Prokey';
+import { Erc20BaseCoinInfoModel } from './../src/models/CoinInfoModel';
+import { CoinBaseType } from '../src/coins/CoinInfo';
+import { JsonRpcProvider, TransactionResponse } from '@ethersproject/providers';
+import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber';
 
 const AccountDiscoveryResponseWithNoTokenTransfers: WalletModel.EthereumAccountInfo = require('./testFixtures/account-discovery-3.json');
 const AccountDiscoveryResponseWithTokens: WalletModel.EthereumAccountInfo = require('./testFixtures/account-discovery.json');
 const DeviceFeaturesSupportingEIP1559: Features = require('./testFixtures/device-features-eip1559.json');
 const DeviceFeaturesNotSupportingEIP1559: Features = require('./testFixtures/device-features-no-eip1559.json');
+const OnchainTxData: TransactionResponse = require('./testFixtures/ethers-tx-result.json');
+const PublicProviders = require('../data/NetworkProviders.json');
 
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
@@ -34,10 +40,27 @@ describe('EthereumWallet test', () => {
     let ethWallet: EthereumWallet;
     let device: Device;
     const defaultPath = "m/44'/60'/0'/0/0";
-    const testAddress1 = '0x858abb1F5e2BE982FB755bdcCa5adCB4c08F5954';
+    const testAddress1 = '0x9F8cCdaFCc39F3c7D6EBf637c9151673CBc36b88';
     const testAddress2 = '0x6bca60d6ce8d72b087b499abc95b5b1668b33369';
     const USDTContractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
     const WETHContractAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+    const usdtCoinInfo: Erc20BaseCoinInfoModel = {
+        chain_id: 56,
+        address: '0x55d398326f99059fF775485246999027B3197955',
+        shortcut: 'USDT',
+        decimals: 18,
+        name: 'Tether USD (bep20)',
+        coinBaseType: CoinBaseType.ERC20,
+        id: 'erc20_bsc_usdt',
+        priority: 4,
+        slip44: 60,
+        support: {
+            optimum: '1.10.2',
+        },
+        tx_url: 'https://bscscan.com/tx/{hash}',
+        type: '2',
+    };
 
     const testSymbol = 'USDT';
     before(() => {
@@ -53,9 +76,61 @@ describe('EthereumWallet test', () => {
         sinon.restore();
     });
 
+    describe('test Ethereum Wallet with public provider', () => {
+        before(() => {
+            sinon.stub(JsonRpcProvider.prototype, 'sendTransaction').callsFake(() => Promise.resolve(OnchainTxData));
+            //@ts-ignore
+            sinon.stub(BaseWallet.prototype, 'GetDevice').callsFake(() => ({
+                GetFeatures: () => Promise.resolve(DeviceFeaturesNotSupportingEIP1559),
+            }));
+        });
+
+        describe('coin type is BNB', () => {
+            const balanceHex = '0x9269476624fdee';
+            const balanceNumber = '41211101977050606';
+            before(() => {
+                sinon
+                    .stub(JsonRpcProvider.prototype, 'getBalance')
+                    .callsFake(() => Promise.resolve(EthersBigNumber.from(balanceHex)));
+            });
+
+            it('ethereum wallet should contain public provider servers', () => {
+                ethWallet = new EthereumWallet(device, 'BNB', false);
+                const provider = PublicProviders.find((item) => item.chainId == 56);
+                expect(ethWallet._ethBlockchain._servers.length).equal(provider.url.length);
+            });
+
+            it('BNB account balance should equal to the mock balance', async () => {
+                ethWallet = new EthereumWallet(device, 'BNB', false);
+                const result = await ethWallet.StartDiscovery();
+                expect(result?.accounts?.[0].balance).equal(balanceNumber);
+            });
+        });
+
+        describe('coin type is a USDT token', () => {
+            it('ethereum wallet should contain public provider servers', () => {
+                ethWallet = new EthereumWallet(device, '', true, usdtCoinInfo);
+                const provider = PublicProviders.find((item) => item.chainId == 56);
+                expect(ethWallet._ethBlockchain._servers.length).equal(provider.url.length);
+            });
+
+            // it('USDT account balance should equal to the mock balance', async () => {
+            //     ethWallet = new EthereumWallet(device, 'BNB', false);
+            //     const result = await ethWallet.StartDiscovery();
+            //     expect(result?.accounts?.[0].balance).equal(balanceNumber);
+            // });
+        });
+    });
+
+    // it('pass this', async () => {
+    //     const rawtx = await ethWallet.GenerateTransaction('0x', new BigNumber(630));
+    //     const tx = await ethWallet.SendTransaction('dfgdfg');
+    //     expect(tx.txid).equal(OnchainTxData.hash);
+    // });
+
     describe('StartDiscovery test', () => {
         it('Should return native ETH token transactions', async () => {
-            ethWallet = new EthereumWallet(device, 'ETH', false);
+            ethWallet = new EthereumWallet(device, 'BNB', false);
             const result = await ethWallet.StartDiscovery();
             result?.accounts?.[0].transactions?.should.all.not.haveOwnProperty('tokenTransfers');
             expect(result.accounts?.length).to.equal(1);
