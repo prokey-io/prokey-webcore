@@ -173,6 +173,9 @@ export class EthereumWallet extends BaseWallet {
         var accInfo = await this._ethBlockchain.GetAddressInfo(path);
         accInfo.accountIndex = accountNumber;
 
+        // When using public nodes there are no transactions or token transfers
+        // because they don't give transaction history.
+        // so if isDirectQueryFromGeth is true we don't continue the code and directly return the account info
         if (accInfo.isDirectQueryFromGeth) return accInfo;
 
         // Should do some changes and filters to the account if it is erc20 contract

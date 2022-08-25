@@ -110,7 +110,7 @@ export class EthereumBlockchain extends BlockchainBase {
                     case 'blockbook':
                         result = await BlockbookServer.BroadcastTransaction(this._servers[i], transaction);
                         break;
-                    case 'publicProvider':
+                    case 'geth':
                         result = await PublicEthereumServer.BroadcastTransaction(this._servers[i], transaction);
                 }
 
