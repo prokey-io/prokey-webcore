@@ -261,7 +261,7 @@ export class EthereumWallet extends BaseWallet {
         }
 
         const deviceFeatures = await this.GetDevice().GetFeatures();
-        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures);
+        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures, this._network);
         // Get the gas params from server
         const feeData = await this._ethBlockchain.GetFeeData(coinInfo.chain_id);
         const transactionFee = await this.CalculateTransactionFee(deviceSupportsEIP1559, feeData);
