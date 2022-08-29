@@ -7,6 +7,10 @@
             "isSupportXpub": true
         },
         {
+            "apiType": "geth",
+            "name": "public-provider"
+        },
+        {
             "apiType": "chaino",
             "name": "prokey-chaino",
             "baseUrl": "https://blocks.prokey.org"
@@ -151,7 +155,7 @@
             "chainId": 56,
             "servers": [
                 {
-                    "name": "prokey-blockbook",
+                    "name": "public-provider",
                     "type" : "geth"
                 }
             ]
@@ -186,7 +190,7 @@
             "servers": [
                 {
                     "type" : "geth",
-                    "name": "prokey-chaino"
+                    "name": "public-provider"
                 }
             ]
         },
