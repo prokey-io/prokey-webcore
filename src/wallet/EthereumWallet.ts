@@ -89,7 +89,7 @@ export class EthereumWallet extends BaseWallet {
             this._gasLimit = 65000;
             const ci = super.GetCoinInfo() as Erc20BaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
-            this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci.address);
+            this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci);
         } else {
             const ci = this.GetCoinInfo() as EthereumBaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
@@ -172,6 +172,11 @@ export class EthereumWallet extends BaseWallet {
         // Getting addresses' info
         var accInfo = await this._ethBlockchain.GetAddressInfo(path);
         accInfo.accountIndex = accountNumber;
+
+        // When using public nodes there are no transactions or token transfers
+        // because they don't give transaction history.
+        // so if isDirectQueryFromGeth is true we don't continue the code and directly return the account info
+        if (accInfo.isDirectQueryFromGeth) return accInfo;
 
         // Should do some changes and filters to the account if it is erc20 contract
         if (this._isErc20) {
@@ -256,7 +261,7 @@ export class EthereumWallet extends BaseWallet {
         }
 
         const deviceFeatures = await this.GetDevice().GetFeatures();
-        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures);
+        const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures, this._network);
         // Get the gas params from server
         const feeData = await this._ethBlockchain.GetFeeData(coinInfo.chain_id);
         const transactionFee = await this.CalculateTransactionFee(deviceSupportsEIP1559, feeData);

@@ -1,0 +1,31 @@
+{
+    "type": 2,
+    "chainId": 4,
+    "nonce": 0,
+    "maxPriorityFeePerGas": {
+        "type": "BigNumber",
+        "hex": "0x59682f00"
+    },
+    "maxFeePerGas": {
+        "type": "BigNumber",
+        "hex": "0x59682f24"
+    },
+    "gasPrice": null,
+    "gasLimit": {
+        "type": "BigNumber",
+        "hex": "0x5208"
+    },
+    "to": "0x08Cd0bDDCf8d54dfD165e492A7411BB6030323de",
+    "value": {
+        "type": "BigNumber",
+        "hex": "0x00"
+    },
+    "data": "0x",
+    "accessList": [],
+    "hash": "0x192007acc13c07fd0b072fd5e498c757166fc4c37fc5c8dcf450fb7bcaec9b62",
+    "v": 0,
+    "r": "0x7f8ab50efd4f1e926c95a839c27cc612d80ff37599001a5965b4c2c8e4aeb8fd",
+    "s": "0x66473459649ff34a538541911172e1b7f9382d23aadf5b5354159a48560acb9b",
+    "from": "0x34a5473a1A640c1F039bbb8fbC46cAfCDc21372d",
+    "confirmations": 0
+}

@@ -62,6 +62,9 @@ export interface EthereumAccountInfo {
     // account index
     accountIndex?: number;
     addressModel?: AddressModel;
+    // When we use a public provider server instead of blockbook,
+    // this will be true. also can be used on ui to know that the method is public provider not blockbook.
+    isDirectQueryFromGeth?: boolean;
     // When account is erc20, balance is overridden to token balance
     // but we also need eth balance for fee calculation
     ethBalance?: string;

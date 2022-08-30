@@ -7,6 +7,10 @@
             "isSupportXpub": true
         },
         {
+            "apiType": "geth",
+            "name": "public-provider"
+        },
+        {
             "apiType": "chaino",
             "name": "prokey-chaino",
             "baseUrl": "https://blocks.prokey.org"
@@ -146,6 +150,18 @@
         },
         {
             "type": 1,
+            "name": "Binance smart chain",
+            "shortcut": "BNB",
+            "chainId": 56,
+            "servers": [
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 1,
             "name": "Ethereum Testnet Goerli",
             "shortcut": "tGTH",
             "chainId": 5,
@@ -173,7 +189,8 @@
             "chainId": 56,
             "servers": [
                 {
-                    "name": "prokey-chaino"
+                    "type" : "geth",
+                    "name": "public-provider"
                 }
             ]
         },
