@@ -25,7 +25,7 @@ class PublicEthereumServer {
             tokenBalance = addressBalance;
         }
         balance = (await provider.getBalance(address)).toString();
-        const nonce = (await provider.getTransactionCount(address)).toString();
+        const nonce = (await provider.getTransactionCount(address)).toString(16);
 
         const accInfo: WalletModel.EthereumAccountInfo = {
             address,
