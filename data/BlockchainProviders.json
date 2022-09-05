@@ -145,6 +145,10 @@
                 {
                     "name": "prokey-blockbook",
                     "urlAffix":"eth"
+                },
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
                 }
             ]
         },
