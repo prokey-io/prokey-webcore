@@ -96,23 +96,6 @@ export class BlockchainProviders {
                     (c) =>
                         c.type == coinInfo.coinBaseType && c.chainId == (coinInfo as EthereumBaseCoinInfoModel).chain_id
                 );
-                //blockbook servers are priority but if there is a geth type on coin data,
-                //we are going to use public provider then.
-                //There can be multiple rpc urls that will be pushed to servers after some change.
-                if (coin?.servers[0].type == 'geth') {
-                    const publicProvider = _publicProviders.find((item) => item.chainId == coin?.chainId);
-                    if (publicProvider) {
-                        publicProvider.url.forEach((url) => {
-                            servers.push({
-                                apiType: 'geth',
-                                serverName: 'public',
-                                url,
-                            });
-                        });
-                        return servers;
-                    }
-                    return [];
-                }
                 break;
             case CoinBaseType.OMNI:
                 // We support OMNI on Bitcoin network
@@ -139,20 +122,31 @@ export class BlockchainProviders {
             // find the specific server
             const s = allServers.find((s) => s.name == coinServer.name);
             if (s != undefined) {
-                // add prefix to url if any
-                let url: string = s.baseUrl;
-                if (coinServer.urlAffix) {
-                    const searchRegExp = new RegExp('{a}', 'g');
-                    url = url.replace(searchRegExp, coinServer.urlAffix);
-                }
+                switch (s.apiType) {
+                    case 'geth':
+                        const publicProvider = _publicProviders.find((item) => item.chainId == coin?.chainId);
+                        if (publicProvider) {
+                            publicProvider.url.forEach((url) => {
+                                servers.push({ apiType: s.apiType, serverName: s.name, url });
+                            });
+                        }
+                        break;
+                    case 'blockbook':
+                        // add prefix to url if any
+                        let url: string = s.baseUrl;
+                        if (coinServer.urlAffix) {
+                            const searchRegExp = new RegExp('{a}', 'g');
+                            url = url.replace(searchRegExp, coinServer.urlAffix);
+                        }
 
-                // push to list
-                servers.push({
-                    apiType: s.apiType,
-                    serverName: s.name,
-                    url: url,
-                    isSupportXpub: s.isSupportXpub,
-                });
+                        // push to list
+                        servers.push({
+                            apiType: s.apiType,
+                            serverName: s.name,
+                            url: url,
+                            isSupportXpub: s.isSupportXpub,
+                        });
+                }
             }
         });
 
