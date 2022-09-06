@@ -131,7 +131,7 @@ export class BlockchainProviders {
                             });
                         }
                         break;
-                    default:
+                    case 'blockbook':
                         // add prefix to url if any
                         let url: string = s.baseUrl;
                         if (coinServer.urlAffix) {
