@@ -16,11 +16,6 @@
             "baseUrl": "https://blocks.prokey.org"
         },
         {
-            "apiType": "ripple",
-            "name": "ripple",
-            "baseUrl": "https://ripple.prokey.app/api"
-        },
-        {
             "apiType": "stellar",
             "name": "stellar",
             "baseUrl": "https://stellar.prokey.app/api"

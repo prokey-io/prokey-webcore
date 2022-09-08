@@ -132,6 +132,7 @@ export class BlockchainProviders {
                         }
                         break;
                     case 'blockbook':
+                    case 'prokey':
                         // add prefix to url if any
                         let url: string = s.baseUrl;
                         if (coinServer.urlAffix) {
