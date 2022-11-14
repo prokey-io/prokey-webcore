@@ -161,6 +161,18 @@
         },
         {
             "type": 1,
+            "name": "OKChain Token",
+            "shortcut": "OKT",
+            "chainId": 66,
+            "servers": [
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 1,
             "name": "Ethereum Testnet Goerli",
             "shortcut": "tGTH",
             "chainId": 5,

@@ -28,6 +28,13 @@
       "chainId": 56
     },
     {
+      "name": "OKXChain Mainnet",
+      "url": [
+        "https://exchainrpc.okex.org"
+      ],
+      "chainId": 66
+    },
+    {
       "name": "Avalanche C-Chain",
       "url": [
         "https://api.avax.network/ext/bc/C/rpc",

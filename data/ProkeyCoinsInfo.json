@@ -35674,6 +35674,24 @@
         "https://wallet.prokey.io"
       ],
       "decimals": 18
+    },
+    {
+      "chain": "okx",
+      "chain_id": 66,
+      "name": "OKChain Token",
+      "rskip60": false,
+      "shortcut": "OKT",
+      "slip44": 996,
+      "support": {
+        "optimum": "1.10.5"
+      },
+      "priority": 100,
+      "test": false,
+      "tx_url": "https://www.oklink.com/en/okc/tx/{hash}",
+      "wallets": [
+        "https://wallet.prokey.io"
+      ],
+      "decimals": 18
     }
   ],
   "omni": [
