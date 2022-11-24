@@ -526,7 +526,10 @@ export class BitcoinWallet extends BaseWallet {
                     prev_hash: utxo.txid,
                     prev_index: utxo.vout,
                     amount: utxo.value,
-                })
+                });
+
+                // balance of the UTXO
+                utxoBal = +utxo.value;
             } else {
                 // Search for the best match
                 let i = 1;
@@ -545,7 +548,9 @@ export class BitcoinWallet extends BaseWallet {
                     prev_hash: utxo.txid, 
                     prev_index: utxo.vout,
                     amount: utxo.value
-                });            
+                });         
+
+                // balance of the UTXO
                 utxoBal = +utxo.value;
             }
         }
@@ -563,8 +568,11 @@ export class BitcoinWallet extends BaseWallet {
                     prev_hash: utxo.txid, 
                     prev_index: utxo.vout,
                     amount: utxo.value
-                });            
+                });  
+                
+                // balance of the UTXOs
                 utxoBal += +utxo.value;
+
                 if (utxoBal >= totalSend + txFee)
                     break;
             }
@@ -591,7 +599,9 @@ export class BitcoinWallet extends BaseWallet {
             changeIndex = pathOfLastChangeAddress[4] + 1;
         }
 
-        //! Add change - fee
+        //! Add change
+        //! Change is an output to ourself to which the rest of inputs will transfer
+        //! Change is Sum(UTXOs) - total_amount_to_send - transaction_fee
         let change = utxoBal - totalSend - txFee;        
 
         let changePaths = PathUtil.GetBipPath(
