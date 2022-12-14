@@ -40,7 +40,7 @@ export abstract class BaseBlockchainServer {
 
         const request = new Request(url, { method: 'GET' });
 
-        return await client.execute<T>(request);
+        return await JSON.parse(await client.execute<string>(request)) as T;
     }
 
     /**
