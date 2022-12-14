@@ -68,17 +68,17 @@ export class RippleWallet extends BaseWallet {
                         path.address = address.address;
 
                         let emptyAccount: RippleAccountInfo = {
-                            balance: '0',
-                            account: address.address,
-                            ownerCount: 0,
-                            previousTxnId: '',
-                            previousTxnLgrSeq: 0,
-                            sequence: 0,
-                            tickSize: 0,
-                            transferRate: 0,
-                            ledgerEntryType: '',
-                            flags: 0,
-                            index: '',
+                            Balance: '0',
+                            Account: address.address,
+                            OwnerCount: 0,
+                            PreviousTxnId: '',
+                            PreviousTxnLgrSeq: 0,
+                            Sequence: 0,
+                            TickSize: 0,
+                            TransferRate: 0,
+                            LedgerEntryType: '',
+                            Flags: 0,
+                            Index: '',
 
                             addressModel: path
                         };
@@ -91,7 +91,7 @@ export class RippleWallet extends BaseWallet {
                     return resolve(this._rippleWallet);
                 } else {
                     this._rippleWallet.accounts.push(account);
-                    this._rippleWallet.totalBalance += +account.balance!;
+                    this._rippleWallet.totalBalance += +account.Balance!;
                     if (accountFindCallBack) {
                         accountFindCallBack(account);
                     }
@@ -142,8 +142,8 @@ export class RippleWallet extends BaseWallet {
         // Check balance
         let bal = 0;
         var acc = this._rippleWallet.accounts![accountNumber];
-        if (acc != null && acc.balance != null) {
-            bal = +acc.balance;
+        if (acc != null && acc.Balance != null) {
+            bal = +acc.Balance;
         }
 
         let ci = super.GetCoinInfo() as RippleCoinInfoModel;
@@ -164,7 +164,7 @@ export class RippleWallet extends BaseWallet {
         let tx: RippleTransaction = {
             address_n: path.path,
             fee: +selectedFee,
-            sequence: this._rippleWallet.accounts![accountNumber].sequence,
+            sequence: this._rippleWallet.accounts![accountNumber].Sequence,
             payment: {
                 amount: amount,
                 destination: toAccount

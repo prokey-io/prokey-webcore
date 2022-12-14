@@ -1,22 +1,22 @@
-import { AddressModel } from '../../../../models/Prokey';
+import { AddressModel } from '../../../models/Prokey';
 
 export interface RippleAccountInfo {
-    account: string,
-    accountTxnId?: string,
-    balance?: string,
-    domain?: null,
-    emailHash?: null,
-    messageKey?: null,
-    regularKey?: null,
-    ownerCount: number,
-    previousTxnId: string,
-    previousTxnLgrSeq: number,
-    sequence: number,
-    tickSize: number,
-    transferRate: number,
-    ledgerEntryType: string,
-    flags: number,
-    index: string,
+    Account: string,
+    AccountTxnId?: string,
+    Balance?: string,
+    Domain?: null,
+    EmailHash?: null,
+    MessageKey?: null,
+    RegularKey?: null,
+    OwnerCount: number,
+    PreviousTxnId: string,
+    PreviousTxnLgrSeq: number,
+    Sequence: number,
+    TickSize: number,
+    TransferRate: number,
+    LedgerEntryType: string,
+    Flags: number,
+    Index: string,
 
     addressModel?: AddressModel
 }

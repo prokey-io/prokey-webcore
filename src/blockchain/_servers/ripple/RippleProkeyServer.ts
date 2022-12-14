@@ -1,5 +1,5 @@
-import { BaseBlockchainServer } from '../../BaseBlockchainServer';
-import { BlockchainServerModel } from '../../../BlockchainProviders';
+import { BaseBlockchainServer } from '../BaseBlockchainServer';
+import { BlockchainServerModel } from '../../BlockchainProviders';
 import {
     RippleAccountInfo,
     RippleAccountTransactionResponse,
@@ -7,7 +7,7 @@ import {
     RippleTransactionDataInfo,
     RippleTransactionResponse
 } from './ProkeyRippleModel';
-import * as Utils from '../../../../utils/utils';
+import * as Utils from '../../../utils/utils';
 
 export class RippleProkeyServer extends BaseBlockchainServer {
     /**
@@ -16,9 +16,18 @@ export class RippleProkeyServer extends BaseBlockchainServer {
      * @param address address
      */
     public static async GetAddressInfo(server: BlockchainServerModel, address: string): Promise<RippleAccountInfo> {
-        const url = `${server.url}/account/${address}`;
-
-        return await this.GetFromServer<RippleAccountInfo>(url);
+        const res = await this.JsonRpcV2Request(
+            server.url,     // Server URL
+            "account_info",                 // method
+            {                               // params
+                "account": address,
+                "strict": true,
+                "ledger_index": "current",
+                "queue": false
+            });
+        
+        
+        return res.result.account_data;
     }
 
     /**

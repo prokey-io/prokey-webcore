@@ -45,7 +45,8 @@ export class BlockbookServer extends BaseBlockchainServer {
     public static async GetAccount(server: BlockchainServerModel, publicKey: string, details?: BlockbookRequestDetails): Promise<BitcoinAccountInfoModel> {
         const url = `${server.url}/xpub/${publicKey}` + this._getReqParams(details);
         
-        return await this.GetFromServer<BitcoinAccountInfoModel>(url);
+        let res = await this.GetFromServer<BitcoinAccountInfoModel>(url);
+        return res;
     }
 
     /**

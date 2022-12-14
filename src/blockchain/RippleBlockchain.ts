@@ -1,13 +1,13 @@
 import { BlockchainProviders, BlockchainServerModel } from './BlockchainProviders';
 import { BlockchainBase } from './BlockchainBase';
 import { BaseCoinInfoModel } from '../models/CoinInfoModel';
-import { RippleProkeyServer } from './_servers/prokey/ripple/RippleProkeyServer';
+import { RippleProkeyServer } from './_servers/ripple/RippleProkeyServer';
 import {
     RippleAccountInfo,
     RippleFee,
     RippleTransactionDataInfo,
     RippleTransactionResponse
-} from './_servers/prokey/ripple/ProkeyRippleModel';
+} from './_servers/ripple/ProkeyRippleModel';
 import { MyConsole } from '../utils/console';
 import { AddressModel } from '../models/Prokey';
 import * as WalletModel from '../models/RippleWalletModel'

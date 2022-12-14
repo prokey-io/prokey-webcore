@@ -57,4 +57,21 @@ export abstract class BaseBlockchainServer {
 
         return JSON.parse(await client.execute<string>(request)) as T;
     }
+
+    protected static async JsonRpcV2Request(url: string, method: string, params: any): Promise<any> {
+        const client = newHttpClient();
+        const request = new Request(
+            url, // server URL
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: method,
+                    params: [params],
+                    id: 1
+                }), 
+            });
+        
+        return await client.execute<any>(request);
+    }
 }
