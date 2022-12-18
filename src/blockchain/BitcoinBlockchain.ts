@@ -331,17 +331,17 @@ export class BitcoinBlockchain extends BlockchainBase {
 
                     let res = await BlockbookServer.GetEstimateFee(this._servers[i], 1);
                     if (res.result) {
-                        fee.high = Math.floor(+res.result * 100000); // satoshi per KB
+                        fee.high = +res.result * 100000; // satoshi per KB
                     }
 
                     res = await BlockbookServer.GetEstimateFee(this._servers[i], 3);
                     if (res.result) {
-                        fee.normal = Math.floor(+res.result * 100000); // satoshi per KB
+                        fee.normal = +res.result * 100000; // satoshi per KB
                     }
 
                     res = await BlockbookServer.GetEstimateFee(this._servers[i], 6);
                     if (res.result) {
-                        fee.economy = Math.floor(+res.result * 100000); // satoshi per KB
+                        fee.economy = +res.result * 100000; // satoshi per KB
                     }
 
                     this._lastFee = fee;
