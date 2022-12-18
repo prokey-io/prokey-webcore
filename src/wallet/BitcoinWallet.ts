@@ -502,7 +502,7 @@ export class BitcoinWallet extends BaseWallet {
             tx.options.version = 4;
             tx.options.version_group_id = 0x892f2085;
             if(coinInfo.shortcut == "ZEC"){
-                tx.options.branch_id = 3925833126;
+                tx.options.branch_id = 3268858036; // updated chain-id
             }
         }
 
@@ -716,15 +716,26 @@ export class BitcoinWallet extends BaseWallet {
         let acc = this._bitcoinWallet.accounts[fromAccount];
 
         // Get the current fees from blockchain
-        let txFees = await this._bitcoinBlockchain.GetTxFee(coinInfo.name == 'Bitcoin');
+        let txFees: WalletModel.BitcoinFee;
+        if(super.GetCoinInfo().name == "Zcash") {
+            txFees = {
+                economy: 10, // per KB
+                high: 10,
+                normal: 10
+            }
+        }
+        else
+        {
+            txFees = await this._bitcoinBlockchain.GetTxFee(coinInfo.name == 'Bitcoin');
+        }
 
         // Calculate transaction length
         let txLen = await this.CalculateTxLen(receivers, acc, txFees);
 
         let fees: BitcoinFeeSelectionModel = {
-            economy: (txLen * txFees.economy).toString(),
-            normal: (txLen * txFees.normal).toString(),
-            priority: (txLen * txFees.high).toString(),
+            economy: Math.floor((txLen * txFees.economy)).toString(),
+            normal: Math.floor((txLen * txFees.normal)).toString(),
+            priority: Math.floor((txLen * txFees.high)).toString(),
             unit: coinInfo.shortcut,
             decimal: coinInfo.decimals,
         }

@@ -154,6 +154,10 @@
             "chainId": 56,
             "servers": [
                 {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"bsc"
+                },
+                {
                     "name": "public-provider",
                     "type" : "geth"
                 }
@@ -203,6 +207,10 @@
             "name": "all_bep2020_on_bsc_network",
             "chainId": 56,
             "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"bsc"
+                },
                 {
                     "type" : "geth",
                     "name": "public-provider"
