@@ -151,7 +151,7 @@
             "servers": [
                 {
                     "name": "prokey-blockbook",
-                    "type" : "bnb"
+                    "urlAffix":"bsc"
                 },
                 {
                     "name": "public-provider",
@@ -205,7 +205,7 @@
             "servers": [
                 {
                     "name": "prokey-blockbook",
-                    "urlAffix":"bnb"
+                    "urlAffix":"bsc"
                 },
                 {
                     "type" : "geth",
