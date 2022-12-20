@@ -6,23 +6,21 @@ chai.use(require('chai-things'));
 const MockXMLHttpRequest = require('mock-xmlhttprequest');
 const MockXhr = MockXMLHttpRequest.newMockXhr();
 
-import { Device } from '../src/device/Device';
-import { EthereumWallet } from '../src/wallet/EthereumWallet';
-import { BaseWallet } from '../src/wallet/BaseWallet';
-import * as WalletModel from '../src/models/EthereumWalletModel';
+import { Device } from '../../src/device/Device';
+import { EthereumWallet } from '../../src/wallet/EthereumWallet';
+import { BaseWallet } from '../../src/wallet/BaseWallet';
 import BigNumber from 'bignumber.js';
-import { Features } from '../src/models/Prokey';
-import { Erc20BaseCoinInfoModel } from './../src/models/CoinInfoModel';
-import { CoinBaseType } from '../src/coins/CoinInfo';
+import { Erc20BaseCoinInfoModel } from '../../src/models/CoinInfoModel';
+import { CoinBaseType } from '../../src/coins/CoinInfo';
 import { JsonRpcProvider, TransactionResponse } from '@ethersproject/providers';
 import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber';
 
-const AccountDiscoveryResponseWithNoTokenTransfers: WalletModel.EthereumAccountInfo = require('./testFixtures/account-discovery-3.json');
-const AccountDiscoveryResponseWithTokens: WalletModel.EthereumAccountInfo = require('./testFixtures/account-discovery.json');
-const DeviceFeaturesSupportingEIP1559: Features = require('./testFixtures/device-features-eip1559.json');
-const DeviceFeaturesNotSupportingEIP1559: Features = require('./testFixtures/device-features-no-eip1559.json');
-const OnchainTxData: TransactionResponse = require('./testFixtures/ethers-tx-result.json');
-const PublicProviders = require('../data/NetworkProviders.json');
+const AccountDiscoveryResponseWithNoTokenTransfers = require('../testFixtures/blockbook-response/ethereum/account-discovery-response-with-no-token-transfers.json');
+const AccountDiscoveryResponseWithTokens = require('../testFixtures/blockbook-response/ethereum/account-discovery-response-with-tokens.json');
+const DeviceFeaturesSupportingEIP1559 = require('../testFixtures/device-features/device-features-eip1559.json');
+const DeviceFeaturesNotSupportingEIP1559 = require('../testFixtures/device-features/device-features-no-eip1559.json');
+const OnchainTxData: TransactionResponse = require('../testFixtures/ethers-tx-result.json');
+const PublicProviders = require('../../data/NetworkProviders.json');
 
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
@@ -74,6 +72,13 @@ describe('EthereumWallet test', () => {
 
     afterEach(() => {
         sinon.restore();
+    });
+
+    it('Should return native ETH token transactions', async () => {
+        ethWallet = new EthereumWallet(device, 'ETH', false);
+        const result = await ethWallet.StartDiscovery();
+        result?.accounts?.[0].transactions?.should.all.not.haveOwnProperty('tokenTransfers');
+        expect(result.accounts?.length).to.equal(1);
     });
 
     describe('test Ethereum Wallet with public provider', () => {
