@@ -81,14 +81,30 @@ export class RippleBlockchain extends BlockchainBase {
         limit: number = 10
     ): Promise<Array<WalletModel.RippleTransactionDataInfo>> {
         this._ensureThereIsAServer();
-        return this.foreachServer<Array<RippleTransactionDataInfo>>(
-            async (server) => {
-                return await RippleServer.GetAccountTransactions(server, account, limit);
-            },
-            (error) => {
-                MyConsole.Exception('RippleBlockchain::GetAccountTransactions->', error);
-            }
-        );
+        for (let i = 0; i < this._servers.length; i++) {
+            try {
+                    let res = await RippleServer.GetAccountTransactions(this._servers[i], account, limit);
+                    if (res.status == 'success') {
+                        if(res.transactions == null) {
+                            throw new Error('Status is success but there is no transaction data')
+                        }
+                        
+                        return res.transactions;
+                    } else {
+                        // If there is any error message
+                        if (res.error_message) {
+                            throw new Error(res.error_message);
+                        } else {
+                            throw new Error("Unknown server error");
+                        }
+                    }
+                }
+                catch (e) {
+                    MyConsole.Exception('RippleBlockchain::GetAddressInfo->', e);
+                }
+        }
+    
+        throw new Error('RippleBlockchain::GetAddressInfo->Request has error');
     }
 
     async GetFee(): Promise<WalletModel.RippleFee> {

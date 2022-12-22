@@ -74,7 +74,6 @@ export class RippleWallet extends BaseWallet {
                             TransferRate: 0,
                             LedgerEntryType: '',
                             Flags: 0,
-                            Index: '',
 
                             isAccountFounded: false,
                             addressModel: account.addressModel,

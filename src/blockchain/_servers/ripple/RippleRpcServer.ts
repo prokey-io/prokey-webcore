@@ -1,10 +1,30 @@
+/*
+ * This is part of PROKEY HARDWARE WALLET project
+ * Copyright (C) 2022 Prokey.io
+ * 
+ * Hadi Robati, hadi@prokey.io
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 import { BaseBlockchainServer } from '../BaseBlockchainServer';
 import { BlockchainServerModel } from '../../BlockchainProviders';
 import {
     RippleAccountInfo,
     RippleAccountTransactionResponse,
     RippleFee,
-    RippleTransactionDataInfo,
+    RippleAccountTxResponse,
     RippleTransactionResponse,
 } from './RippleRpcModel';
 
@@ -28,7 +48,7 @@ export class RippleServer extends BaseBlockchainServer {
         );
 
         if (res == null || res.result == null) {
-            Promise.reject('No valid response from the server');
+            Promise.reject('Not a valid response from the server');
         }
 
         return res.result;
@@ -67,14 +87,26 @@ export class RippleServer extends BaseBlockchainServer {
         server: BlockchainServerModel,
         account: string,
         limit: number = 10
-    ): Promise<Array<RippleTransactionDataInfo>> {
-        let trs = await this.GetFromServer<RippleAccountTransactionResponse>(
-            `${server.url}/account/transactions?accountAddress=${account}&pageSize${limit}`
+    ): Promise<RippleAccountTxResponse> {
+        const res = await this.JsonRpcV2Request(
+            server.url, // Server URL
+            'account_tx', // method
+            {
+                // params
+                account: account,
+                binary: false,
+                forward: false,
+                ledger_index_max: -1,
+                ledger_index_min: -1,
+                limit: limit
+            }
         );
-        if (trs != null && trs.transactions != null) {
-            return trs.transactions;
+
+        if (res == null || res.result == null) {
+            Promise.reject('Not a valid response from the server');
         }
-        return [];
+
+        return res.result;
     }
 
     /**

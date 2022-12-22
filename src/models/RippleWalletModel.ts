@@ -26,41 +26,65 @@ export interface RippleAccountInfo {
     TransferRate: number,
     LedgerEntryType: string,
     Flags: number,
-    Index: string,
 
     isAccountFounded: boolean,
     addressModel: AddressModel
 }
 
-export interface RippleTransactionInfo {
-    account: string,
-    amount: string,
-    destination: string,
-    fee: string,
-    flags: number,
-    sequence: number,
-    signingPubKey: string,
-    transactionType: string,
-    txnSignature: string,
-    hash: string,
-    date: number,
-}
-
 export interface RippleAccountTransactionResponse {
-    'account': string,
-    'ledgerIndexMax': number,
-    'ledgerIndexMin': number,
-    'limit': number,
-    'marker': string,
-    'transactions': Array<RippleTransactionDataInfo>,
-    'status': string,
-    'validated': boolean
+    account: string,
+    ledgerIndexMax: number,
+    ledgerIndexMin: number,
+    limit: number,
+    marker: string,
+    transactions: Array<RippleTransactionDataInfo>,
+    status: string,
+    validated: boolean
 }
 
 export interface RippleTransactionDataInfo {
-    meta: any,
-    transactionDetail: RippleTransactionInfo,
-    validated: boolean
+    // The ledger index of the ledger version that included this transaction.
+    ledger_index: number;
+    // If binary is True, then this is a hex string of the transaction metadata. Otherwise, the transaction metadata is included in JSON format.
+    meta: any;
+    // JSON object defining the transaction. (JSON mode only)
+    tx?: RippleTransactionInfo;
+    // Unique hashed String representing the transaction. (Binary mode only)
+    tx_blob?: string;
+    // Whether or not the transaction is included in a validated ledger. Any transaction not yet in a validated ledger is subject to change.
+    validated: boolean;
+}
+
+export interface RippleTransactionInfo {
+    // A unique identifier for the account, most commonly the account's address.
+    Account: string;
+    // The amount of currency to deliver.
+    Amount: string;
+    // The unique address of the account receiving the payment.
+    Destination: string;
+    // The fee of transaction
+    Fee: string;
+    // Transaction flags
+    Flags: number;
+    // Highest ledger index this transaction can appear in.
+    LastLedgerSequence: number,
+    // The sequence number of the account sending the transaction. A transaction is only valid if the Sequence number 
+    // is exactly 1 greater than the previous transaction from the same account.
+    Sequence: number;
+    // Hex representation of the public key that corresponds to the private key used to sign this transaction.
+    SigningPubKey: string;
+    // The type of transaction. Valid types include:
+    // Payment, OfferCreate, OfferCancel, TrustSet, AccountSet, AccountDelete, SetRegularKey, SignerListSet, EscrowCreate, EscrowFinish, 
+    // EscrowCancel, PaymentChannelCreate, PaymentChannelFund, PaymentChannelClaim, and DepositPreauth.
+    TransactionType: string;
+    // The signature that verifies this transaction as originating from the account it says it is from.
+    TxnSignature: string;
+    // The hash of transaction
+    hash: string;
+    // Ledger number
+    inLedger: number,
+    // The ledger index of the ledger that includes this transaction.
+    ledger_index: number,
 }
 
 export interface RippleDrop {
