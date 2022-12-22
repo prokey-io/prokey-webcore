@@ -1,15 +1,7 @@
 import { AddressModel } from '../../../models/Prokey';
 
-export interface RippleAccountInfo {
+export interface RippleRpcResponseBase {
     status: string;
-
-    // in case of sucess
-    account_data?: RippleAccountData;
-    ledger_current_index?: number;
-    queue_data?: {
-        txn_count: number;
-    };
-    validated?: boolean;
 
     // in case of error
     error?: string;
@@ -22,6 +14,16 @@ export interface RippleAccountInfo {
         queue: boolean;
         strict: boolean;
     };
+}
+
+export interface RippleAccountInfo extends RippleRpcResponseBase {
+    // in case of sucess
+    account_data?: RippleAccountData;
+    ledger_current_index?: number;
+    queue_data?: {
+        txn_count: number;
+    };
+    validated?: boolean;
 }
 
 export interface RippleAccountData {
