@@ -56,20 +56,16 @@ export class RippleWallet extends BaseWallet {
             let an = 0;
             this._rippleWallet.accounts = new Array<RippleAccountInfo>();
             do {
+                //! Get account n info
                 let account = await this.GetAccountInfo(an);
-                if (account == null) {
-                    if (this._rippleWallet.accounts.length == 0) {
-                        let path = PathUtil.GetBipPath(
-                            CoinBaseType.Ripple,
-                            an,
-                            super.GetCoinInfo()
-                        );
-                        let address = await this.GetAddress<RippleAddress>(path.path, false);
-                        path.address = address.address;
 
+                //! If Account is not founded
+                if (account.isAccountFounded == false) {
+                    //! If there is no account in the wallet, a default account(first account) will be added
+                    if (this._rippleWallet.accounts.length == 0) {
                         let emptyAccount: RippleAccountInfo = {
                             Balance: '0',
-                            Account: address.address,
+                            Account: account.addressModel.address,
                             OwnerCount: 0,
                             PreviousTxnId: '',
                             PreviousTxnLgrSeq: 0,
@@ -80,8 +76,10 @@ export class RippleWallet extends BaseWallet {
                             Flags: 0,
                             Index: '',
 
-                            addressModel: path
+                            isAccountFounded: false,
+                            addressModel: account.addressModel,
                         };
+                        
                         if (accountFindCallBack) {
                             accountFindCallBack(emptyAccount);
                         }
@@ -102,7 +100,7 @@ export class RippleWallet extends BaseWallet {
     }
 
     // Get ripple account info from blockchain
-    private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo | null> {
+    private async GetAccountInfo(accountNumber: number): Promise<RippleAccountInfo> {
         let path = PathUtil.GetBipPath(
             CoinBaseType.Ripple,
             accountNumber,

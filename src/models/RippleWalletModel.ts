@@ -28,7 +28,8 @@ export interface RippleAccountInfo {
     Flags: number,
     Index: string,
 
-    addressModel?: AddressModel
+    isAccountFounded: boolean,
+    addressModel: AddressModel
 }
 
 export interface RippleTransactionInfo {

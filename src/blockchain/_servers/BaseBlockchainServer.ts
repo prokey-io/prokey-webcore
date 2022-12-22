@@ -76,6 +76,6 @@ export abstract class BaseBlockchainServer {
             }
         );
 
-        return await client.execute<any>(request);
+        return JSON.parse(await client.execute<any>(request));
     }
 }

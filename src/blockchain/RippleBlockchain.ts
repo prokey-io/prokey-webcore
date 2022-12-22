@@ -1,7 +1,7 @@
 import { BlockchainProviders, BlockchainServerModel } from './BlockchainProviders';
 import { BlockchainBase } from './BlockchainBase';
 import { BaseCoinInfoModel } from '../models/CoinInfoModel';
-import { RippleProkeyServer } from './_servers/ripple/RippleRpcServer';
+import { RippleServer } from './_servers/ripple/RippleRpcServer';
 import {
     RippleAccountData,
     RippleFee,
@@ -26,14 +26,31 @@ export class RippleBlockchain extends BlockchainBase {
 
         for (let i = 0; i < this._servers.length; i++) {
             try {
-                let res = await RippleProkeyServer.GetAddressInfo(this._servers[i], reqAdd.address);
+                let res = await RippleServer.GetAddressInfo(this._servers[i], reqAdd.address);
                 if (res.status == 'success') {
                     if (res.account_data == null) {
                         throw new Error('Status is success but there is no account_data');
                     }
 
-                    return res.account_data;
+                    return {
+                        ...res.account_data,
+                        isAccountFounded: true,
+                        addressModel: reqAdd,
+                    };
+
                 } else {
+                    // If this account/address is not available, the server returns "Account not found." with following data: 
+                    //  "error": "actNotFound"
+                    //  "error_code": 19,
+                    //  "error_message": "Account not found.",
+                    // in this case, An empty account info with "isAccountFounded: false" flag will be retuned
+                    if(res.error == 'actNotFound') {
+                        return <WalletModel.RippleAccountInfo>{
+                            isAccountFounded: false,
+                            addressModel: reqAdd,
+                        };
+                    }
+
                     // If there is any error message
                     if (res.error_message) {
                         throw new Error(res.error_message);
@@ -51,7 +68,7 @@ export class RippleBlockchain extends BlockchainBase {
         this._ensureThereIsAServer();
         return this.foreachServer<RippleTransactionResponse>(
             async (server) => {
-                return await RippleProkeyServer.BroadCastTransaction(server, transaction);
+                return await RippleServer.BroadCastTransaction(server, transaction);
             },
             (error) => {
                 MyConsole.Exception('RippleBlockchain::BroadCastTransaction->', error);
@@ -66,7 +83,7 @@ export class RippleBlockchain extends BlockchainBase {
         this._ensureThereIsAServer();
         return this.foreachServer<Array<RippleTransactionDataInfo>>(
             async (server) => {
-                return await RippleProkeyServer.GetAccountTransactions(server, account, limit);
+                return await RippleServer.GetAccountTransactions(server, account, limit);
             },
             (error) => {
                 MyConsole.Exception('RippleBlockchain::GetAccountTransactions->', error);
@@ -78,7 +95,7 @@ export class RippleBlockchain extends BlockchainBase {
         this._ensureThereIsAServer();
         return this.foreachServer<RippleFee>(
             async (server) => {
-                return await RippleProkeyServer.GetCurrentFee(server);
+                return await RippleServer.GetCurrentFee(server);
             },
             (error) => {
                 MyConsole.Exception('RippleBlockchain::GetFee->', error);

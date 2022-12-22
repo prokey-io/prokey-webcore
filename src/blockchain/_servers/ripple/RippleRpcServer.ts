@@ -7,9 +7,8 @@ import {
     RippleTransactionDataInfo,
     RippleTransactionResponse,
 } from './RippleRpcModel';
-import * as Utils from '../../../utils/utils';
 
-export class RippleProkeyServer extends BaseBlockchainServer {
+export class RippleServer extends BaseBlockchainServer {
     /**
      * Get information about an address
      * @param server Server Model

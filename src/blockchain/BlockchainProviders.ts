@@ -132,7 +132,7 @@ export class BlockchainProviders {
                         }
                         break;
                     case 'blockbook':
-                    case 'prokey':
+                    case 'fullnode':
                         // add prefix to url if any
                         let url: string = s.baseUrl;
                         if (coinServer.urlAffix) {
@@ -147,6 +147,7 @@ export class BlockchainProviders {
                             url: url,
                             isSupportXpub: s.isSupportXpub,
                         });
+                        break;
                 }
             }
         });
