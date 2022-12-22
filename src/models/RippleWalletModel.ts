@@ -82,30 +82,44 @@ export interface RippleFee {
 }
 
 export interface RippleTransactionResponse {
-    status: string,
-    validated: boolean,
-    accepted: boolean,
-    accountSequenceAvailable: number,
-    accountSequenceNext: number,
-    applied: boolean,
-    broadcast: boolean,
-    engineResult: string,
-    engineResultCode: number,
-    engineResultMessage: string,
-    kept: boolean,
-    openLedgerCost: string,
-    queued: boolean,
-    txBlob: string,
-    txJson: {
-        account: string,
-        amount: string,
-        destination: string,
-        fee: string,
-        flags: number,
-        sequence: number,
-        signingPubKey: string,
-        transactionType: string,
-        txnSignature: string,
-        hash: string
-    }
+    status: string;
+
+    // In Case of accept
+    accepted?: boolean;
+    account_sequence_available?: number;
+    account_sequence_next?: number;
+    applied?: boolean;
+    broadcast?: boolean;
+    engine_result?: string;
+    engine_result_code?: number;
+    engine_result_message?: string;
+    kept?: boolean;
+    open_ledger_cost?: string;
+    queued?: boolean;
+    tx_blob?: string;
+    tx_json?: {
+        Account: string;
+        Amount: {
+            currency: string;
+            issuer: string;
+            value: string;
+        };
+        Destination: string;
+        Fee: string;
+        Flags: number;
+        Sequence: number;
+        SigningPubKey: string;
+        TransactionType: string;
+        TxnSignature: string;
+        hash: string;
+    };
+    validated_ledger_index?: number;
+
+    // In case of error
+    error?: string;
+    error_exception?: string;
+    request?: {
+        command: string;
+        tx_blob: string;
+    };
 }

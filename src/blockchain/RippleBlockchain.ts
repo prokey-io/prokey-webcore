@@ -1,16 +1,16 @@
 import { BlockchainProviders, BlockchainServerModel } from './BlockchainProviders';
 import { BlockchainBase } from './BlockchainBase';
 import { BaseCoinInfoModel } from '../models/CoinInfoModel';
-import { RippleProkeyServer } from './_servers/ripple/RippleProkeyServer';
+import { RippleProkeyServer } from './_servers/ripple/RippleRpcServer';
 import {
-    RippleAccountInfo,
+    RippleAccountData,
     RippleFee,
     RippleTransactionDataInfo,
-    RippleTransactionResponse
-} from './_servers/ripple/ProkeyRippleModel';
+    RippleTransactionResponse,
+} from './_servers/ripple/RippleRpcModel';
 import { MyConsole } from '../utils/console';
 import { AddressModel } from '../models/Prokey';
-import * as WalletModel from '../models/RippleWalletModel'
+import * as WalletModel from '../models/RippleWalletModel';
 
 type ProcessServersCallBack<T> = (server: BlockchainServerModel) => Promise<T>;
 type ProcessServersError = (error: any) => void;
@@ -19,42 +19,77 @@ export class RippleBlockchain extends BlockchainBase {
     constructor(coinInfo: BaseCoinInfoModel) {
         const servers: Array<BlockchainServerModel> = BlockchainProviders.Get(coinInfo);
         super(servers);
-        this._ensureThereIsAServer();
     }
 
     public async GetAddressInfo(reqAdd: AddressModel): Promise<WalletModel.RippleAccountInfo> {
-        return this.foreachServer<RippleAccountInfo>(async server => {
-            return await RippleProkeyServer.GetAddressInfo(server, reqAdd.address);
-        }, (error) => {
-            MyConsole.Exception('RippleBlockchain::GetAddressInfo->', error);
-        });
+        this._ensureThereIsAServer();
+
+        for (let i = 0; i < this._servers.length; i++) {
+            try {
+                let res = await RippleProkeyServer.GetAddressInfo(this._servers[i], reqAdd.address);
+                if (res.status == 'success') {
+                    if (res.account_data == null) {
+                        throw new Error('Status is success but there is no account_data');
+                    }
+
+                    return res.account_data;
+                } else {
+                    // If there is any error message
+                    if (res.error_message) {
+                        throw new Error(res.error_message);
+                    }
+                }
+            } catch (e) {
+                MyConsole.Exception('RippleBlockchain::GetAddressInfo->', e);
+            }
+        }
+
+        throw new Error('RippleBlockchain::GetAddressInfo->Request has error');
     }
 
     public async BroadCastTransaction(transaction: string): Promise<WalletModel.RippleTransactionResponse> {
-        return this.foreachServer<RippleTransactionResponse>(async server => {
-            return await RippleProkeyServer.BroadCastTransaction(server, transaction);
-        }, (error) => {
-            MyConsole.Exception('RippleBlockchain::BroadCastTransaction->', error);
-        });
+        this._ensureThereIsAServer();
+        return this.foreachServer<RippleTransactionResponse>(
+            async (server) => {
+                return await RippleProkeyServer.BroadCastTransaction(server, transaction);
+            },
+            (error) => {
+                MyConsole.Exception('RippleBlockchain::BroadCastTransaction->', error);
+            }
+        );
     }
 
-    async GetAccountTransactions(account: string, limit: number = 10): Promise<Array<WalletModel.RippleTransactionDataInfo>> {
-        return this.foreachServer<Array<RippleTransactionDataInfo>>(async server => {
-            return await RippleProkeyServer.GetAccountTransactions(server, account, limit);
-        }, (error) => {
-            MyConsole.Exception('RippleBlockchain::GetAccountTransactions->', error);
-        });
+    async GetAccountTransactions(
+        account: string,
+        limit: number = 10
+    ): Promise<Array<WalletModel.RippleTransactionDataInfo>> {
+        this._ensureThereIsAServer();
+        return this.foreachServer<Array<RippleTransactionDataInfo>>(
+            async (server) => {
+                return await RippleProkeyServer.GetAccountTransactions(server, account, limit);
+            },
+            (error) => {
+                MyConsole.Exception('RippleBlockchain::GetAccountTransactions->', error);
+            }
+        );
     }
 
     async GetFee(): Promise<WalletModel.RippleFee> {
-        return this.foreachServer<RippleFee>(async server => {
-            return await RippleProkeyServer.GetCurrentFee(server);
-        }, (error) => {
-            MyConsole.Exception('RippleBlockchain::GetFee->', error);
-        });
+        this._ensureThereIsAServer();
+        return this.foreachServer<RippleFee>(
+            async (server) => {
+                return await RippleProkeyServer.GetCurrentFee(server);
+            },
+            (error) => {
+                MyConsole.Exception('RippleBlockchain::GetFee->', error);
+            }
+        );
     }
 
-    private async foreachServer<T>(callback: ProcessServersCallBack<T>, errorCallback: ProcessServersError): Promise<T> {
+    private async foreachServer<T>(
+        callback: ProcessServersCallBack<T>,
+        errorCallback: ProcessServersError
+    ): Promise<T> {
         for (const server of this._servers) {
             try {
                 return await callback(server);
