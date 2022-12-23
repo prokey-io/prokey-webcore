@@ -21,11 +21,10 @@
 import { BaseBlockchainServer } from '../BaseBlockchainServer';
 import { BlockchainServerModel } from '../../BlockchainProviders';
 import {
-    RippleAccountInfo,
-    RippleAccountTransactionResponse,
-    RippleFee,
+    RippleAccountInfoResponse,
+    RippleFeeResponse,
     RippleAccountTxResponse,
-    RippleTransactionResponse,
+    RippleSubmitTransactionResponse,
 } from './RippleRpcModel';
 
 export class RippleServer extends BaseBlockchainServer {
@@ -34,7 +33,7 @@ export class RippleServer extends BaseBlockchainServer {
      * @param server Server Model
      * @param address address
      */
-    public static async GetAddressInfo(server: BlockchainServerModel, address: string): Promise<RippleAccountInfo> {
+    public static async GetAddressInfo(server: BlockchainServerModel, address: string): Promise<RippleAccountInfoResponse> {
         const res = await this.JsonRpcV2Request(
             server.url, // Server URL
             'account_info', // method
@@ -63,7 +62,7 @@ export class RippleServer extends BaseBlockchainServer {
     public static async BroadCastTransaction(
         server: BlockchainServerModel,
         data: string
-    ): Promise<RippleTransactionResponse> {
+    ): Promise<RippleSubmitTransactionResponse> {
         const res = await this.JsonRpcV2Request(
             server.url, // Server URL
             'submit', // method
@@ -113,14 +112,17 @@ export class RippleServer extends BaseBlockchainServer {
      * Getting current fee
      * @returns Ripple Fee
      */
-    public static async GetCurrentFee(server: BlockchainServerModel): Promise<RippleFee> {
-        return await this.GetFromServer<RippleFee>(`${server.url}/transaction/fee`);
-    }
+    public static async GetCurrentFee(server: BlockchainServerModel): Promise<RippleFeeResponse> {
+        const res = await this.JsonRpcV2Request(
+            server.url, // Server URL
+            'fee', // method
+            {} // no param needed
+        );
 
-    private static async SendTransaction(
-        server: BlockchainServerModel,
-        data: string
-    ): Promise<RippleTransactionResponse> {
-        return await this.GetFromServer<RippleTransactionResponse>(`${server.url}/transaction/submit/${data}`);
+        if (res == null || res.result == null) {
+            Promise.reject('Not a valid response from the server');
+        }
+
+        return res.result;
     }
 }
