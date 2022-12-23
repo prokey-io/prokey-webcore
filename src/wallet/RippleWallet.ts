@@ -28,7 +28,6 @@ import * as WalletModel from '../models/RippleWalletModel';
 var WAValidator = require('multicoin-address-validator');
 
 export class RippleWallet extends BaseWallet {
-
     // _block_chain : ProkeyRippleBlockchain;
     _rippleBlockchain: RippleBlockchain;
     _rippleWallet: WalletModel.RippleWalletModel;
@@ -39,8 +38,8 @@ export class RippleWallet extends BaseWallet {
         this._rippleBlockchain = new RippleBlockchain(super.GetCoinInfo());
         this._rippleWallet = {
             totalBalance: 0,
-            accounts: new Array<WalletModel.RippleAccountInfo>()
-        }
+            accounts: new Array<WalletModel.RippleAccountInfo>(),
+        };
     }
 
     /**
@@ -48,7 +47,9 @@ export class RippleWallet extends BaseWallet {
      * @param accountFindCallBack is an optional callback function, this function will be called when an account discovered
      * @returns RippleWallet with all accounts
      */
-    public async StartDiscovery(accountFindCallBack?: (accountInfo: WalletModel.RippleAccountInfo) => void): Promise<WalletModel.RippleWalletModel> {
+    public async StartDiscovery(
+        accountFindCallBack?: (accountInfo: WalletModel.RippleAccountInfo) => void
+    ): Promise<WalletModel.RippleWalletModel> {
         return new Promise<WalletModel.RippleWalletModel>(async (resolve, reject) => {
             let an = 0;
             this._rippleWallet.accounts = new Array<WalletModel.RippleAccountInfo>();
@@ -75,7 +76,7 @@ export class RippleWallet extends BaseWallet {
                             isAccountFounded: false,
                             addressModel: account.addressModel,
                         };
-                        
+
                         if (accountFindCallBack) {
                             accountFindCallBack(emptyAccount);
                         }
@@ -97,16 +98,16 @@ export class RippleWallet extends BaseWallet {
 
     /**
      * Get account's transaction from blockchain
-     * @param account 
-     * @returns 
+     * @param account
+     * @returns
      */
     public async GetAccountTransactions(accountNumber: number): Promise<Array<WalletModel.RippleTransactionDataInfo>> {
-        if(this._rippleWallet.accounts == null){
-            throw new Error("There is no account in wallet, Do Wallet Discovery First");
+        if (this._rippleWallet.accounts == null) {
+            throw new Error('There is no account in wallet, Do Wallet Discovery First');
         }
 
         // Validate account
-        if(accountNumber >= this._rippleWallet.accounts.length){
+        if (accountNumber >= this._rippleWallet.accounts.length) {
             throw new Error(`Cannot fine account #${accountNumber}`);
         }
 
@@ -119,7 +120,13 @@ export class RippleWallet extends BaseWallet {
         return await this._rippleBlockchain.GetFee();
     }
 
-    public GenerateTransaction(toAccount: string, amount: number, accountNumber: number, selectedFee: string, destinationTag?: number): RippleTransaction {
+    public GenerateTransaction(
+        toAccount: string,
+        amount: number,
+        accountNumber: number,
+        selectedFee: string,
+        destinationTag?: number
+    ): RippleTransaction {
         // Validate accountNumber
         if (accountNumber >= this._rippleWallet.accounts!.length) {
             throw new Error('Account number is wrong');
@@ -134,18 +141,14 @@ export class RippleWallet extends BaseWallet {
 
         let ci = super.GetCoinInfo() as RippleCoinInfoModel;
 
-        bal = bal
-            - ci.min_balance // 20 XRP for reserve
-            - amount
-            - (+selectedFee);
-        if (bal < 0)
-            throw new Error('Insufficient balance you need to hold 20 XRP in your account.');
+        bal =
+            bal -
+            ci.min_balance - // 20 XRP for reserve
+            amount -
+            +selectedFee;
+        if (bal < 0) throw new Error('Insufficient balance you need to hold 20 XRP in your account.');
 
-        let path = PathUtil.GetBipPath(
-            CoinBaseType.Ripple,
-            accountNumber,
-            ci
-        );
+        let path = PathUtil.GetBipPath(CoinBaseType.Ripple, accountNumber, ci);
 
         let tx: RippleTransaction = {
             address_n: path.path,
@@ -153,8 +156,8 @@ export class RippleWallet extends BaseWallet {
             sequence: this._rippleWallet.accounts![accountNumber].Sequence,
             payment: {
                 amount: amount,
-                destination: toAccount
-            }
+                destination: toAccount,
+            },
         };
         if (destinationTag) {
             tx.payment.destination_tag = destinationTag;
@@ -176,11 +179,7 @@ export class RippleWallet extends BaseWallet {
 
     // Get ripple account info from blockchain
     private async GetAccountInfo(accountNumber: number): Promise<WalletModel.RippleAccountInfo> {
-        let path = PathUtil.GetBipPath(
-            CoinBaseType.Ripple,
-            accountNumber,
-            super.GetCoinInfo()
-        );
+        let path = PathUtil.GetBipPath(CoinBaseType.Ripple, accountNumber, super.GetCoinInfo());
 
         let address = await this.GetAddress<RippleAddress>(path.path, false);
 
