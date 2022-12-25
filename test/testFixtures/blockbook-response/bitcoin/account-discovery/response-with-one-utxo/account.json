@@ -1,0 +1,76 @@
+{
+    "page": 1,
+    "totalPages": 1,
+    "itemsOnPage": 1000,
+    "address": "upub5Ecnpu5iFCLtnRpSFJNtFmfpWqjee1Q3aMDvUJkAWyGYbtZgZ5DKwBjmXJaAAj9zvKT6NT9m4GwY4qziTxn7BTkQbGsBpW1kKrhXCcuEboJ",
+    "balance": "200000",
+    "totalReceived": "200000",
+    "totalSent": "0",
+    "unconfirmedBalance": "0",
+    "unconfirmedTxs": 0,
+    "txs": 1,
+    "transactions": [
+        {
+            "txid": "8cb5074ecc0107e27ce583f998363a44990f056c1b37a240885f7a93b2885d31",
+            "version": 1,
+            "vin": [
+                {
+                    "txid": "df603263abcd25d65e1ee325a4ad8d0dadcd914c08c6e44118bd71f86e44df67",
+                    "sequence": 4294967295,
+                    "n": 0,
+                    "addresses": ["tb1q53m6f8z9jezjlxzjcvapn7p76x9ffpl7hxqu3h"],
+                    "isAddress": true,
+                    "value": "1086054"
+                },
+                {
+                    "txid": "76f58ad322e584504826cec31604dab7c91677c828955cb54ff892831132d6d7",
+                    "sequence": 4294967295,
+                    "n": 1,
+                    "addresses": ["tb1q53m6f8z9jezjlxzjcvapn7p76x9ffpl7hxqu3h"],
+                    "isAddress": true,
+                    "value": "6000"
+                }
+            ],
+            "vout": [
+                {
+                    "value": "200000",
+                    "n": 0,
+                    "hex": "a9140e6fd2fe090de6ebba4447a974a0b7791390068487",
+                    "addresses": ["2MtZZQegHXJRG6r5dqRHjTm5syAwHi66rUK"],
+                    "isAddress": true,
+                    "isOwn": true
+                },
+                {
+                    "value": "891843",
+                    "n": 1,
+                    "hex": "0014d86180688e3dbb6790946b8a1f38301284fac16b",
+                    "addresses": ["tb1qmpscq6yw8kak0yy5dw9p7wpsz2z04sttlk8quf"],
+                    "isAddress": true
+                }
+            ],
+            "blockHash": "0000000000000ab57901e3322c3b2c57dac588721b94394c877ec80761789002",
+            "blockHeight": 2412794,
+            "confirmations": 14,
+            "blockTime": 1671953425,
+            "size": 372,
+            "vsize": 210,
+            "value": "1091843",
+            "valueIn": "1092054",
+            "fees": "211",
+            "hex": "0100000000010267df446ef871bd1841e4c6084c91cdad0d8dada425e31e5ed625cdab633260df0000000000ffffffffd7d632118392f84fb55c9528c87716c9b7da0416c3ce26485084e522d38af5760000000000ffffffff02400d03000000000017a9140e6fd2fe090de6ebba4447a974a0b7791390068487c39b0d0000000000160014d86180688e3dbb6790946b8a1f38301284fac16b02483045022100e80f5d05fa5b106a72ce8e29860d819c7541845d7106d9629319e96f4fa5965d02205c2ac6724f8862006effeb8fb5d0f4480bd3a722a5ef9c560ddfeba5b32c8e7a012102e4e2dcccba6735fc29892ca12dba8d65dd95f3d65b63ad4f399ede8c2300933502473044022035fd947a243b8756ebaa3eb8e1854b385b21f4bca70569062cc990436915dc41022026f46f7467fb32b148edd4f1b5a26a0539d03327bff49f3693eb99c0d3b5e3c7012102e4e2dcccba6735fc29892ca12dba8d65dd95f3d65b63ad4f399ede8c2300933500000000"
+        }
+    ],
+    "usedTokens": 1,
+    "tokens": [
+        {
+            "type": "XPUBAddress",
+            "name": "2MtZZQegHXJRG6r5dqRHjTm5syAwHi66rUK",
+            "path": "m/49'/1'/1'/0/0",
+            "transfers": 1,
+            "decimals": 8,
+            "balance": "200000",
+            "totalReceived": "200000",
+            "totalSent": "0"
+        }
+    ]
+}
