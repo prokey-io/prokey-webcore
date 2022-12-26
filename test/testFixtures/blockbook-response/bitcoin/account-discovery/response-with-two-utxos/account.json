@@ -21,7 +21,8 @@
                     "n": 0,
                     "addresses": ["tb1qmpscq6yw8kak0yy5dw9p7wpsz2z04sttlk8quf"],
                     "isAddress": true,
-                    "value": "891843"
+                    "value": "891843",
+                    "hex": "16001428eef016bc8e65adbb786292e1cc55304175fd4e"
                 }
             ],
             "vout": [
@@ -62,7 +63,8 @@
                     "n": 0,
                     "addresses": ["tb1q53m6f8z9jezjlxzjcvapn7p76x9ffpl7hxqu3h"],
                     "isAddress": true,
-                    "value": "1086054"
+                    "value": "1086054",
+                    "hex": "16001428eef016bc8e65adbb786292e1cc55304175fd4e"
                 },
                 {
                     "txid": "76f58ad322e584504826cec31604dab7c91677c828955cb54ff892831132d6d7",
@@ -70,7 +72,8 @@
                     "n": 1,
                     "addresses": ["tb1q53m6f8z9jezjlxzjcvapn7p76x9ffpl7hxqu3h"],
                     "isAddress": true,
-                    "value": "6000"
+                    "value": "6000",
+                    "hex": "16001428eef016bc8e65adbb786292e1cc55304175fd4e"
                 }
             ],
             "vout": [

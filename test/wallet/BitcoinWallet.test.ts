@@ -11,7 +11,9 @@ import { getHDPath } from '../../src/utils/pathUtils';
 
 import AccountDiscoveryResponseWithNoUTXO from '../testFixtures/blockbook-response/bitcoin/account-discovery/response-with-no-utxo/account.json';
 import AccountDiscoveryResponseWithOneUTXO from '../testFixtures/blockbook-response/bitcoin/account-discovery/response-with-one-utxo/account.json';
+import AccountDiscoveryResponseWithTwoUTXO from '../testFixtures/blockbook-response/bitcoin/account-discovery/response-with-two-utxos/account.json';
 import OneUTXO from '../testFixtures/blockbook-response/bitcoin/account-discovery/response-with-one-utxo/utxos.json';
+import TwoUTXOs from '../testFixtures/blockbook-response/bitcoin/account-discovery/response-with-two-utxos/utxos.json';
 import FeeEstimation1 from '../testFixtures/bitcoin/fee-estimation-1.json';
 import FeeEstimation3 from '../testFixtures/bitcoin/fee-estimation-3.json';
 import FeeEstimation6 from '../testFixtures/bitcoin/fee-estimation-6.json';
@@ -101,6 +103,9 @@ describe('BitcoinWallet test', () => {
         beforeEach(() => {
             mockApiResponse(accountByXpubUrl(testXpub1), AccountDiscoveryResponseWithOneUTXO);
             mockApiResponse(accountByXpubUrl(testXpub2), AccountDiscoveryResponseWithNoUTXO);
+            mockApiResponse(feeEstimationUrl(1), FeeEstimation1);
+            mockApiResponse(feeEstimationUrl(3), FeeEstimation3);
+            mockApiResponse(feeEstimationUrl(6), FeeEstimation6);
         });
 
         it('Should return account with balance', async () => {
@@ -112,9 +117,6 @@ describe('BitcoinWallet test', () => {
         });
 
         it('Should return `No sufficient balance in your account` because tx amount equals to previous utxo amount and there nothing left for fee', async () => {
-            mockApiResponse(feeEstimationUrl(1), FeeEstimation1);
-            mockApiResponse(feeEstimationUrl(3), FeeEstimation3);
-            mockApiResponse(feeEstimationUrl(6), FeeEstimation6);
             mockApiResponse(accountUtxoUrl, OneUTXO);
 
             await btcWallet.StartDiscovery();
@@ -123,21 +125,18 @@ describe('BitcoinWallet test', () => {
             ).to.be.rejectedWith('No sufficient balance in your account');
         });
 
-        // it('Should generate transaction with one output', async () => {
-        //     mockApiResponse(feeEstimationUrl(1), FeeEstimation1);
-        //     mockApiResponse(feeEstimationUrl(3), FeeEstimation3);
-        //     mockApiResponse(feeEstimationUrl(6), FeeEstimation6);
-        //     mockApiResponse(accountUtxoUrl, OneUTXO);
+        it('Should generate transaction with one output and one input', async () => {
+            mockApiResponse(accountUtxoUrl, OneUTXO);
 
-        //     await btcWallet.StartDiscovery();
-        //     const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: OneUTXO[0].value - 3414 }]);
-        //     expect(rawTx.outputs.length).equals(1);
-        // });
+            await btcWallet.StartDiscovery();
+            const rawTx = await btcWallet.GenerateTransaction([
+                { Address: testBip49Address2, value: +OneUTXO[0].value - 3414 },
+            ]);
+            expect(rawTx.outputs.length).equals(1);
+            expect(rawTx.inputs.length).equals(1);
+        });
 
-        it('Should return ', async () => {
-            mockApiResponse(feeEstimationUrl(1), FeeEstimation1);
-            mockApiResponse(feeEstimationUrl(3), FeeEstimation3);
-            mockApiResponse(feeEstimationUrl(6), FeeEstimation6);
+        it('Should return error because send amount is more than overall balance', async () => {
             mockApiResponse(accountUtxoUrl, OneUTXO);
 
             await btcWallet.StartDiscovery();
@@ -149,16 +148,38 @@ describe('BitcoinWallet test', () => {
 
     describe('Several UTXO + ONE UTXO with exact same amount to send + fee', () => {
         beforeEach(() => {
-            mockApiResponse(accountByXpubUrl(testXpub1), AccountDiscoveryResponseWithOneUTXO);
+            mockApiResponse(accountByXpubUrl(testXpub1), AccountDiscoveryResponseWithTwoUTXO);
             mockApiResponse(accountByXpubUrl(testXpub2), AccountDiscoveryResponseWithNoUTXO);
+            mockApiResponse(feeEstimationUrl(1), FeeEstimation1);
+            mockApiResponse(feeEstimationUrl(3), FeeEstimation3);
+            mockApiResponse(feeEstimationUrl(6), FeeEstimation6);
         });
 
-        it('Should return account with balance', async () => {
+        it('Should return account with correct balance', async () => {
             const result = await btcWallet.StartDiscovery();
             expect(result.accounts?.length).to.equal(1);
             if (result.accounts) {
-                expect(result.accounts[0].balance).to.equal(AccountDiscoveryResponseWithOneUTXO.balance);
+                expect(result.accounts[0].balance).to.equal(AccountDiscoveryResponseWithTwoUTXO.balance);
             } else expect.fail();
+        });
+
+        it('Should generate transaction with one output and one input', async () => {
+            mockApiResponse(accountUtxoUrl, TwoUTXOs);
+
+            await btcWallet.StartDiscovery();
+            const amount = +TwoUTXOs[0].value + +TwoUTXOs[1].value - 5782;
+            const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
+            expect(rawTx.outputs.length).equals(1);
+        });
+
+        it('Should generate transaction with two outputs and two inputs', async () => {
+            mockApiResponse(accountUtxoUrl, TwoUTXOs);
+
+            await btcWallet.StartDiscovery();
+            const amount = 300_000;
+            const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
+            expect(rawTx.outputs.length).equals(2);
+            expect(rawTx.inputs.length).equals(2);
         });
     });
 });
