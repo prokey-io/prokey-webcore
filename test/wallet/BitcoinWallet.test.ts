@@ -130,8 +130,12 @@ describe('BitcoinWallet test', () => {
                 mockApiResponse(accountUtxoUrl, OneUTXO);
 
                 await btcWallet.StartDiscovery();
+                const fee = await btcWallet.CalculateTransactionFee(
+                    [{ Address: testBip49Address2, value: +OneUTXO[0].value }],
+                    0
+                );
                 const rawTx = await btcWallet.GenerateTransaction([
-                    { Address: testBip49Address2, value: +OneUTXO[0].value - 3414 },
+                    { Address: testBip49Address2, value: +OneUTXO[0].value - +fee.normal },
                 ]);
                 expect(rawTx.outputs.length).equals(1);
                 expect(rawTx.inputs.length).equals(1);
@@ -150,8 +154,12 @@ describe('BitcoinWallet test', () => {
                 mockApiResponse(accountUtxoUrl, OneUTXO);
 
                 const wallet = await btcWallet.StartDiscovery();
+                const fee = await btcWallet.CalculateTransactionFee(
+                    [{ Address: testBip49Address2, value: +OneUTXO[0].value }],
+                    0
+                );
                 const rawTx = await btcWallet.GenerateTransaction([
-                    { Address: testBip49Address2, value: +OneUTXO[0].value - 3414 },
+                    { Address: testBip49Address2, value: +OneUTXO[0].value - +fee.normal },
                 ]);
 
                 if (wallet.accounts) {
@@ -166,8 +174,14 @@ describe('BitcoinWallet test', () => {
 
                 await btcWallet.StartDiscovery();
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: 100000 }]);
+                const fee = await btcWallet.CalculateTransactionFee([{ Address: testBip49Address2, value: 100000 }], 0);
+                let outputAmountsSum = 0;
+                rawTx.outputs.forEach((item) => {
+                    outputAmountsSum += parseInt(item.amount);
+                });
                 expect(rawTx.outputs.length).equals(2);
                 expect(rawTx.inputs.length).equals(1);
+                expect(outputAmountsSum + +fee.normal).to.equal(parseInt(AccountDiscoveryResponseWithOneUTXO.balance));
             });
 
             it('Outputs amount sum should be less than the account balance (fee)', async () => {
@@ -175,6 +189,7 @@ describe('BitcoinWallet test', () => {
 
                 const wallet = await btcWallet.StartDiscovery();
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: 10000 }]);
+                const fee = await btcWallet.CalculateTransactionFee([{ Address: testBip49Address2, value: 10000 }], 0);
                 let outputAmountsSum = 0;
                 rawTx.outputs.forEach((item) => {
                     outputAmountsSum += parseInt(item.amount);
@@ -182,6 +197,7 @@ describe('BitcoinWallet test', () => {
                 if (wallet.accounts) {
                     expect(outputAmountsSum).to.be.lessThan(parseInt(wallet!.accounts[0].balance));
                 } else expect.fail();
+                expect(outputAmountsSum + +fee.normal).to.equal(parseInt(AccountDiscoveryResponseWithOneUTXO.balance));
             });
         });
     });
@@ -208,7 +224,12 @@ describe('BitcoinWallet test', () => {
                 mockApiResponse(accountUtxoUrl, TwoUTXOs);
 
                 await btcWallet.StartDiscovery();
-                const amount = +TwoUTXOs[0].value + +TwoUTXOs[1].value - 5782;
+                const fee = await btcWallet.CalculateTransactionFee(
+                    [{ Address: testBip49Address2, value: +TwoUTXOs[0].value + +TwoUTXOs[1].value }],
+                    0
+                );
+
+                const amount = +TwoUTXOs[0].value + +TwoUTXOs[1].value - +fee.normal;
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
                 expect(rawTx.outputs.length).equals(1);
             });
@@ -217,7 +238,11 @@ describe('BitcoinWallet test', () => {
                 mockApiResponse(accountUtxoUrl, TwoUTXOs);
 
                 const wallet = await btcWallet.StartDiscovery();
-                const amount = +TwoUTXOs[0].value + +TwoUTXOs[1].value - 5782;
+                const fee = await btcWallet.CalculateTransactionFee(
+                    [{ Address: testBip49Address2, value: +TwoUTXOs[0].value + +TwoUTXOs[1].value }],
+                    0
+                );
+                const amount = +TwoUTXOs[0].value + +TwoUTXOs[1].value - +fee.normal;
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
                 if (wallet.accounts) {
                     expect(parseInt(rawTx.outputs[0].amount)).to.be.lessThan(parseInt(wallet.accounts[0].balance));
@@ -232,8 +257,14 @@ describe('BitcoinWallet test', () => {
                 await btcWallet.StartDiscovery();
                 const amount = 300_000;
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
+                const fee = await btcWallet.CalculateTransactionFee([{ Address: testBip49Address2, value: amount }], 0);
+                let outputAmountsSum = 0;
+                rawTx.outputs.forEach((item) => {
+                    outputAmountsSum += parseInt(item.amount);
+                });
                 expect(rawTx.outputs.length).equals(2);
                 expect(rawTx.inputs.length).equals(2);
+                expect(outputAmountsSum + +fee.normal).to.equal(parseInt(AccountDiscoveryResponseWithTwoUTXO.balance));
             });
 
             it('Inputs amount sum should equal account balance', async () => {
@@ -242,6 +273,11 @@ describe('BitcoinWallet test', () => {
                 const wallet = await btcWallet.StartDiscovery();
                 const amount = 300_000;
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
+                const fee = await btcWallet.CalculateTransactionFee([{ Address: testBip49Address2, value: amount }], 0);
+                let outputAmountsSum = 0;
+                rawTx.outputs.forEach((item) => {
+                    outputAmountsSum += parseInt(item.amount);
+                });
                 let inputsSum = 0;
                 rawTx.inputs.forEach((item) => {
                     inputsSum += parseInt(item!.amount!);
@@ -249,6 +285,7 @@ describe('BitcoinWallet test', () => {
                 if (wallet.accounts) {
                     expect(inputsSum).to.equal(parseInt(wallet.accounts[0].balance));
                 } else expect.fail();
+                expect(outputAmountsSum + +fee.normal).to.equal(parseInt(AccountDiscoveryResponseWithTwoUTXO.balance));
             });
 
             it('Output amount should be less than account balance', async () => {
@@ -257,11 +294,17 @@ describe('BitcoinWallet test', () => {
                 const wallet = await btcWallet.StartDiscovery();
                 const amount = 300_000;
                 const rawTx = await btcWallet.GenerateTransaction([{ Address: testBip49Address2, value: amount }]);
+                const fee = await btcWallet.CalculateTransactionFee([{ Address: testBip49Address2, value: amount }], 0);
+                let outputAmountsSum = 0;
+                rawTx.outputs.forEach((item) => {
+                    outputAmountsSum += parseInt(item.amount);
+                });
                 if (wallet.accounts) {
                     expect(parseInt(rawTx.outputs[0].amount)).to.be.lessThan(
                         parseInt(AccountDiscoveryResponseWithTwoUTXO.balance)
                     );
                 } else expect.fail();
+                expect(outputAmountsSum + +fee.normal).to.equal(parseInt(AccountDiscoveryResponseWithTwoUTXO.balance));
             });
         });
     });
