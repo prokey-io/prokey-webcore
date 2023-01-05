@@ -36,10 +36,10 @@ describe('BitcoinWallet test', () => {
     const testBip49Address2 = '3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ';
 
     const accountByXpubUrl = (xpub) =>
-        `https://btc.prokey.app/api/v2/xpub/${xpub}?page=1&pagesize=1000&details=txs&tokens=used`;
-    const accountUtxoUrl = `https://btc.prokey.app/api/v2/utxo/${testXpub1}`;
+        `https://btc.prokey.app/blockbook/btc/api/v2/xpub/${xpub}?page=1&pagesize=1000&details=txs&tokens=used`;
+    const accountUtxoUrl = `https://btc.prokey.app/blockbook/btc/api/v2/utxo/${testXpub1}`;
 
-    const feeEstimationUrl = (num: number) => `https://btc.prokey.app/api/v2/estimatefee/${num}`;
+    const feeEstimationUrl = (num: number) => `https://btc.prokey.app/blockbook/btc/api/v2/estimatefee/${num}`;
 
     const bitcoinFeeListUrl = 'https://bitcoinfees.earn.com/api/v1/fees/list';
 
