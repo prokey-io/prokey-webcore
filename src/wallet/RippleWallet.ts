@@ -24,6 +24,7 @@ import * as PathUtil from '../utils/pathUtils';
 import { AddressModel, RippleAddress, RippleSignedTx, RippleTransaction } from '../models/Prokey';
 import { RippleBlockchain } from '../blockchain/RippleBlockchain';
 import * as WalletModel from '../models/RippleWalletModel';
+import * as Utils from '../utils/utils';
 
 var WAValidator = require('multicoin-address-validator');
 
@@ -166,7 +167,11 @@ export class RippleWallet extends BaseWallet {
     }
 
     public async SendTransaction(tx: RippleSignedTx): Promise<WalletModel.RippleSubmitTransactionResponse> {
-        return await this._rippleBlockchain.BroadCastTransaction(tx.serialized_tx);
+        let data = tx.serialized_tx as any;
+        if (data instanceof Uint8Array) {
+            data = Utils.ByteArrayToHexString(data).toUpperCase();
+        }
+        return await this._rippleBlockchain.BroadCastTransaction(data);
     }
 
     /**
