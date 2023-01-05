@@ -3,7 +3,7 @@
         {
             "apiType": "blockbook",
             "name": "prokey-blockbook",
-            "baseUrl": "https://{a}.prokey.app/api/v2",
+            "baseUrl": "https://{a}.prokey.app/blockbook/{a}/api/v2",
             "isSupportXpub": true
         },
         {
@@ -11,24 +11,9 @@
             "name": "public-provider"
         },
         {
-            "apiType": "chaino",
-            "name": "prokey-chaino",
-            "baseUrl": "https://blocks.prokey.org"
-        },
-        {
-            "apiType": "stellar",
-            "name": "stellar",
-            "baseUrl": "https://stellar.prokey.app/api"
-        },
-        {
-            "apiType": "nem",
-            "name": "nem",
-            "baseUrl": "https://nem.prokey.app/api"
-        },
-        {
-            "apiType": "prokey",
-            "name": "prokey",
-            "baseUrl": "https://{a}.prokey.app/api/{a}"
+            "apiType": "fullnode",
+            "name": "prokey-node",
+            "baseUrl": "https://{a}.prokey.app/fullnode/{a}"
         }
     ],
     "coins": [
@@ -72,7 +57,7 @@
             "servers": [
                 {
                     "name":"prokey-blockbook",
-                    "urlAffix":"digibyte"
+                    "urlAffix":"dgb"
                 }
             ]
         },
@@ -111,12 +96,23 @@
         },
         {
             "type": 0,
+            "name": "Bitcoin Cash",
+            "shortcut": "BCH",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"bch"
+                }
+            ]
+        },
+        {
+            "type": 0,
             "name": "testnet",
             "shortcut": "TEST",
             "servers": [
                 {
                     "name":"prokey-blockbook",
-                    "urlAffix":"btctest"
+                    "urlAffix":"test"
                 }
             ]
         },
@@ -223,7 +219,7 @@
             "shortcut": "XRP",
             "servers": [
                 {
-                    "name":"prokey",
+                    "name":"prokey-node",
                     "urlAffix":"XRP"
                 }
             ]
