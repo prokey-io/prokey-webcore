@@ -37,7 +37,7 @@ export abstract class BaseBlockchainServer {
 
         const request = new Request(url, { method: 'GET' });
 
-        return JSON.parse(await client.execute<string>(request)) as T;
+        return await client.execute<T>(request);
     }
 
     /**
@@ -51,7 +51,7 @@ export abstract class BaseBlockchainServer {
 
         const request = new Request(url, { body: body, method: 'POST' });
 
-        return JSON.parse(await client.execute<string>(request)) as T;
+        return await client.execute<T>(request);
     }
 
     /**
@@ -76,6 +76,6 @@ export abstract class BaseBlockchainServer {
             }
         );
 
-        return JSON.parse(await client.execute<any>(request));
+        return await client.execute<any>(request);
     }
 }
