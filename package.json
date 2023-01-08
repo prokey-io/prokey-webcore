@@ -31,7 +31,7 @@
     "scripts": {
         "build": "tsc",
         "prepublish": "tsc && copyfiles data/ProkeyCoinsInfo.json dist/src/data/ProkeyCoinsInfo.json",
-        "test": "mocha --require mocha-suppress-logs --require mock-local-storage --require ts-node/register test/wallet/BitcoinWallet.test.ts --timeout 30000"
+        "test": "mocha --require mocha-suppress-logs --require mock-local-storage --require ts-node/register test/**/*.test.ts --timeout 30000"
     },
     "devDependencies": {
         "@types/chai": "^4.3.1",
