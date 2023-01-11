@@ -265,6 +265,32 @@ export class BitcoinBlockchain extends BlockchainBase {
         throw new Error('BitcoinBlockchain::BroadCastTransaction->No server to handle the request');
     }
 
+    public async GetZcashChainId() {
+        this._ensureThereIsAServer();
+        for (let i = 0; i < this._servers.length; i++) {
+            if (this._servers[i].apiType == 'blockbook') {
+                try {
+                    const result = await BlockbookServer.GetZcashChainId(this._servers[i]);
+                    if (result.backend) {
+                        return {
+                            isSuccess: true,
+                            chainId: result.backend.consensus.chaintip,
+                        };
+                    } else {
+                        return {
+                            isSuccess: false,
+                            error: 'GetZcashChainId have error',
+                        };
+                    }
+                } catch (e) {
+                    MyConsole.Exception('BitcoinBlockchain::BroadCastTransaction->', e);
+                }
+            }
+        }
+
+        throw new Error('BitcoinBlockchain::GetZcashChainId->No server to handle the request');
+    }
+
     public async GetTxFee(isBitcoin: boolean): Promise<WalletModel.BitcoinFee> {
         //! fetch/update the fee rate every 1 minutes
         const secondsPassedFromLastCall = (new Date().getTime() - this._lastFeeFetchTime.getTime()) / 1000;
