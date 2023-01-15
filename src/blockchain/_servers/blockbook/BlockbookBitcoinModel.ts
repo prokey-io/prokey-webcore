@@ -304,17 +304,17 @@ export interface Consensus {
 export interface Backend {
     chain: string;
     blocks: number;
-    headers: number;
-    bestBlockHash: string;
+    headers?: number;
+    bestBlockHash?: string;
     difficulty: string;
-    sizeOnDisk: number;
+    sizeOnDisk?: number;
     version: string;
-    subversion: string;
-    protocolVersion: string;
-    consensus: Consensus;
+    subversion?: string;
+    protocolVersion?: string;
+    consensus?: Consensus;
 }
 
-export interface ZcashBackendModel {
+export interface BlockbookStatusModel {
     blockbook: Blockbook;
     backend: Backend;
 }
