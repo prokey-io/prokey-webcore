@@ -861,9 +861,6 @@ export class BitcoinWallet extends BaseWallet {
         return false;
     }
 
-    private _getAccount
-
-
     /**
      * Loading previous transaction of each input(s).
      * @param tx Bitcoin transaction 

@@ -46,7 +46,7 @@
             "servers": [
                 {
                     "name":"prokey-blockbook",
-                    "urlAffix":"zcash"
+                    "urlAffix":"zec"
                 }
             ]
         },
