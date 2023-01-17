@@ -501,8 +501,11 @@ export class BitcoinWallet extends BaseWallet {
             tx.options.overwintered = true;
             tx.options.version = 4;
             tx.options.version_group_id = 0x892f2085;
-            if(coinInfo.shortcut == "ZEC"){
-                tx.options.branch_id = 3268858036; // updated chain-id
+            if (coinInfo.shortcut == 'ZEC') {
+                const chainId = await this._bitcoinBlockchain.GetZcashChainId();
+                if (chainId.chaintip) {
+                    tx.options.branch_id = parseInt(chainId.chaintip, 16);
+                } else throw new Error('Can not get Zcash chainId');
             }
         }
 
@@ -857,9 +860,6 @@ export class BitcoinWallet extends BaseWallet {
         
         return false;
     }
-
-    private _getAccount
-
 
     /**
      * Loading previous transaction of each input(s).

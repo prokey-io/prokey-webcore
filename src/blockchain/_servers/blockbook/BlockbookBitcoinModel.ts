@@ -276,3 +276,46 @@ export interface BitcoinUtxoModel {
     path?: string
 }
 
+
+export interface Blockbook {
+    coin: string;
+    host: string;
+    version: string;
+    gitCommit: string;
+    buildTime: Date;
+    syncMode: boolean;
+    initialSync: boolean;
+    inSync: boolean;
+    bestHeight: number;
+    lastBlockTime: string;
+    inSyncMempool: boolean;
+    lastMempoolTime: string;
+    mempoolSize: number;
+    decimals: number;
+    dbSize: number;
+    about: string;
+}
+
+export interface Consensus {
+    chaintip: string;
+    nextblock: string;
+}
+
+export interface Backend {
+    chain: string;
+    blocks: number;
+    headers?: number;
+    bestBlockHash?: string;
+    difficulty: string;
+    sizeOnDisk?: number;
+    version: string;
+    subversion?: string;
+    protocolVersion?: string;
+    consensus?: Consensus;
+}
+
+export interface BlockbookStatusModel {
+    blockbook: Blockbook;
+    backend: Backend;
+}
+

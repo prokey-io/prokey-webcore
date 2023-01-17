@@ -359,3 +359,8 @@ export interface BitcoinSentView {
     address: string,
     status: 'SENT' | 'SENT_TO_OWN' | 'OMNI_CHANGE' | 'OMNI_SENT',
 }
+
+export interface ZcashConsensusModel {
+    chaintip: string;
+    nextblock?: string;
+}

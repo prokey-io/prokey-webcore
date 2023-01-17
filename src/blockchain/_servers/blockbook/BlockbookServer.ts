@@ -20,7 +20,7 @@
 
 import { BlockchainServerModel } from "../../BlockchainProviders";
 import { BaseBlockchainServer } from "../BaseBlockchainServer";
-import { BitcoinAccountInfoModel, BitcoinAddressInfoModel, BitcoinTransactionDetailInfoModel, BitcoinTransactionInfoModel, BitcoinUtxoModel } from "./BlockbookBitcoinModel";
+import { BitcoinAccountInfoModel, BitcoinAddressInfoModel, BitcoinTransactionDetailInfoModel, BitcoinTransactionInfoModel, BitcoinUtxoModel, BlockbookStatusModel } from "./BlockbookBitcoinModel";
 import { BlockbookRequestDetails } from "./BlockbookRequestModels";
 import { BlockbookFeeModel, BlockbookTransactionResult } from "./BlockbookCommonModel"
 
@@ -119,6 +119,12 @@ export class BlockbookServer extends BaseBlockchainServer {
         const url = `${server.url}/estimatefee/${numberOfBlocks}`;
 
         return await this.GetFromServer<BlockbookFeeModel>(url);
+    }
+
+    public static async GetZcashChainId(server: BlockchainServerModel) {
+        const url = `${server.url}`;
+
+        return await this.GetFromServer<BlockbookStatusModel>(url);
     }
 
     //******************************

@@ -151,7 +151,7 @@ export class BitcoinBlockchain extends BlockchainBase {
      */
     public async GetRawTransaction(transactionId: string): Promise<WalletModel.BitcoinTransactionDetailInfoModel> {
         this._ensureThereIsAServer();
-        for (let i = 0; i < this._servers.length; i++) { 
+        for (let i = 0; i < this._servers.length; i++) {
             if (this._servers[i].apiType == 'blockbook') {
                 let txInfo = await BlockbookServer.GetRawTransaction(this._servers[i], transactionId);
 
@@ -263,6 +263,27 @@ export class BitcoinBlockchain extends BlockchainBase {
         }
 
         throw new Error('BitcoinBlockchain::BroadCastTransaction->No server to handle the request');
+    }
+
+    public async GetZcashChainId(): Promise<WalletModel.ZcashConsensusModel> {
+        this._ensureThereIsAServer();
+        for (let i = 0; i < this._servers.length; i++) {
+            if (this._servers[i].apiType == 'blockbook') {
+                try {
+                    const result = await BlockbookServer.GetZcashChainId(this._servers[i]);
+                    if (result.backend && result.backend.consensus) {
+                        return {
+                            chaintip: result.backend.consensus.chaintip,
+                            nextblock: result.backend.consensus.nextblock,
+                        };
+                    } else MyConsole.Exception('BitcoinBlockchain::GetZcashChainId->Blockbook error');
+                } catch (e) {
+                    MyConsole.Exception('BitcoinBlockchain::GetZcashChainId->', e);
+                }
+            }
+        }
+
+        throw new Error('BitcoinBlockchain::GetZcashChainId->No server to handle the request');
     }
 
     public async GetTxFee(isBitcoin: boolean): Promise<WalletModel.BitcoinFee> {
