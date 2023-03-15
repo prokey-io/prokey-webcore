@@ -2,8 +2,6 @@
     "name": "@prokey-io/webcore",
     "version": "0.3.1",
     "license": "GPL-3.0",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
     "files": [
         "dist/**/*",
         "protob/**/*"
@@ -12,6 +10,9 @@
     "author": "Prokey Technologies Sdn. Bhd. <info@prokey.io>",
     "dependencies": {
         "@metamask/eth-sig-util": "^4.0.1",
+        "@ethersproject/bignumber": "^5.6.2",
+        "@ethersproject/contracts": "^5.7.0",
+        "@ethersproject/providers": "^5.7.0",
         "@types/bytebuffer": "^5.0.40",
         "assert": "^2.0.0",
         "bignumber.js": "^9.0.1",
@@ -31,10 +32,33 @@
     },
     "scripts": {
         "build": "tsc",
-        "prepublish": "tsc && copyfiles data/ProkeyCoinsInfo.json dist/src/data/ProkeyCoinsInfo.json"
+        "prepublish": "tsc && copyfiles data/ProkeyCoinsInfo.json dist/src/data/ProkeyCoinsInfo.json",
+        "test": "mocha --require mocha-suppress-logs --require mock-local-storage --require ts-node/register test/**/*.test.ts --timeout 30000"
     },
     "devDependencies": {
+        "@types/chai": "^4.3.1",
+        "@types/chai-as-promised": "^7.1.5",
+        "@types/chai-things": "^0.0.35",
+        "@types/mocha": "^9.1.1",
+        "@types/sinon": "^10.0.12",
+        "@typescript-eslint/eslint-plugin": "^5.29.0",
+        "@typescript-eslint/parser": "^5.29.0",
+        "chai": "^4.3.6",
+        "chai-as-promised": "^7.1.1",
+        "chai-things": "^0.2.0",
+        "copyfiles": "^2.4.1",
+        "eslint": "^8.18.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.1.0",
+        "mocha": "^10.0.0",
+        "mocha-suppress-logs": "^0.3.1",
+        "mock-local-storage": "^1.1.23",
+        "mock-xmlhttprequest": "^7.0.4",
+        "prettier": "^2.7.1",
+        "sinon": "^14.0.0",
+        "ts-node": "^10.8.1",
         "typescript": "^4.2.3",
-        "copyfiles": "^2.4.1"
+        "xhr-mock": "^2.5.1",
+        "xmlhttprequest": "^1.8.0"
     }
 }

@@ -1,9 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
  * Copyright (C) 2022 Prokey.io
- * 
+ *
  * Hadi Robati, hadi@prokey.io
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,50 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressModel } from "./Prokey";
-
-/**
- * For account discovery, BitcoinAccountAddressReq should be used as starting point
- * @next BitcoinWalletModel
- */
-export interface BitcoinDiscoveryWalletReq {
-    address: string,
-    path?: Array<number> | string,
-    publicKey?: string,
-    pubkeyIndex?: number,
-    isGetUtxo?: boolean,   
-}
-
-/**
- * This is the result of account discovery
- * Result of account discovery is a Wallet with total balance and list of AccountInfo
- * @end
- */
-export interface BitcoinWalletModel {
-    totalBalance: number,
-    accounts?: Array<BitcoinAccountInfo>,
-}
-
 /**
  * This is a bitcoin account model that can be gotten by Public Key
  */
-export interface BitcoinAccountInfo {
+export interface BitcoinAccountInfoModel {
     // current page, starting from 1
-    page?: number, 
+    page?: number; 
     // total number of pages
-    totalPages?: number,
+    totalPages?: number;
     // number of items on page
-    itemsOnPage?: number,
+    itemsOnPage?: number;
     // the requested address(address/xpub)
-    address: string,
+    address: string;
     // total current balance per satoshi
-    balance: string,
+    balance: string;
     // total received
-    totalReceived: string,
+    totalReceived: string;
     // total sent
-    totalSent: string,
+    totalSent: string;
     // the balance which is not confirmed yet
-    unconfirmedBalance: string,
+    unconfirmedBalance: string;
     // number of unconfirmed transactions
     unconfirmedTxs: number;
     // total number of transactions
@@ -74,21 +50,6 @@ export interface BitcoinAccountInfo {
     usedTokens: number;
     // list of tokens
     tokens?: BitcoinTokenModel[];
-    //--------------------------
-    // Additional information
-    //--------------------------
-    // account index
-    accountIndex?: number,
-    // list of addresses
-    addresses?: AddressModel[];
-    // list of change addresses
-    changeAddresses?: AddressModel[];
-    // the public key and path to this account
-    publicKey?: AddressModel,
-    // List of unspent transactions (UTXO)
-    sortedUtxos?: BitcoinUtxoModel[],
-    // The last unused address
-    lastUnusedAddress?: AddressModel;
 }
 
 /**
@@ -99,8 +60,6 @@ export interface BitcoinTransactionInfoModel {
     txid: string,
     // transaction version
     version?: number,
-    // locktime
-    lockTime?: number,
     // list of inputs
     vin: Array<BitcoinTransactionInputModel>,
     // list of outputs
@@ -120,18 +79,7 @@ export interface BitcoinTransactionInfoModel {
     // transaction fee
     fees: string,
     // the transaction in raw
-    hex: string,
-    //-----------
-    // OmniLayer transaction data
-    //-----------
-    // true means this is a receive transaction
-    omniIsReceived?: boolean,
-    // omni transaction value
-    omniValue?: number,
-    // the address of receiver fund
-    omniReceiverAddress?: string,
-    // the sender address
-    omniSenderAddress?: string,
+    hex: string
 }
 
 /**
@@ -226,10 +174,6 @@ export interface BitcoinAddressInfoModel {
     txids?: string[]
     // list of transactions
     transactions?: BitcoinTransactionInfoModel[];
-    //--------------------------
-    // Additional information
-    //--------------------------
-    addressModel?: AddressModel;
 }
 
 /**
@@ -315,7 +259,7 @@ export interface BitcoinTransactionOutputDetailModel {
 /**
  * Bitcoin utxo (unspent transaction) model
  */
- export interface BitcoinUtxoModel {
+export interface BitcoinUtxoModel {
     // transaction id
     txid: string,
     // prev. output index
@@ -332,35 +276,46 @@ export interface BitcoinTransactionOutputDetailModel {
     path?: string
 }
 
-export interface BitcoinFee {
-    economy: number,
-    normal: number,
-    high: number,
+
+export interface Blockbook {
+    coin: string;
+    host: string;
+    version: string;
+    gitCommit: string;
+    buildTime: Date;
+    syncMode: boolean;
+    initialSync: boolean;
+    inSync: boolean;
+    bestHeight: number;
+    lastBlockTime: string;
+    inSyncMempool: boolean;
+    lastMempoolTime: string;
+    mempoolSize: number;
+    decimals: number;
+    dbSize: number;
+    about: string;
 }
 
-export interface BitcoinTransactionView {
-    hash: string,
-    blockNumber: number,
-    date: string,
-    received?: Array<BitcoinReceivedView>,
-    sent?: Array<BitcoinSentView>,
-    fee?: number
-    isOmni: boolean,
-}
-
-export interface BitcoinReceivedView {
-    value: number,
-    address: string,
-    status: 'RECEIVED' |'RECEIVED_FROM_OWN' | 'OMNI_RECEIVED' | 'OMNI_CHANGE',
-}
-
-export interface BitcoinSentView {
-    value: number,
-    address: string,
-    status: 'SENT' | 'SENT_TO_OWN' | 'OMNI_CHANGE' | 'OMNI_SENT',
-}
-
-export interface ZcashConsensusModel {
+export interface Consensus {
     chaintip: string;
-    nextblock?: string;
+    nextblock: string;
 }
+
+export interface Backend {
+    chain: string;
+    blocks: number;
+    headers?: number;
+    bestBlockHash?: string;
+    difficulty: string;
+    sizeOnDisk?: number;
+    version: string;
+    subversion?: string;
+    protocolVersion?: string;
+    consensus?: Consensus;
+}
+
+export interface BlockbookStatusModel {
+    blockbook: Blockbook;
+    backend: Backend;
+}
+

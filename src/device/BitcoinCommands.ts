@@ -84,7 +84,7 @@ export class BitcoinCommands implements ICoinCommands {
             address_n = path;
         }
 
-        const scriptType = PathUtil.IsSegwitPath(address_n) ? ProkeyResponses.EnumInputScriptType.SPENDP2SHWITNESS : ProkeyResponses.EnumInputScriptType.SPENDADDRESS;
+        const scriptType = PathUtil.GetScriptType(address_n);
 
         let param = {
             address_n: address_n,
@@ -206,6 +206,7 @@ export class BitcoinCommands implements ICoinCommands {
 
         let param = {
             address_n: address_n,
+            coin_name: this._coinInfo.on_device || this._coinInfo.name || 'Bitcoin',
             show_display: showDisplay,
             script_type: scriptType,
         }

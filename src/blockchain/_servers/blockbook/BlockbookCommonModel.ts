@@ -1,7 +1,9 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
- * Copyright (C) Prokey.io
- * 
+ * Copyright (C) 2022 Prokey.io
+ *
+ * Hadi Robati, hadi@prokey.io
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,15 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressModel } from "./Prokey";
-
-export interface RequestAddressInfo {
-    address: string,                        // Address to get info
-    addressModel?: AddressModel,
+/**
+ * Transaction result
+ */
+export interface BlockbookTransactionResult {
+    // transaction hash
+    result?: string,
+    // error
+    error?: string,
 }
 
-export interface GenericSentTransactionResult {
-    isSuccess: boolean,
-    txid?: string;
-    error?: string,
+export interface BlockbookFeeModel {
+    result?: string,
+    error?: string
 }

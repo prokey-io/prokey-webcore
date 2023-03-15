@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressModel } from "./Prokey";
+import { AddressModel } from './Prokey';
+import { BitcoinAddressInfoModel, BitcoinTransactionInfoModel } from './BitcoinWalletModel';
 
 /**
  * This is the result of account discovery
@@ -34,7 +35,30 @@ export interface OmniAccountInfo {
     balance: number,
     accountIndex: number,
     addressModel?: AddressModel,
-    trKeys?: Array<number>
+    transactions?: BitcoinTransactionInfoModel[],
+    bitcoinAddressInfo?: BitcoinAddressInfoModel,
+    // List of unspent transactions (UTXO)
+    sortedUtxos?: BitcoinUtxoModel[],
+}
+
+/**
+ * Bitcoin utxo (unspent transaction) model
+ */
+ export interface BitcoinUtxoModel {
+    // transaction id
+    txid: string,
+    // prev. output index
+    vout: number,
+    // prev. output value
+    value: string,
+    // block height
+    height: number,
+    // number of confirmations (lastBlockNumber - blockHeight)
+    confirmations: number,
+    // address (if req by xpub)
+    address?: string,
+    // path to the address (if req by xpub)
+    path?: string
 }
 
 export interface OmniTransactionView {

@@ -1,0 +1,228 @@
+{
+    "servers": [
+        {
+            "apiType": "blockbook",
+            "name": "prokey-blockbook",
+            "baseUrl": "https://{a}.prokey.app/blockbook/{a}/api/v2",
+            "isSupportXpub": true
+        },
+        {
+            "apiType": "geth",
+            "name": "public-provider"
+        },
+        {
+            "apiType": "fullnode",
+            "name": "prokey-node",
+            "baseUrl": "https://{a}.prokey.app/fullnode/{a}"
+        }
+    ],
+    "coins": [
+        {
+            "type": 0,
+            "name": "bitcoin",
+            "shortcut": "BTC",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"btc"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "dash",
+            "shortcut": "DASH",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"dash"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "zcash",
+            "shortcut": "ZEC",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"zec"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "digibyte",
+            "shortcut": "DGB",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"dgb"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "decred",
+            "shortcut": "DCR",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"decred"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "vertcoin",
+            "shortcut": "VTC",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"vert"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "Dogecoin",
+            "shortcut": "DOGE",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"doge"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "Bitcoin Cash",
+            "shortcut": "BCH",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"bch"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "testnet",
+            "shortcut": "TEST",
+            "servers": [
+                {
+                    "name":"prokey-blockbook",
+                    "urlAffix":"test"
+                }
+            ]
+        },
+        {
+            "type": 0,
+            "name": "litecoin",
+            "shortcut": "LTC",
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"ltc"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "ethereum",
+            "shortcut": "ETH",
+            "chainId": 1,
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"eth"
+                },
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "Binance smart chain",
+            "shortcut": "BNB",
+            "chainId": 56,
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"bsc"
+                },
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "OKChain Token",
+            "shortcut": "OKT",
+            "chainId": 66,
+            "servers": [
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "Ethereum Testnet Goerli",
+            "shortcut": "tGTH",
+            "chainId": 5,
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"eth-test"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "name": "all_erc20_on_eth_network",
+            "chainId": 1,
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"eth"
+                },
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "name": "all_bep2020_on_bsc_network",
+            "chainId": 56,
+            "servers": [
+                {
+                    "name": "prokey-blockbook",
+                    "urlAffix":"bsc"
+                },
+                {
+                    "type" : "geth",
+                    "name": "public-provider"
+                }
+            ]
+        },
+        {
+            "type": 5,
+            "name": "ripple",
+            "shortcut": "XRP",
+            "servers": [
+                {
+                    "name":"prokey-node",
+                    "urlAffix":"XRP"
+                }
+            ]
+        }
+    ]
+}

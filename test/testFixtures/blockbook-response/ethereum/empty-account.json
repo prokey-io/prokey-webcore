@@ -1,0 +1,11 @@
+{
+    "page": 1,
+    "totalPages": 1,
+    "itemsOnPage": 1000,
+    "address": "0x253d4349fdB69c63069A7137D2C9e73ff042F859",
+    "balance": "0",
+    "unconfirmedBalance": "0",
+    "unconfirmedTxs": 0,
+    "txs": 0,
+    "nonce": "0"
+}

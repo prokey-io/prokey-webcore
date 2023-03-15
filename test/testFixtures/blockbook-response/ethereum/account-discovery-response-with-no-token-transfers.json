@@ -1,0 +1,134 @@
+{
+    "page": 1,
+    "totalPages": 1,
+    "itemsOnPage": 1000,
+    "address": "0xb9D3e45AAEE1Ab9a5B87ff8bC999867A99897A78",
+    "balance": "2835132327642462000",
+    "unconfirmedBalance": "0",
+    "unconfirmedTxs": 0,
+    "txs": 4,
+    "nonTokenTxs": 4,
+    "transactions": [
+        {
+            "txid": "0x108ce4095242cac1130ab62fccc12395e252cb4736a18cb8dca818700518ddfe",
+            "vin": [
+                {
+                    "n": 0,
+                    "addresses": ["0xb9D3e45AAEE1Ab9a5B87ff8bC999867A99897A78"],
+                    "isAddress": true,
+                    "isOwn": true
+                }
+            ],
+            "vout": [
+                {
+                    "value": "2500000000000000000",
+                    "n": 0,
+                    "addresses": ["0x3A86de1F1503d8D98E84877B7759a44a371bF697"],
+                    "isAddress": true
+                }
+            ],
+            "blockHash": "0xb9c5fd2f35e56c626010484d55102a6128d5af3db58f985b6934752ea3954fd6",
+            "blockHeight": 13770276,
+            "confirmations": 1279735,
+            "blockTime": 1639042179,
+            "value": "2500000000000000000",
+            "fees": "1944550308057000",
+            "ethereumSpecific": {
+                "status": 1,
+                "nonce": 1,
+                "gasLimit": 21000,
+                "gasUsed": 21000,
+                "gasPrice": "92597633717",
+                "data": "0x"
+            }
+        },
+        {
+            "txid": "0x199ba1a1d6d3a2f79147dc5da70736f0d217253cbca38a0c1a85527193d4abec",
+            "vin": [{ "n": 0, "addresses": ["0x10b72129Af872443780f9377b2f0C835Ba238259"], "isAddress": true }],
+            "vout": [
+                {
+                    "value": "4848737280000000000",
+                    "n": 0,
+                    "addresses": ["0xb9D3e45AAEE1Ab9a5B87ff8bC999867A99897A78"],
+                    "isAddress": true,
+                    "isOwn": true
+                }
+            ],
+            "blockHash": "0xa7368904d7a6ae694f3f92f949e903e72df2130681424c5e60fe15736966a71c",
+            "blockHeight": 13082577,
+            "confirmations": 1967434,
+            "blockTime": 1629735468,
+            "value": "4848737280000000000",
+            "fees": "2163000000000000",
+            "ethereumSpecific": {
+                "status": 1,
+                "nonce": 9,
+                "gasLimit": 21000,
+                "gasUsed": 21000,
+                "gasPrice": "103000000000",
+                "data": "0x"
+            }
+        },
+        {
+            "txid": "0x7021bffcad594a6cff088b26f8183514b046d6474ebc724266ea869e43e93f77",
+            "vin": [
+                {
+                    "n": 0,
+                    "addresses": ["0xb9D3e45AAEE1Ab9a5B87ff8bC999867A99897A78"],
+                    "isAddress": true,
+                    "isOwn": true
+                }
+            ],
+            "vout": [
+                {
+                    "value": "10000000000000000",
+                    "n": 0,
+                    "addresses": ["0x2e4373bD1C87D7d065131fe5a1213Cf0B6c2A207"],
+                    "isAddress": true
+                }
+            ],
+            "blockHash": "0x29ff75159b269ce1c2cd2ad654fa94e181718b6a7053fb938c3da136c54104ce",
+            "blockHeight": 13082560,
+            "confirmations": 1967451,
+            "blockTime": 1629735261,
+            "value": "10000000000000000",
+            "fees": "1660402049481000",
+            "ethereumSpecific": {
+                "status": 1,
+                "nonce": 0,
+                "gasLimit": 21000,
+                "gasUsed": 21000,
+                "gasPrice": "79066764261",
+                "data": "0x"
+            }
+        },
+        {
+            "txid": "0xb7238b107979eaea82c9fe3a51cbd44e444b238c36fa9eb4a8d0cfc2bf02af27",
+            "vin": [{ "n": 0, "addresses": ["0x10b72129Af872443780f9377b2f0C835Ba238259"], "isAddress": true }],
+            "vout": [
+                {
+                    "value": "500000000000000000",
+                    "n": 0,
+                    "addresses": ["0xb9D3e45AAEE1Ab9a5B87ff8bC999867A99897A78"],
+                    "isAddress": true,
+                    "isOwn": true
+                }
+            ],
+            "blockHash": "0xc6784412bb604408be7b557715e97653a4c983ed682f0df3ac6e1ca96a54210f",
+            "blockHeight": 13082540,
+            "confirmations": 1967471,
+            "blockTime": 1629735081,
+            "value": "500000000000000000",
+            "fees": "2163000000000000",
+            "ethereumSpecific": {
+                "status": 1,
+                "nonce": 8,
+                "gasLimit": 21000,
+                "gasUsed": 21000,
+                "gasPrice": "103000000000",
+                "data": "0x"
+            }
+        }
+    ],
+    "nonce": "2"
+}

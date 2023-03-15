@@ -1,6 +1,8 @@
 /*
  * This is part of PROKEY HARDWARE WALLET project
- * Copyright (C) Prokey.io
+ * Copyright (C) 2022 Prokey.io
+ * 
+ * Hadi Robati, hadi@prokey.io
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressModel } from "./Prokey";
+import { RequestAddressInfo } from "../models/GenericWalletModel";
+import { BlockchainServerModel } from "./BlockchainProviders";
 
-export interface RequestAddressInfo {
-    address: string,                        // Address to get info
-    addressModel?: AddressModel,
-}
+export abstract class BlockchainBase {
+    _servers: BlockchainServerModel[];
 
-export interface GenericSentTransactionResult {
-    isSuccess: boolean,
-    txid?: string;
-    error?: string,
+    constructor(servers: BlockchainServerModel[]){
+        this._servers = servers;
+    }
+
+    public abstract GetAddressInfo(reqAdd: RequestAddressInfo);
+    public abstract BroadCastTransaction(transaction: string);
 }

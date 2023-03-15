@@ -1,0 +1,23 @@
+{
+    "vendor": "prokey.io",
+    "major_version": 1,
+    "minor_version": 10,
+    "patch_version": 1,
+    "device_id": "436E13ACF7C2E098FC13B6B6",
+    "pin_protection": false,
+    "passphrase_protection": false,
+    "label": "My Prokey",
+    "initialized": true,
+    "revision": "BXvRq8YdjHZzMAXW/wLwxHcMsq0=",
+    "bootloader_hash": "wWvDpPiA5JJsa03I/XvkjMTBTS6zjKH9qv1PNZUludU=",
+    "pin_cached": false,
+    "passphrase_cached": false,
+    "needs_backup": false,
+    "model": "Optimum",
+    "unfinished_backup": false,
+    "no_backup": false,
+    "pin_on_device": true,
+    "view_major_version": 1,
+    "view_minor_version": 2,
+    "view_patch_version": 0
+}
