@@ -257,6 +257,11 @@ export type EthereumSignedTx = {
     s: string,
 };
 
+export type EthereumSignedTypedData = {
+    address: string,
+    signature: string,
+}
+
 export type Identity = {
     proto?: string,
     user?: string,

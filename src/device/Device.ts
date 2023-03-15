@@ -345,7 +345,14 @@ export class Device {
             // 
             this._sendMessageExpectedResponseType = expectedResType;
 
-            await this.SendMessageByType(messageTypeName, param);
+            const res = await this.SendMessageByType(messageTypeName, param);
+            if(res.success == false) {
+                // On reboot command, device does not return any response
+                if(messageTypeName == "RebootDevice") {
+                    return this._sendMessageResolve(<ProkeyResponses.Success>{});
+                }
+                return this._sendMessageReject(res);
+            }
         });
     }
 
