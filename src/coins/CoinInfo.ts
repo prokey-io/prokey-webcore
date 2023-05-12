@@ -129,6 +129,9 @@ export class CoinInfo {
                     ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
 
+                // Update the divisible
+                ci.decimals = ci.divisible ? 8 : 0;
+                
                 ci.id = `omni_${ci.shortcut}`;
                 break;
             case CoinBaseType.Ripple:
