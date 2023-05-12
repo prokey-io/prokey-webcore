@@ -581,6 +581,8 @@ export class BitcoinWallet extends BaseWallet {
             }
         }
 
+        MyConsole.Info("BitcoinWallet::GenerateTransaction->best utxo for this transaction:", tx);
+
         //! Load previous transactions 
         await this.LoadPrevTx(acc, tx);
 
@@ -893,10 +895,6 @@ export class BitcoinWallet extends BaseWallet {
             prev.vin.forEach( inp => {
                 if(inp.txid == null) {
                     throw new Error("BitcoinWallet::LoadPrevTx->PrevTransation id is null");
-                }
-
-                if(inp.hex == null) {
-                    throw new Error("BitcoinWallet::LoadPrevTx->PrevTransation hex is null");
                 }
 
                 ref.inputs.push({

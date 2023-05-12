@@ -151,7 +151,7 @@ export type TransactionInput = {
 export type RefTransactionInput = {
     prev_hash: string,
     prev_index: number,
-    script_sig: string,
+    script_sig?: string,
     sequence: number,
 };
 
