@@ -166,9 +166,8 @@ export class EthereumWallet extends BaseWallet {
 
         // Getting addresses from Prokey
         let address = await super.GetAddress<EthereumAddress>(path.path, false);
-
         path.address = address.address;
-
+        
         // Getting addresses' info
         var accInfo = await this._ethBlockchain.GetAddressInfo(path);
         accInfo.accountIndex = accountNumber;
@@ -195,7 +194,7 @@ export class EthereumWallet extends BaseWallet {
                 // Reassign balance with contract token balance
                 if (accInfo.tokens && accInfo.tokens.length > 0) {
                     const tokenBalance = accInfo.tokens.find(
-                        (token) => token.contract == this._contractAddress
+                        (token) => token.contract.toLocaleLowerCase() == this._contractAddress.toLocaleLowerCase()
                     )?.balance;
                     if (tokenBalance) {
                         accInfo.balance = tokenBalance;
