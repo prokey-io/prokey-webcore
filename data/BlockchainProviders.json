@@ -173,6 +173,18 @@
         },
         {
             "type": 1,
+            "name": "Ethereum Classic",
+            "shortcut": "ETC",
+            "chainId": 61,
+            "servers": [
+                {
+                    "name": "public-provider",
+                    "type" : "geth"
+                }
+            ]
+        },
+        {
+            "type": 1,
             "name": "Ethereum Testnet Goerli",
             "shortcut": "tGTH",
             "chainId": 5,

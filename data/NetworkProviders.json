@@ -9,6 +9,15 @@
       "chainId": 1
     },
     {
+      "name": "Ethereum Classic",
+      "url": [
+        "https://etc.etcdesktop.com",
+        "https://geth-at.etc-network.info",
+        "https://besu-de.etc-network.info"
+      ],
+      "chainId": 61
+    },
+    {
       "name": "Ethereum Testnet Goerli",
       "url": [
         "https://rpc.ankr.com/eth_goerli",
