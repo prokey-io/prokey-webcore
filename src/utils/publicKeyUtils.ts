@@ -41,14 +41,9 @@ const prefixes = new Map<string, string>([
  * @returns true if valid otherwise false
  */
 export function validateBitcoinExtendedPublicKey(key: string): boolean {
-    // Prefixes for XPUB, YPUB, and ZPUB keys
-    const xpubPrefix = 'xpub';
-    const ypubPrefix = 'ypub';
-    const zpubPrefix = 'zpub';
-
     // Check prefix
     const prefix = key.substring(0, 4);
-    if (![xpubPrefix, ypubPrefix, zpubPrefix].includes(prefix)) {
+    if (!prefixes.has(prefix)) {
         return false;
     }
 
