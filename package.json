@@ -9,17 +9,20 @@
     "description": "This module can be used to communicate with Prokey device",
     "author": "Prokey Technologies Sdn. Bhd. <info@prokey.io>",
     "dependencies": {
-        "@metamask/eth-sig-util": "^4.0.1",
         "@ethersproject/bignumber": "^5.6.2",
         "@ethersproject/contracts": "^5.7.0",
         "@ethersproject/providers": "^5.7.0",
+        "@metamask/eth-sig-util": "^4.0.1",
         "@types/bytebuffer": "^5.0.40",
         "assert": "^2.0.0",
         "bignumber.js": "^9.0.1",
+        "bs58": "^5.0.0",
+        "bs58check": "^3.0.1",
         "buffer": "^5.4.3",
         "bytebuffer": "^5.0.1",
         "compare-versions": "^3.6.0",
         "core-js": "^2.6.11",
+        "crypto": "^1.0.1",
         "crypto-js": "3.1.9-1",
         "events": "^3.2.0",
         "multicoin-address-validator": "^0.4.8",
@@ -32,7 +35,8 @@
     "scripts": {
         "build": "tsc",
         "prepublish": "tsc && copyfiles data/ProkeyCoinsInfo.json dist/src/data/ProkeyCoinsInfo.json",
-        "test": "mocha --require mocha-suppress-logs --require mock-local-storage --require ts-node/register test/**/*.test.ts --timeout 30000"
+        "test": "mocha --require mocha-suppress-logs --require mock-local-storage --require ts-node/register test/**/*.test.ts --timeout 30000",
+        "test-xpub": "mocha --require mock-local-storage --require ts-node/register test/utils/publicKeyUtils.test.ts"
     },
     "devDependencies": {
         "@types/chai": "^4.3.1",
