@@ -20,7 +20,26 @@
 
 import * as crypto from 'crypto';
 import * as bs58 from 'bs58';
+import * as b58 from 'bs58check';
 
+const prefixes = new Map<string, string>([
+    ['xpub', '0488b21e'],
+    ['ypub', '049d7cb2'],
+    ['Ypub', '0295b43f'],
+    ['zpub', '04b24746'],
+    ['Zpub', '02aa7ed3'],
+    ['tpub', '043587cf'],
+    ['upub', '044a5262'],
+    ['Upub', '024289ef'],
+    ['vpub', '045f1cf6'],
+    ['Vpub', '02575483'],
+]);
+
+/**
+ * To validate Extended Public Key
+ * @param key the public key in xpub, ypub or zpub to validate
+ * @returns true if valid otherwise false
+ */
 export function validateBitcoinExtendedPublicKey(key: string): boolean {
     // Prefixes for XPUB, YPUB, and ZPUB keys
     const xpubPrefix = 'xpub';
@@ -52,4 +71,32 @@ export function validateBitcoinExtendedPublicKey(key: string): boolean {
     }
 
     return true;
+}
+
+/**
+ * To change the public key version byte like xpub to ypub
+ * @param xpub The public key to convert
+ * @param targetFormat The target format from @prefixes map
+ * @returns The changed version public key
+ */
+export function changeVersionBytes(xpub: string, targetFormat: string) {
+    if (!prefixes.has(targetFormat)) {
+        return 'Invalid target version';
+    }
+
+    // trim whitespace
+    xpub = xpub.trim();
+
+    try {
+        // get the data
+        var data = b58.decode(xpub);
+        // remove the version bytes
+        data = data.slice(4);
+        // add the new version bytes
+        data = Buffer.concat([Buffer.from(prefixes.get(targetFormat) as string, 'hex'), data]);
+        // encode back to base58
+        return b58.encode(data);
+    } catch (err) {
+        return "Invalid extended public key! Please double check that you didn't accidentally paste extra data.";
+    }
 }
