@@ -332,6 +332,9 @@ export class EthereumWallet extends BaseWallet {
             txToSign.data = this.GetErc20TransactionData(receivedAddress, amount);
         }
 
+        //! Log the transaction for debugging porpose
+        MyConsole.Info('EthereumWallet::GenerateTransaction->Tx to sign', txToSign);
+
         return txToSign;
     }
 
