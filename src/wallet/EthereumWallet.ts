@@ -308,7 +308,7 @@ export class EthereumWallet extends BaseWallet {
             address_n: account.addressModel.path,
             to: receivedAddress,
             value: amount.toString(16),
-            nonce: nonce,
+            nonce: (+nonce).toString(16),
             gasLimit: this._gasLimit.toString(16),
             chainId: coinInfo.chain_id,
         };
