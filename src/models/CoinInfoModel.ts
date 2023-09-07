@@ -37,6 +37,7 @@ export interface BaseCoinInfoModel {
     test?: boolean,
     decimals: number,
     slip44: number,
+    priority: number;
 
     //! Dynamic properties, Not in json file
     coinBaseType: CoinBaseType,
@@ -137,4 +138,9 @@ export interface NemCoinInfoModel extends BaseCoinInfoModel {
   on_device: string,
   tx_url: string,
   priority: number,
+}
+
+export interface TronCoinInfoModel extends BaseCoinInfoModel {
+    on_device: string;
+    tx_url: string;
 }

@@ -35775,5 +35775,46 @@
     }
   ],
   "NEM": [
+  ],
+  "tron": [
+    {
+      "name": "Tron",
+      "shortcut": "TRX",
+      "slip44": 195,
+      "decimals": 6,
+      "priority": 7,
+      "on_device": "Tron",
+      "test": false,
+      "support": {
+        "optimum": "1.11.0"
+      },
+      "tx_url": "https://tronscan.org/#/transaction/{hash}"
+    },
+    {
+      "name": "Tron Shasta",
+      "shortcut": "Shasta",
+      "slip44": 195,
+      "decimals": 6,
+      "priority": 7,
+      "on_device": "Tron",
+      "test": true,
+      "support": {
+        "optimum": "1.11.0"
+      },
+      "tx_url": "https://shasta.tronscan.org/#/transaction/{hash}"
+    },
+    {
+      "name": "Tron Nile",
+      "shortcut": "Nile",
+      "slip44": 195,
+      "decimals": 6,
+      "priority": 7,
+      "on_device": "Tron",
+      "test": true,
+      "support": {
+        "optimum": "1.11.0"
+      },
+      "tx_url": "https://nile.tronscan.org/#/transaction/{hash}"
+    }
   ]
 }

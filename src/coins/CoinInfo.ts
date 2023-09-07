@@ -26,6 +26,7 @@ import {
     OmniCoinInfoModel,
     RippleCoinInfoModel,
     NemCoinInfoModel,
+    TronCoinInfoModel,
 } from '../models/CoinInfoModel';
 
 import * as EthereumNetworks from '../utils/ethereum-networks';
@@ -44,6 +45,7 @@ export enum CoinBaseType {
     OMNI,
     Ripple,
     Stellar,
+    Tron,
     OTHERS,
 }
 
@@ -97,6 +99,9 @@ export class CoinInfo {
             case CoinBaseType.NEM:
                 c = ProkeyCoinInfoModel.NEM;
                 break;
+            case CoinBaseType.Tron:
+                c = ProkeyCoinInfoModel.tron;
+                break;
         }
 
         let f = coinName.toLowerCase();
@@ -149,6 +154,10 @@ export class CoinInfo {
 
                 ci.id = `nem_${ci.shortcut}`;
                 break;
+            case CoinBaseType.Tron:
+                ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci.id = `tron_${ci.shortcut}`;
+                break;
             default:
                 ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
@@ -176,6 +185,7 @@ export class CoinInfo {
         | OmniCoinInfoModel
         | RippleCoinInfoModel
         | NemCoinInfoModel
+        | TronCoinInfoModel
     > {
         let list = new Array<
             | BitcoinBaseCoinInfoModel
@@ -185,6 +195,7 @@ export class CoinInfo {
             | OmniCoinInfoModel
             | RippleCoinInfoModel
             | NemCoinInfoModel
+            | TronCoinInfoModel
         >();
 
         //! For all bitcoin base coins
@@ -258,6 +269,18 @@ export class CoinInfo {
             }
         });
 
+        //! For all Tron base coins
+        ProkeyCoinInfoModel.tron.forEach((tron) => {
+            //! Check the version
+            if (compareVersions(firmwareVersion, tron.support.optimum) >= 0) {
+                list.push({
+                    ...tron,
+                    coinBaseType: CoinBaseType.Tron,
+                    id: `tron_${tron.shortcut}`,
+                });
+            }
+        });
+
         //! Sort the list by Priority
         list.sort((a, b) => {
             if (a.priority > b.priority) return 1;
@@ -267,6 +290,7 @@ export class CoinInfo {
 
         return list;
     }
+
     static compareVersions(firmwareVersion, networkVersion) {
         return compareVersions(firmwareVersion, networkVersion);
     }
