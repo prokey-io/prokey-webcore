@@ -19,22 +19,22 @@
 */
 
 import {
-  BitcoinBaseCoinInfoModel,
-  EthereumBaseCoinInfoModel,
-  Erc20BaseCoinInfoModel,
-  MiscCoinInfoModel,
-  OmniCoinInfoModel,
-  RippleCoinInfoModel,
-  NemCoinInfoModel,
-} from "../models/CoinInfoModel";
+    BitcoinBaseCoinInfoModel,
+    EthereumBaseCoinInfoModel,
+    Erc20BaseCoinInfoModel,
+    MiscCoinInfoModel,
+    OmniCoinInfoModel,
+    RippleCoinInfoModel,
+    NemCoinInfoModel,
+} from '../models/CoinInfoModel';
 
- import * as EthereumNetworks from "../utils/ethereum-networks";
+import * as EthereumNetworks from '../utils/ethereum-networks';
 
 const compareVersions = require('compare-versions');
 
-const modelName = require.resolve("../../data/ProkeyCoinsInfo.json");
+const modelName = require.resolve('../../data/ProkeyCoinsInfo.json');
 delete require.cache[modelName];
-const ProkeyCoinInfoModel = require("../../data/ProkeyCoinsInfo.json");
+const ProkeyCoinInfoModel = require('../../data/ProkeyCoinsInfo.json');
 
 export enum CoinBaseType {
     BitcoinBase,
@@ -44,7 +44,7 @@ export enum CoinBaseType {
     OMNI,
     Ripple,
     Stellar,
-    OTHERS
+    OTHERS,
 }
 
 export interface CoinNameModel {
@@ -58,7 +58,6 @@ export interface CoinNameModel {
 }
 
 export class CoinInfo {
-
     /**
      * This function will return the CoinInfo by coinName and type
      * @param coinName The coin name or shortcut
@@ -66,13 +65,16 @@ export class CoinInfo {
      * @param chainOrPropertyId For Ethereum or OMNI, this property can be used instead of name if set.
      */
     public static Get<T>(coinName: string, coinType: CoinBaseType, chainOrPropertyId?: number): T {
-        if (coinType == undefined)
-            throw new Error();
+        if (coinType == undefined) throw new Error();
 
-        if(coinType == CoinBaseType.ERC20 && coinName.length <= 0 ) {
-            throw new Error("You have to provide Contract Address for ERC20 tokens");
-        } else if( (coinType == CoinBaseType.EthereumBase || coinType == CoinBaseType.OMNI) && coinName.length == 0 && chainOrPropertyId == null) {
-            throw new Error("No Chain ID or coin name provided");
+        if (coinType == CoinBaseType.ERC20 && coinName.length <= 0) {
+            throw new Error('You have to provide Contract Address for ERC20 tokens');
+        } else if (
+            (coinType == CoinBaseType.EthereumBase || coinType == CoinBaseType.OMNI) &&
+            coinName.length == 0 &&
+            chainOrPropertyId == null
+        ) {
+            throw new Error('No Chain ID or coin name provided');
         }
 
         let c: any;
@@ -101,100 +103,105 @@ export class CoinInfo {
 
         let ci: any;
 
-        switch(coinType){
+        switch (coinType) {
             case CoinBaseType.BitcoinBase:
-                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
                 ci.id = `btc_${ci.shortcut}`;
                 break;
             case CoinBaseType.EthereumBase:
-                if(chainOrPropertyId != null) {
-                    ci = c.find( token => token.chain_id == chainOrPropertyId);
+                if (chainOrPropertyId != null) {
+                    ci = c.find((token) => token.chain_id == chainOrPropertyId);
                 } else {
-                    ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                    ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
 
                 ci.id = `eth_${ci.shortcut}`;
                 break;
             case CoinBaseType.ERC20:
-                ci = c.find(obj => obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci = c.find(
+                    (obj) =>
+                        obj.address.toLowerCase() == f || obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f
+                );
 
                 ci.id = `erc20_${EthereumNetworks.GetNetworkByChainId(ci.chain_id)}_${ci.shortcut}`;
                 ci.slip44 = EthereumNetworks.GetSlip44ByChainId(ci.chain_id);
                 break;
             case CoinBaseType.OMNI:
-                if(chainOrPropertyId != null) {
-                    ci = c.find( token => token.proparty_id == chainOrPropertyId);
+                if (chainOrPropertyId != null) {
+                    ci = c.find((token) => token.proparty_id == chainOrPropertyId);
                 } else {
-                    ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                    ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
                 }
 
                 // Update the divisible
                 ci.decimals = ci.divisible ? 8 : 0;
-                
+
                 ci.id = `omni_${ci.shortcut}`;
                 break;
             case CoinBaseType.Ripple:
-                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
                 ci.id = `ripple_${ci.shortcut}`;
                 break;
             case CoinBaseType.NEM:
-                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
                 ci.id = `nem_${ci.shortcut}`;
                 break;
             default:
-                ci = c.find(obj => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
+                ci = c.find((obj) => obj.name.toLowerCase() == f || obj.shortcut.toLowerCase() == f);
 
                 ci.id = `unknown_${ci.shortcut}`;
                 break;
         }
 
-        if (ci)
-        {
+        if (ci) {
             ci.coinBaseType = coinType;
             return ci;
-        }
-        else
-            throw new Error(`cannot find ${coinName}`);
+        } else throw new Error(`cannot find ${coinName}`);
     }
 
     /**
      * Returning the sorted list of all coins
      * @param firmwareVersion Specific Version of Prokey which support this coin
      */
-     public static GetAllCoinsInfoByVersion(firmwareVersion: string): Array< BitcoinBaseCoinInfoModel |
-                                                                        EthereumBaseCoinInfoModel |
-                                                                        Erc20BaseCoinInfoModel |
-                                                                        MiscCoinInfoModel |
-                                                                        OmniCoinInfoModel |
-                                                                        RippleCoinInfoModel |
-                                                                        NemCoinInfoModel> {
-
-        let list = new Array<BitcoinBaseCoinInfoModel |
-                                EthereumBaseCoinInfoModel |
-                                Erc20BaseCoinInfoModel |
-                                MiscCoinInfoModel |
-                                OmniCoinInfoModel |
-                                RippleCoinInfoModel |
-                                NemCoinInfoModel>();
+    public static GetAllCoinsInfoByVersion(
+        firmwareVersion: string
+    ): Array<
+        | BitcoinBaseCoinInfoModel
+        | EthereumBaseCoinInfoModel
+        | Erc20BaseCoinInfoModel
+        | MiscCoinInfoModel
+        | OmniCoinInfoModel
+        | RippleCoinInfoModel
+        | NemCoinInfoModel
+    > {
+        let list = new Array<
+            | BitcoinBaseCoinInfoModel
+            | EthereumBaseCoinInfoModel
+            | Erc20BaseCoinInfoModel
+            | MiscCoinInfoModel
+            | OmniCoinInfoModel
+            | RippleCoinInfoModel
+            | NemCoinInfoModel
+        >();
 
         //! For all bitcoin base coins
-        ProkeyCoinInfoModel.bitcoin.forEach(coin => {
+        ProkeyCoinInfoModel.bitcoin.forEach((coin) => {
             //! Check the version
-            if(compareVersions(firmwareVersion, coin.support.optimum) >= 0) {
+            if (compareVersions(firmwareVersion, coin.support.optimum) >= 0) {
                 list.push({
                     ...coin,
                     coinBaseType: CoinBaseType.BitcoinBase,
                     id: `btc_${coin.shortcut}`,
-                })
+                });
             }
         });
 
         //! For all ethereum base coins
-        ProkeyCoinInfoModel.eth.forEach(coin => {
-            if(compareVersions(firmwareVersion, coin.support.optimum) >= 0) {
+        ProkeyCoinInfoModel.eth.forEach((coin) => {
+            if (compareVersions(firmwareVersion, coin.support.optimum) >= 0) {
                 list.push({
                     ...coin,
                     coinBaseType: CoinBaseType.EthereumBase,
@@ -204,8 +211,8 @@ export class CoinInfo {
         });
 
         //! For all ERC20 tokens
-        ProkeyCoinInfoModel.erc20.forEach(token => {
-            if(compareVersions(firmwareVersion, token.support.optimum) >= 0) {
+        ProkeyCoinInfoModel.erc20.forEach((token) => {
+            if (compareVersions(firmwareVersion, token.support.optimum) >= 0) {
                 list.push({
                     ...token,
                     coinBaseType: CoinBaseType.ERC20,
@@ -216,11 +223,11 @@ export class CoinInfo {
         });
 
         //! For all OMNI tokens in support file
-        ProkeyCoinInfoModel.omni.forEach(omni => {
-            if(compareVersions(firmwareVersion, omni.support.optimum) >= 0) {
+        ProkeyCoinInfoModel.omni.forEach((omni) => {
+            if (compareVersions(firmwareVersion, omni.support.optimum) >= 0) {
                 list.push({
                     ...omni,
-                    decimals: (omni.divisible) ? 8 : 0,
+                    decimals: omni.divisible ? 8 : 0,
                     coinBaseType: CoinBaseType.OMNI,
                     id: `omni_${omni.shortcut}`,
                 });
@@ -228,42 +235,39 @@ export class CoinInfo {
         });
 
         //! For all Ripple base coins
-        ProkeyCoinInfoModel.ripple.forEach(ripple => {
+        ProkeyCoinInfoModel.ripple.forEach((ripple) => {
             //! Check the version
-            if(compareVersions(firmwareVersion, ripple.support.optimum) >= 0) {
+            if (compareVersions(firmwareVersion, ripple.support.optimum) >= 0) {
                 list.push({
                     ...ripple,
                     coinBaseType: CoinBaseType.Ripple,
                     id: `ripple_${ripple.shortcut}`,
-                })
+                });
             }
         });
 
         //! For all Nem base coins
-        ProkeyCoinInfoModel.NEM.forEach(nem => {
+        ProkeyCoinInfoModel.NEM.forEach((nem) => {
             //! Check the version
-            if(compareVersions(firmwareVersion, nem.support.optimum) >= 0) {
+            if (compareVersions(firmwareVersion, nem.support.optimum) >= 0) {
                 list.push({
                     ...nem,
                     coinBaseType: CoinBaseType.NEM,
                     id: `nem_${nem.shortcut}`,
-                })
+                });
             }
         });
 
         //! Sort the list by Priority
         list.sort((a, b) => {
-            if (a.priority > b.priority)
-                return 1;
-            else if (a.priority < b.priority)
-                return -1;
-            else
-                return 0;
+            if (a.priority > b.priority) return 1;
+            else if (a.priority < b.priority) return -1;
+            else return 0;
         });
 
         return list;
     }
     static compareVersions(firmwareVersion, networkVersion) {
-      return compareVersions(firmwareVersion, networkVersion);
+        return compareVersions(firmwareVersion, networkVersion);
     }
 }
