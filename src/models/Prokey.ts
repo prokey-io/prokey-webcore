@@ -1044,3 +1044,12 @@ export type LoadDeviceFlags = {
     skip_checksum?: boolean,
     u2f_counter?: number,
 }
+
+// Tron types
+export type TronAddress = {
+    address: string,
+}
+
+export type TronSignedTx = {
+    serialized_tx: string,
+}

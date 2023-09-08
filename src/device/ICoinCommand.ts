@@ -24,19 +24,22 @@ import { BitcoinTx } from '../models/BitcoinTx';
 import { EthereumTx } from '../models/EthereumTx';
 import { RippleTransaction } from '../models/Responses-V6';
 import {NEMSignTxMessage} from "../models/Prokey";
+import { TronTransaction } from '../models/TronTx';
 
 export interface ICoinCommands {
     GetAddress(
         device: Device,
         path: Array<number> | string,
         showOnProkey?: boolean,
-    ): Promise<ProkeyResponses.AddressModel |
+    ): Promise<
+        ProkeyResponses.AddressModel |
         ProkeyResponses.EthereumAddress |
         ProkeyResponses.LiskAddress |
         ProkeyResponses.NEMAddress |
         ProkeyResponses.RippleAddress |
         ProkeyResponses.CardanoAddress |
-        ProkeyResponses.StellarAddress>;
+        ProkeyResponses.StellarAddress |
+        ProkeyResponses.TronAddress>;
 
     GetAddresses(
         device: Device,
@@ -48,7 +51,8 @@ export interface ICoinCommands {
         ProkeyResponses.NEMAddress |
         ProkeyResponses.RippleAddress |
         ProkeyResponses.CardanoAddress |
-        ProkeyResponses.StellarAddress>>;
+        ProkeyResponses.StellarAddress |
+        ProkeyResponses.TronAddress>>;
 
     GetPublicKey(
         device: Device,
@@ -66,7 +70,8 @@ export interface ICoinCommands {
         transaction:BitcoinTx |
                     EthereumTx |
                     RippleTransaction |
-                    NEMSignTxMessage,
+                    NEMSignTxMessage |
+                    TronTransaction,
     ): Promise<ProkeyResponses.SignedTx |
         ProkeyResponses.EthereumSignedTx |
         ProkeyResponses.EosSignedTx |
@@ -75,7 +80,8 @@ export interface ICoinCommands {
         ProkeyResponses.BinanceSignTx |
         ProkeyResponses.CardanoSignedTx |
         ProkeyResponses.RippleSignedTx |
-        ProkeyResponses.NEMSignedTx>;
+        ProkeyResponses.NEMSignedTx |
+        ProkeyResponses.TronSignedTx>;
 
     SignMessage(
         device: Device,
