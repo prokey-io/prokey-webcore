@@ -34,8 +34,7 @@ import { MyConsole } from '../utils/console';
 import * as EthereumNetworks from '../utils/ethereum-networks';
 import BigNumber from 'bignumber.js';
 import { BlockchainProviders, BlockchainServerModel } from '../blockchain/BlockchainProviders';
-import { EstimateGasLimit } from '../utils/ethereum-providers';
-import { TransactionRequest, FeeData } from '@ethersproject/providers';
+import { FeeData } from '@ethersproject/providers';
 import { supportsEIP1559 } from '../utils/DeviceUtils';
 var WAValidator = require('multicoin-address-validator');
 
@@ -86,7 +85,7 @@ export class EthereumWallet extends BaseWallet {
         this._servers = BlockchainProviders.Get(super.GetCoinInfo());
 
         if (isErc20) {
-            this._gasLimit = 65000;
+            this._gasLimit = 200000;
             const ci = super.GetCoinInfo() as Erc20BaseCoinInfoModel;
             this._network = EthereumNetworks.GetNetworkByChainId(ci.chain_id);
             this._ethBlockchain = new EthereumBlockchain(this._servers, true, ci);
@@ -245,19 +244,6 @@ export class EthereumWallet extends BaseWallet {
 
         // Cast coin info model
         let coinInfo = super.GetCoinInfo() as Erc20BaseCoinInfoModel | EthereumBaseCoinInfoModel;
-
-        // Estimate the transaction gas limit
-        if (this._isErc20) {
-            try {
-                const tx: TransactionRequest = {
-                    to: this._contractAddress,
-                    data: '0x' + this.GetErc20TransactionData(receivedAddress, amount),
-                };
-                this._gasLimit = (await EstimateGasLimit(coinInfo.chain_id, tx)).toNumber();
-            } catch (error) {
-                this._gasLimit = 65000;
-            }
-        }
 
         const deviceFeatures = await this.GetDevice().GetFeatures();
         const deviceSupportsEIP1559 = supportsEIP1559(deviceFeatures, this._network);
