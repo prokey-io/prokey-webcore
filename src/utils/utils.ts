@@ -33,7 +33,7 @@ export function ReverseString(buf: string): string {
 export function ReverseByteArray(buf: Uint8Array): Uint8Array {
     let copy: Uint8Array = new Uint8Array(buf.length);
     for (let i = 0; i < buf.length; i++) {
-        copy[buf.length-i-1] = buf[i];
+        copy[buf.length - i - 1] = buf[i];
     }
 
     return buf;
@@ -52,7 +52,7 @@ export function HexStringToByteArray(data: string): Uint8Array {
 }
 
 export function HexStringToByteArrayNumber(data: string): Array<number> {
-    if(data.length % 2 == 1) {
+    if (data.length % 2 == 1) {
         throw new Error("Hex string lenght should be even");
     }
 
@@ -64,6 +64,18 @@ export function HexStringToByteArrayNumber(data: string): Array<number> {
     }
 
     return b;
+}
+
+export function HexStringToUTF8(hex: string): string {
+    if (hex.startsWith("0x")) {
+        hex = hex.slice(2);
+    }
+    return decodeURIComponent(
+        hex
+            .match(/.{1,2}/g)
+            .map(byte => `%${byte}`)
+            .join("")
+    );
 }
 
 export function ByteArrayToHexString(buf: any): string {
@@ -127,7 +139,7 @@ export function StripLeadingZeroes(str: string) {
     return str;
 }
 
-export function SplitString(len: number, str?:string): [string, string] {
+export function SplitString(len: number, str?: string): [string, string] {
     if (str == null) {
         return ['', ''];
     }
