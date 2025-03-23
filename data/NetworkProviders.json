@@ -2,7 +2,6 @@
     {
       "name": "Ethereum Mainnet",
       "url": [
-        "https://rpc.ankr.com/eth",
         "https://eth-mainnet.public.blastapi.io",
         "https://main-rpc.linkpool.io"
       ],
@@ -20,7 +19,6 @@
     {
       "name": "Ethereum Testnet Goerli",
       "url": [
-        "https://rpc.ankr.com/eth_goerli",
         "https://rpc.goerli.mudit.blog",
         "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
       ],
@@ -47,7 +45,6 @@
       "name": "Avalanche C-Chain",
       "url": [
         "https://api.avax.network/ext/bc/C/rpc",
-        "https://rpc.ankr.com/avalanche",
         "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc"
       ],
       "chainId": 43114
@@ -73,8 +70,7 @@
     {
       "name": "Arbitrum One",
       "url": [
-        "https://arb1.arbitrum.io/rpc",
-        "https://rpc.ankr.com/arbitrum"
+        "https://arb1.arbitrum.io/rpc"
       ],
       "chainId": 42161
     },
